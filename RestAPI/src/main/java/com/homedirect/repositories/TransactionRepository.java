@@ -10,5 +10,5 @@ import com.homedirect.entity.TransactionHistory;
 @Repository
 public interface TransactionRepository extends JpaRepository<TransactionHistory, Integer> {
 
-	List<TransactionHistory> findBySourceAccountNumberOrderByTimeDesc(String accountNumber);
+	List<TransactionHistory> findBySourceAccountNumberOrderByTimeDesc(String account);
 }

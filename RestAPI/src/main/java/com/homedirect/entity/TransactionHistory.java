@@ -8,8 +8,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import com.homedirect.util.ValidatorATM;
-
 @Entity
 @Table(name = "transactionhistory")
 public class TransactionHistory {
@@ -101,20 +99,5 @@ public class TransactionHistory {
 	public void setContent(String content) {
 		this.content = content;
 	}
-
-	public String printTransfer() {
-		return "STK chuyen: " + sourceAccountNumber + "\tSTK nhan: " + reciverAccountNumber + "\tSo tien: "
-				+ ValidatorATM.formatAmount(transferAmount) + " VND\tNoi dung: " + content + "\tThoi gian: " + time
-				+ "\tTrang thai: " + status;
-	}
-
-	public String printWithdraw() {
-		return "STK: " + sourceAccountNumber + "\tSo tien: " + ValidatorATM.formatAmount(transferAmount)
-				+ " VND\tNoi dung: " + content + "\tThoi gian: " + time + "\tTrang thai: " + status;
-	}
-
-	public String printDeposit() {
-		return "STK: " + sourceAccountNumber + "\tSo tien: " + ValidatorATM.formatAmount(transferAmount)
-				+ " VND\tNoi dung: " + content + "\tThoi gian: " + time + "\tTrang thai: " + status;
-	}
+	// xóa hàm print
 }

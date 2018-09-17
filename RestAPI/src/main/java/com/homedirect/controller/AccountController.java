@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.homedirect.entity.Account;
+import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
 import com.homedirect.service.impl.AccountServiceImpl;
 
@@ -23,14 +24,16 @@ public class AccountController {
 	@Autowired
 	private AccountServiceImpl accountService;
 
+	
+	// thay Account = AccountRequest 
 	@PostMapping(value = "/login")
-	public Account login(@RequestBody Account account) {
-		return accountService.getAccount(account.getUserName(), account.getPassWord());
+	public Account login(@RequestBody AccountRequest account) {
+		return accountService.getAccount(account.getUsername(), account.getPassword());
 	}
 
 	@PostMapping(value = "/accounts")
-	public boolean addAccount(@RequestBody Account account) {
-		accountService.creatAcc(account.getUserName(), account.getPassWord());
+	public boolean addAccount(@RequestBody AccountRequest account) {
+		accountService.creatAcc(account.getUsername(), account.getPassword());
 		return true;
 	}
 
@@ -41,9 +44,7 @@ public class AccountController {
 
 	@GetMapping(value = "/accounts/{id}")
 	public Account getOneAccount(@PathVariable("id") int id) {
-		Optional<Account> acc; 
-		acc = accountService.findById(id);
-		System.out.println(acc);
+		Optional<Account> acc = accountService.findById(id);
 		return acc.get();
 	}
 
