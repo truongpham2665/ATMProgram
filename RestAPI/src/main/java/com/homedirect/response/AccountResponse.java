@@ -1,11 +1,11 @@
-package com.homedirect.request;
+package com.homedirect.response;
 
-public class AccountRequest {
+public class AccountResponse {
 
-	// create AccountRequest
+	private int id;
 	private String accountNumber;
 	private String username;
-	private String password;
+	private Double amount;
 	
 	public String getAccountNumber() {
 		return accountNumber;
@@ -13,6 +13,14 @@ public class AccountRequest {
 
 	public void setAccountNumber(String accountNumber) {
 		this.accountNumber = accountNumber;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	public String getUsername() {
@@ -23,11 +31,11 @@ public class AccountRequest {
 		this.username = username;
 	}
 
-	public String getPassword() {
-		return password;
+	public Double getAmount() {
+		return amount;
 	}
 
-	public void setPassword(String password) {
-		this.password = password;
+	public void setAmount(Double amount) {
+		this.amount = amount;
 	}
 }

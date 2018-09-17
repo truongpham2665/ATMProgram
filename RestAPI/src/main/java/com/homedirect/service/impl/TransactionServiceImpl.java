@@ -12,9 +12,11 @@ import com.homedirect.repositories.TransactionRepository;
 import com.homedirect.request.DepositRequest;
 import com.homedirect.request.TransferRequest;
 import com.homedirect.request.WithdrawRequest;
+import com.homedirect.response.TransactionResponse;
 import com.homedirect.service.TransactionService;
+import com.homedirect.transformer.impl.TransactionHistoryTransformerImpl;
 import com.homedirect.util.Notification;
-import com.homedirect.util.ValidatorATM;
+import com.homedirect.validate.*;
 
 // thay = request.get....
 //String sourceAccountNumber = transferRequest.getSourceAccountNumber();
@@ -23,10 +25,11 @@ import com.homedirect.util.ValidatorATM;
 //Double amount = transferRequest.getAmount();
 
 @Service
-public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> implements TransactionService<Account> {
+public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> implements TransactionService {
 
 	private @Autowired TransactionRepository transactionRepository;
 	private @Autowired AccountServiceImpl accountService;
+	private @Autowired TransactionHistoryTransformerImpl transactionTransformer;
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
@@ -64,7 +67,7 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 	@Transactional(rollbackFor = Exception.class)
 	public Account transfer(TransferRequest Request) {
 
-		Account sourceAccount = accountService.getAccountByAccountNumber(Request.getSourceAccountNumber());
+		Account sourceAccount = accountService.findByAccountNumber(Request.getSourceAccountNumber());
 		try {
 
 			if (!checkTransfer(Request.getReceiverAccountNumber(), Request.getSourceAccountNumber())
@@ -72,7 +75,7 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 				return null;
 			}
 
-			Account receiverAccount = accountService.getAccountByAccountNumber(Request.getReceiverAccountNumber());
+			Account receiverAccount = accountService.findByAccountNumber(Request.getReceiverAccountNumber());
 			sourceAccount.setAmount(sourceAccount.getAmount() - Request.getAmount() - ConstantTransaction.FEE_TRANSFER);
 			receiverAccount.setAmount(receiverAccount.getAmount() + Request.getAmount());
 
@@ -101,15 +104,6 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 		save(history);
 	}
 
-	@Override
-	public List<TransactionHistory> showHistoryTransfer(int id) {
-		Account account = accountService.findById(id).get();
-		List<TransactionHistory> list = transactionRepository
-				.findBySourceAccountNumberOrderByTimeDesc(account.getAccountNumber());
-		return list;
-
-	}
-
 	public boolean checkTransfer(String reciverAccountNumber, String sourceAccountNumber) {
 		if (reciverAccountNumber.equals(sourceAccountNumber)) {
 			Notification.alert("Khong the tu chuyen tien cho chinh minh");
@@ -121,6 +115,27 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public List<TransactionResponse> showHistoryTransfer(String accountNumber, Byte type) {
+		if(accountNumber == null && type == null) {
+			List<TransactionHistory> transactionHistorys = transactionRepository.findAll();
+			return transactionTransformer.toResponse(transactionHistorys);
+		}
+		
+		if(accountNumber == null) {
+			List<TransactionHistory> transactionHistorys = transactionRepository.findByType(type);
+			return transactionTransformer.toResponse(transactionHistorys);
+		}
+		
+		if(type == null) {
+			List<TransactionHistory> transactionHistorys = transactionRepository.findByFromAccount(accountNumber);
+			return transactionTransformer.toResponse(transactionHistorys);
+		}
+		
+		List<TransactionHistory> transactionHistorys = transactionRepository.findByFromAccountAndType(accountNumber, type);
+		return transactionTransformer.toResponse(transactionHistorys);
 	}
 
 }

@@ -2,25 +2,34 @@ package com.homedirect.request;
 
 public class ChangePassRequest {
 
+	// đổi tên oldpass -> oldPassword
+	// newPass -> newPassword
 	private int id;
-	private String oldPass;
-	private String newPass;
+	private String oldPassword;
+	private String newPassword;
+
 	public int getId() {
 		return id;
 	}
+
 	public void setId(int id) {
 		this.id = id;
 	}
-	public String getOldPass() {
-		return oldPass;
+
+	public String getOldPassword() {
+		return oldPassword;
 	}
-	public void setOldPass(String oldPass) {
-		this.oldPass = oldPass;
+
+	public void setOldPassword(String oldPassword) {
+		this.oldPassword = oldPassword;
 	}
-	public String getNewPass() {
-		return newPass;
+
+	public String getNewPassword() {
+		return newPassword;
 	}
-	public void setNewPass(String newPass) {
-		this.newPass = newPass;
+
+	public void setNewPassword(String newPassword) {
+		this.newPassword = newPassword;
 	}
+
 }

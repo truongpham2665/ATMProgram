@@ -1,29 +1,29 @@
-package com.homedirect.util;
+package com.homedirect.validate;
 
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.Date;
 
-import com.homedirect.constant.ConstantAccount;
+import static com.homedirect.constant.ConstantAccount.*;
 import com.homedirect.constant.ConstantTransaction;
 
 public class ValidatorATM {
 
 	public static String validateUsername(String userName) {
 
-		if (userName.length() > ConstantAccount.USERNAME_LENG && checkWhiteSpace(userName)) {
-			return userName;
+		if (userName.length() < USERNAME_LENG || !checkWhiteSpace(userName)) {
+			return null;
 		}
-		return null;
+		return userName;
 	}
 
 	public static String validatePassword(String passWord) {
 
-		if (passWord.length() > ConstantAccount.PASSWORD_LENG && checkWhiteSpace(passWord)
-				&& checkLetterAndDigit(passWord)) {
-			return passWord;
+		if (passWord.length() < PASSWORD_LENG || !checkWhiteSpace(passWord)
+				|| !checkLetterAndDigit(passWord)) {
+			return null;
 		}
-		return null;
+		return passWord;
 	}
 
 	public static boolean validatorDeposit(Double amount) {
@@ -51,7 +51,7 @@ public class ValidatorATM {
 		}
 		return false;
 	}
-
+	
 	public static boolean checkWhiteSpace(String string) {
 		char ch;
 		for (int i = 0; i < string.length(); i++) {

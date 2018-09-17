@@ -11,32 +11,32 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "transactionhistory")
 public class TransactionHistory {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer Id;
-	private String sourceAccountNumber;
-	private String reciverAccountNumber;
+	private String fromAccount;
+	private String toAccount;
 	private Double transferAmount;
 	private Date time;
 	private String status;
 	private String content;
 	private Byte type;
-	
+
 	public class TransactionType {
 		public static final byte DEPOSIT = 1;
 		public static final byte WITHDRAW = 2;
 		public static final byte TRANSFER = 3;
-		
+
 	}
-	
+
 	public TransactionHistory() {
 	}
 
-	public TransactionHistory(String sourceAccountNumber, String reciverAccountNumber, Double transferAmount,
-			Date time, String status, String content, Byte type) {
-		this.sourceAccountNumber = sourceAccountNumber;
-		this.reciverAccountNumber = reciverAccountNumber;
+	public TransactionHistory(String sourceAccountNumber, String reciverAccountNumber, Double transferAmount, Date time,
+			String status, String content, Byte type) {
+		this.fromAccount = sourceAccountNumber;
+		this.toAccount = reciverAccountNumber;
 		this.transferAmount = transferAmount;
 		this.time = time;
 		this.status = status;
@@ -44,28 +44,28 @@ public class TransactionHistory {
 		this.type = type;
 	}
 
-	public Byte getType() {
-		return type;
+	public Integer getId() {
+		return Id;
 	}
 
-	public void setType(Byte type) {
-		this.type = type;
+	public void setId(Integer id) {
+		Id = id;
 	}
 
-	public String getSourceAccountNumber() {
-		return sourceAccountNumber;
+	public String getFromAccount() {
+		return fromAccount;
 	}
 
-	public void setSourceAccountNumber(String sourceAccountNumber) {
-		this.sourceAccountNumber = sourceAccountNumber;
+	public void setFromAccount(String fromAccount) {
+		this.fromAccount = fromAccount;
 	}
 
-	public String getReciverAccountNumber() {
-		return reciverAccountNumber;
+	public String getToAccount() {
+		return toAccount;
 	}
 
-	public void setReciverAccountNumber(String reciverAccountNumber) {
-		this.reciverAccountNumber = reciverAccountNumber;
+	public void setToAccount(String toAccount) {
+		this.toAccount = toAccount;
 	}
 
 	public Double getTransferAmount() {
@@ -99,5 +99,12 @@ public class TransactionHistory {
 	public void setContent(String content) {
 		this.content = content;
 	}
-	// xóa hàm print
+
+	public Byte getType() {
+		return type;
+	}
+
+	public void setType(Byte type) {
+		this.type = type;
+	}
 }

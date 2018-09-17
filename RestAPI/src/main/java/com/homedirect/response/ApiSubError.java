@@ -53,5 +53,4 @@ class ApiValidationError extends ApiSubError {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-
 }
