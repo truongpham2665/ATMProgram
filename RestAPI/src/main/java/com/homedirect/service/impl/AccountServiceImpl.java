@@ -53,7 +53,7 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 
 	@Override
 	public boolean changePassWord(ChangePassRequest changePassRequest) {
-		Account account = accountRepository.getOne(changePassRequest.getId());
+		Account account = accountRepository.findById(changePassRequest.getId()).get();
 		if (changePassRequest.getOldPass().equals(account.getPassWord())) {
 			account.setPassWord(changePassRequest.getNewPass());
 			accountRepository.save(account);
