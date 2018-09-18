@@ -3,11 +3,19 @@ package com.homedirect.validate;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.Date;
+import java.util.Random;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import static com.homedirect.constant.ConstantAccount.*;
 import com.homedirect.constant.ConstantTransaction;
+import com.homedirect.service.AccountService;
 
+@Component
 public class ValidatorATM {
+	
+	private @Autowired AccountService accountService;
 
 	public static String validateUsername(String userName) {
 
@@ -98,5 +106,18 @@ public class ValidatorATM {
 		DecimalFormat myFormatter = new DecimalFormat("###,###.00");
 		String output = myFormatter.format(amount);
 		return output;
+	}
+	
+	public String generateAccountNumber() {
+		String pattern = "22";
+		Random rd = new Random();
+		int max = 9999;
+		int accountNumber = rd.nextInt(max);
+		DecimalFormat format = new DecimalFormat("0000");
+		String outAccountNumber = pattern + format.format(accountNumber);
+		while (!accountService.checkAccountNumbers(outAccountNumber)) {
+			generateAccountNumber();
+		}
+		return outAccountNumber;
 	}
 }

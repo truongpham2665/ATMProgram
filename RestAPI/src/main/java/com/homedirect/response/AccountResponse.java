@@ -2,7 +2,6 @@ package com.homedirect.response;
 
 public class AccountResponse {
 
-	private int id;
 	private String accountNumber;
 	private String username;
 	private Double amount;
@@ -13,14 +12,6 @@ public class AccountResponse {
 
 	public void setAccountNumber(String accountNumber) {
 		this.accountNumber = accountNumber;
-	}
-
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 
 	public String getUsername() {

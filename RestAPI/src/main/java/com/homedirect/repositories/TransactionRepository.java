@@ -15,4 +15,5 @@ public interface TransactionRepository extends JpaRepository<TransactionHistory,
 	List<TransactionHistory> findByType(Byte type);
 	
 	List<TransactionHistory> findByFromAccountAndType(String accountNumber, Byte type);
+	
 }
