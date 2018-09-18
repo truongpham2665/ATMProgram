@@ -1,8 +1,5 @@
 package com.homedirect.controller;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,49 +9,45 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.homedirect.entity.Account;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
-import com.homedirect.service.impl.AccountServiceImpl;
+import com.homedirect.response.AccountResponse;
+import com.homedirect.service.AccountService;
+
+// Sửa method getAccountList
+// Đổi kiểu trả về Account -> AccountResponse
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/accounts")
 public class AccountController {
 
 	@Autowired
-	private AccountServiceImpl accountService;
+	private AccountService accountService;
 
-	
-	// thay Account = AccountRequest 
 	@PostMapping(value = "/login")
-	public Account login(@RequestBody AccountRequest account) {
-		return accountService.getAccount(account.getUsername(), account.getPassword());
+	public AccountResponse login(@RequestBody AccountRequest request) {
+		return accountService.login(request);
 	}
 
-	@PostMapping(value = "/accounts")
-	public boolean addAccount(@RequestBody AccountRequest account) {
-		accountService.creatAcc(account.getUsername(), account.getPassword());
-		return true;
+	@PostMapping(value = "/create")
+	public AccountResponse addAccount(@RequestBody AccountRequest request) {
+		return accountService.creatAcc(request);
+	}
+	
+	@GetMapping(value = "/show-account/{id}") 
+	public AccountResponse showAccount(@PathVariable Integer id) {
+		return accountService.getOneAccount(id);
 	}
 
-	@GetMapping(value = "/accounts")
-	public List<Account> getListAccount() {
-		return accountService.findAll();
+	@GetMapping(value = "/search-accounts")
+	public AccountResponse searchAccounts(@RequestParam(value = "username", required = false) String username, 
+												@RequestParam(value = "accountNumber", required = false) String accountNumber) {
+		return accountService.searchAccount(username, accountNumber);
 	}
 
-	@GetMapping(value = "/accounts/{id}")
-	public Account getOneAccount(@PathVariable("id") int id) {
-		Optional<Account> acc = accountService.findById(id);
-		return acc.get();
-	}
-
-	@PutMapping(value = "/accounts/changePass")
-	public boolean changeAccount(@RequestBody ChangePassRequest changePassRequest) {
-		if (accountService.changePassWord(changePassRequest)) {
-			return true;
-		}
-		return false;
+	@PutMapping(value = "/change-password")
+	public AccountResponse changeAccount(@RequestBody ChangePassRequest changePassRequest) {
+		return accountService.changePassword(changePassRequest);
 	}
 	
 	@GetMapping(value = "/search/{q}")

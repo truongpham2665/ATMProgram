@@ -2,33 +2,25 @@ package com.homedirect.request;
 
 public class TransferRequest {
 
-	private String sourceAccountNumber;
-	private String receiverAccountNumber;
+	private String toAccountNumber;
+	private String fromAccountNumber;
 	private Double amount;
 	private String content;
 
-	public String getContent() {
-		return content;
+	public String getToAccountNumber() {
+		return toAccountNumber;
 	}
 
-	public void setContent(String content) {
-		this.content = content;
+	public void setToAccountNumber(String toAccountNumber) {
+		this.toAccountNumber = toAccountNumber;
 	}
 
-	public String getSourceAccountNumber() {
-		return sourceAccountNumber;
+	public String getFromAccountNumber() {
+		return fromAccountNumber;
 	}
 
-	public void setSourceAccountNumber(String sourceAccountNumber) {
-		this.sourceAccountNumber = sourceAccountNumber;
-	}
-
-	public String getReceiverAccountNumber() {
-		return receiverAccountNumber;
-	}
-
-	public void setReceiverAccountNumber(String receiverAccountNumber) {
-		this.receiverAccountNumber = receiverAccountNumber;
+	public void setFromAccountNumber(String fromAccountNumber) {
+		this.fromAccountNumber = fromAccountNumber;
 	}
 
 	public Double getAmount() {
@@ -37,5 +29,13 @@ public class TransferRequest {
 
 	public void setAmount(Double amount) {
 		this.amount = amount;
+	}
+
+	public String getContent() {
+		return content;
+	}
+
+	public void setContent(String content) {
+		this.content = content;
 	}
 }

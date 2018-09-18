@@ -1,67 +1,63 @@
 package com.homedirect.service.impl;
 
-import java.text.DecimalFormat;
-import java.util.Random;
-
+import com.homedirect.response.AccountException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.homedirect.constant.ConstantAccount;
 import com.homedirect.entity.Account;
 import com.homedirect.entity.QAccount;
 import com.homedirect.repositories.AccountRepository;
+import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
+import com.homedirect.response.AccountResponse;
 import com.homedirect.service.AccountService;
-import com.homedirect.util.Input;
+import com.homedirect.transformer.impl.AccountTransformerImpl;
 import com.homedirect.util.Notification;
 import com.homedirect.util.ValidatorATM;
 import com.querydsl.core.BooleanBuilder;
+import com.homedirect.validate.ValidatorATM;
+
+// viết thêm method isValidCreateAccount(), 
 
 @Service
 public class AccountServiceImpl extends ServiceAbstract<Account> implements AccountService {
 
 	private @Autowired AccountRepository accountRepository;
-	private String pattern = "22";
+	private @Autowired AccountTransformerImpl accountTransformer;
 
 	@Override
-	public boolean creatAcc(String userName, String passWord) {
-		ValidatorATM.validateUsername(userName);
-		ValidatorATM.validatePassword(passWord);
-		if (userName == null || passWord == null) {
-			return false;
+	public AccountResponse creatAcc(AccountRequest request) {
+		if (!isValidCreateAccount(request.getUsername(), request.getPassword())) {
+			throw new AccountException("account da ton tai");
 		}
-		if (!checkUserName(userName)) {
-			Notification.alert("Tai khoan da ton tai");
-			return false;
-		}
+		Account account = accountTransformer.toAccount(request);
+		accountRepository.save(account);
 
-		Account newAccount = new Account(userName, generateAccountNumber(pattern), passWord,
-				ConstantAccount.DEFAULT_AMOUNT);
-		save(newAccount);
-		return true;
+		return accountTransformer.toResponse(account);
 	}
 
 	@Override
-	public Account login() {
-		String userName = Input.inputString("Ten tai khoan: ");
-		String passWord = Input.inputString("Mat khau: ");
-		Account account = getAccount(userName, passWord);
+	public AccountResponse login(AccountRequest request) {
+		Account account = accountRepository.findByUsernameAndPassword(request.getUsername(), request.getPassword());
 		if (account == null) {
 			Notification.alert("Dang nhap that bai");
-			return account;
+			return null;
 		}
 		Notification.alert("Dang nhap thanh cong");
-		return account;
+		return accountTransformer.toResponse(account);
 	}
 
+	// nếu sai trả về tài khoản hiện tại. thay return null = return accountTransfomer.toResponse(account)
 	@Override
-	public boolean changePassWord(ChangePassRequest changePassRequest) {
+	public AccountResponse changePassword(ChangePassRequest changePassRequest) {
 		Account account = accountRepository.findById(changePassRequest.getId()).get();
-		if (changePassRequest.getOldPass().equals(account.getPassWord())) {
-			account.setPassWord(changePassRequest.getNewPass());
-			accountRepository.save(account);
-			return true;
+		if (!changePassRequest.getOldPassword().equals(account.getPassword()) || changePassRequest.getNewPassword() == null) {
+			System.out.println("khong hop le");
+			return accountTransformer.toResponse(account);
 		}
-		return false;
+
+		account.setPassword(changePassRequest.getNewPassword());
+		accountRepository.save(account);
+		return accountTransformer.toResponse(account);
 	}
 	
 	public Iterable<Account> searchAccounts(String q) {
@@ -73,16 +69,27 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 		return accountRepository.findAll(where);
 	}
 
-	public String generateAccountNumber(String pattern) {
-		Random rd = new Random();
-		int max = 9999;
-		int accountNumber = rd.nextInt(max);
-		DecimalFormat format = new DecimalFormat("0000");
-		String outAccountNumber = pattern + format.format(accountNumber);
-		while (!checkAccountNumbers(outAccountNumber)) {
-			generateAccountNumber(pattern);
+	@Override
+	public AccountResponse getOneAccount(Integer id) {
+		Account account = accountRepository.findById(id).get();
+		return accountTransformer.toResponse(account);
+	}
+
+	@Override
+	public Account findByAccountNumber(String accountNumber) {
+		return accountRepository.findByAccountNumber(accountNumber);
+	}
+
+	public boolean checkUserName(String username) {
+		if (accountRepository.findByUsername(username) != null) {
+			return false;
 		}
-		return outAccountNumber;
+		return true;
+	}
+
+	public AccountResponse getAccount(AccountRequest request) {
+		Account account = accountRepository.findByUsernameAndPassword(request.getUsername(), request.getPassword());
+		return accountTransformer.toResponse(account);
 	}
 
 	public boolean checkAccountNumbers(String accountNumber) {
@@ -92,19 +99,38 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 		return false;
 	}
 
-	public Account getAccountByAccountNumber(String accountNumber) {
-		return accountRepository.findByAccountNumber(accountNumber);
-	}
-
-	public boolean checkUserName(String userName) {
-		if (accountRepository.findByUserName(userName) == null) {
-			return true;
+	private boolean isValidCreateAccount(String username, String password) {
+		if (ValidatorATM.validateUsername(username) == null) {
+			return false;
 		}
-		return false;
+
+		if (ValidatorATM.validatePassword(password) == null) {
+			return false;
+		}
+		if (username == null || password == null) {
+			return false;
+		}
+
+		if (!checkUserName(username)) {
+			Notification.alert("Tai khoan da ton tai");
+			return false;
+		}
+
+		return true;
+	}
+	
+	public AccountResponse getAccountById(int id) {
+		return accountTransformer.toResponse(accountRepository.findAll().get(id));
 	}
 
-	public Account getAccount(String userName, String passWord) {
-		return accountRepository.findByUserNameAndPassWord(userName, passWord);
+	@Override
+	public AccountResponse searchAccount(String username, String accountNumber) {
+		if (username == null) {
+			return accountTransformer.toResponse(accountRepository.findByAccountNumber(accountNumber));
+		}
+		if (accountNumber == null) {
+			return accountTransformer.toResponse(accountRepository.findByUsername(username));
+		}
+		return accountTransformer.toResponse(accountRepository.findByUsernameAndAccountNumber(username, accountNumber));
 	}
-
 }

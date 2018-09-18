@@ -1,39 +1,22 @@
 package com.homedirect.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import javax.persistence.Table;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import javax.persistence.Id;
 
 @Entity
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-@Table(name = "account")
-public class Account implements Serializable {
+public class Account {
 	
-	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer Id;
-	private String userName;
 	private String accountNumber;
-	private String passWord;
+	private String username;
+	private String password;
 	private Double amount;
-
-	public Account() {
-	}
-
-	public Account(String userName, String accountNumber, String passWord, Double amount) {
-		this.userName = userName;
-		this.accountNumber = accountNumber;
-		this.passWord = passWord;
-		this.amount = amount;
-	}
 	
 	public Integer getId() {
 		return Id;
@@ -43,12 +26,12 @@ public class Account implements Serializable {
 		Id = id;
 	}
 
-	public String getUserName() {
-		return userName;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public void setUsername(String userName) {
+		this.username = userName;
 	}
 
 	public String getAccountNumber() {
@@ -59,12 +42,12 @@ public class Account implements Serializable {
 		this.accountNumber = accountNumber;
 	}
 
-	public String getPassWord() {
-		return passWord;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setPassWord(String passWord) {
-		this.passWord = passWord;
+	public void setPassword(String passWord) {
+		this.password = passWord;
 	}
 
 	public Double getAmount() {
@@ -73,10 +56,5 @@ public class Account implements Serializable {
 
 	public void setAmount(Double amount) {
 		this.amount = amount;
-	}
-
-	@Override
-	public String toString() {
-		return "Ten tai khoan la: " + userName + "\n So tai khoan: " + accountNumber + "\n So du hien tai: " + amount;
 	}
 }

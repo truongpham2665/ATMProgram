@@ -1,29 +1,37 @@
-package com.homedirect.util;
+package com.homedirect.validate;
 
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.Date;
+import java.util.Random;
 
-import com.homedirect.constant.ConstantAccount;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import static com.homedirect.constant.ConstantAccount.*;
 import com.homedirect.constant.ConstantTransaction;
+import com.homedirect.service.AccountService;
 
+@Component
 public class ValidatorATM {
+	
+	private @Autowired AccountService accountService;
 
 	public static String validateUsername(String userName) {
 
-		if (userName.length() > ConstantAccount.USERNAME_LENG && checkWhiteSpace(userName)) {
-			return userName;
+		if (userName.length() < USERNAME_LENG || !checkWhiteSpace(userName)) {
+			return null;
 		}
-		return null;
+		return userName;
 	}
 
 	public static String validatePassword(String passWord) {
 
-		if (passWord.length() > ConstantAccount.PASSWORD_LENG && checkWhiteSpace(passWord)
-				&& checkLetterAndDigit(passWord)) {
-			return passWord;
+		if (passWord.length() < PASSWORD_LENG || !checkWhiteSpace(passWord)
+				|| !checkLetterAndDigit(passWord)) {
+			return null;
 		}
-		return null;
+		return passWord;
 	}
 
 	public static boolean validatorDeposit(Double amount) {
@@ -51,7 +59,7 @@ public class ValidatorATM {
 		}
 		return false;
 	}
-
+	
 	public static boolean checkWhiteSpace(String string) {
 		char ch;
 		for (int i = 0; i < string.length(); i++) {
@@ -98,5 +106,18 @@ public class ValidatorATM {
 		DecimalFormat myFormatter = new DecimalFormat("###,###.00");
 		String output = myFormatter.format(amount);
 		return output;
+	}
+	
+	public String generateAccountNumber() {
+		String pattern = "22";
+		Random rd = new Random();
+		int max = 9999;
+		int accountNumber = rd.nextInt(max);
+		DecimalFormat format = new DecimalFormat("0000");
+		String outAccountNumber = pattern + format.format(accountNumber);
+		while (!accountService.checkAccountNumbers(outAccountNumber)) {
+			generateAccountNumber();
+		}
+		return outAccountNumber;
 	}
 }
