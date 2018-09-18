@@ -21,5 +21,7 @@ public interface AccountService {
 	
 	AccountResponse searchAccount(String username, String accountNumber);
 	
+	Iterable<Account> searchAccounts(String q);
+	
 	boolean checkAccountNumbers(String accountNumber);
 }

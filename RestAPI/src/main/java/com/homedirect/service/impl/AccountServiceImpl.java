@@ -12,7 +12,6 @@ import com.homedirect.response.AccountResponse;
 import com.homedirect.service.AccountService;
 import com.homedirect.transformer.impl.AccountTransformerImpl;
 import com.homedirect.util.Notification;
-import com.homedirect.util.ValidatorATM;
 import com.querydsl.core.BooleanBuilder;
 import com.homedirect.validate.ValidatorATM;
 
@@ -64,7 +63,7 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 		QAccount account = QAccount.account;
 		BooleanBuilder where = new BooleanBuilder();
 		if (q != null) {
-			where.and(account.userName.containsIgnoreCase(q));
+			where.and(account.username.containsIgnoreCase(q));
 		}
 		return accountRepository.findAll(where);
 	}
