@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.homedirect.constant.ConstantAccount;
 import com.homedirect.entity.Account;
+import com.homedirect.entity.QAccount;
 import com.homedirect.repositories.AccountRepository;
 import com.homedirect.request.ChangePassRequest;
 import com.homedirect.service.AccountService;
 import com.homedirect.util.Input;
 import com.homedirect.util.Notification;
 import com.homedirect.util.ValidatorATM;
+import com.querydsl.core.BooleanBuilder;
 
 @Service
 public class AccountServiceImpl extends ServiceAbstract<Account> implements AccountService {
@@ -60,6 +62,15 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 			return true;
 		}
 		return false;
+	}
+	
+	public Iterable<Account> searchAccounts(String q) {
+		QAccount account = QAccount.account;
+		BooleanBuilder where = new BooleanBuilder();
+		if (q != null) {
+			where.and(account.userName.containsIgnoreCase(q));
+		}
+		return accountRepository.findAll(where);
 	}
 
 	public String generateAccountNumber(String pattern) {
