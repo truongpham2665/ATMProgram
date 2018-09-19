@@ -4,36 +4,29 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Random;
-
+import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import static com.homedirect.constant.ConstantAccount.*;
 import com.homedirect.constant.ConstantTransaction;
 import com.homedirect.entity.Account;
-import com.homedirect.request.TransferRequest;
 import com.homedirect.service.AccountService;
 
 @Component
 public class ValidatorATM {
 	
+	private static final String USERNAME_PATTERN = "^[a-z0-9._-]{3,15}$"; 
+	private static final String PASSWORD_PATTERN = "((?=.d)(?=.[a-z])(?=.[A-Z])(?=.[!.#$@_+,?-]).{8,50})";
+	
 	private @Autowired AccountService accountService;
-
-	public static String validateUsername(String userName) {
-
-		if (userName.length() < USERNAME_LENG || !checkWhiteSpace(userName)) {
-			return null;
-		}
-		return userName;
+	
+	// chuyển kiểu trả về string -> boolean (username và password)
+	public static boolean validateUsername(String userName) {
+		return userName.length() > USERNAME_LENG || isValidUsername(userName);
 	}
 
-	public static String validatePassword(String passWord) {
-
-		if (passWord.length() < PASSWORD_LENG || !checkWhiteSpace(passWord)
-				|| !checkLetterAndDigit(passWord)) {
-			return null;
-		}
-		return passWord;
+	public static boolean validatePassword(String password) {
+		return password.length() > PASSWORD_LENG || isValidPassword(password);
 	}
 
 	public static boolean validatorDeposit(Double amount) {
@@ -61,40 +54,14 @@ public class ValidatorATM {
 		return false;
 	}
 	
-	public static boolean checkWhiteSpace(String string) {
-		char ch;
-		for (int i = 0; i < string.length(); i++) {
-			ch = string.charAt(i);
-			if (Character.isWhitespace(ch)) {
-				return false;
-			}
-		}
-		return true;
+	// thay hàm checkWhiteSpace() -> isValidUsername
+	public static boolean isValidUsername(String username) {
+		return username.matches(USERNAME_PATTERN);
 	}
 
-	public static boolean checkLetterAndDigit(String string) {
-		char ch;
-		int i = 0;
-		boolean checkDigit = false;
-		boolean checkUpperCase = false;
-		boolean checkLowerCase = false;
-		do {
-			ch = string.charAt(i);
-			if (Character.isDigit(ch)) {
-				checkDigit = true;
-			}
-			if (Character.isUpperCase(ch)) {
-				checkUpperCase = true;
-			}
-			if (Character.isLowerCase(ch)) {
-				checkLowerCase = true;
-			}
-			i++;
-		} while (i < string.length());
-		if (checkDigit && checkUpperCase && checkLowerCase) {
-			return true;
-		}
-		return false;
+	// thay hàm checkLetterAndDigit() -> isValidPassword
+	public static boolean isValidPassword(String password) {
+		return password.matches(PASSWORD_PATTERN);
 	}
 
 	public static Date getDate() {
@@ -120,10 +87,6 @@ public class ValidatorATM {
 			generateAccountNumber();
 		}
 		return outAccountNumber;
-	}
-	
-	public boolean inValidRequestNumberAccount(TransferRequest request) {
-		return false;
 	}
 	
 	public boolean isValidateAccountNumber(String fromAccountNumber, String toAccountNumber) {

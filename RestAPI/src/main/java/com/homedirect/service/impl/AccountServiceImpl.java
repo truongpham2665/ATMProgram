@@ -11,7 +11,6 @@ import com.homedirect.request.ChangePassRequest;
 import com.homedirect.response.AccountResponse;
 import com.homedirect.service.AccountService;
 import com.homedirect.transformer.impl.AccountTransformerImpl;
-import com.homedirect.util.Notification;
 import com.querydsl.core.BooleanBuilder;
 import com.homedirect.validate.ValidatorATM;
 
@@ -26,7 +25,7 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 	@Override
 	public AccountResponse creatAcc(AccountRequest request) {
 		if (!isValidCreateAccount(request.getUsername(), request.getPassword())) {
-			throw new AccountException("account da ton tai");
+			return new AccountResponse();
 		}
 		Account account = accountTransformer.toAccount(request);
 		accountRepository.save(account);
@@ -34,10 +33,12 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 		return accountTransformer.toResponse(account);
 	}
 
+	// đăng nhập thất bại trả về 1 account null.
 	@Override
 	public AccountResponse login(AccountRequest request) {
 		Account account = accountRepository.findByUsernameAndPassword(request.getUsername(), request.getPassword());
 		if (account == null) {
+			new AccountResponse();
 			throw new AccountException("Dang nhap that bai");
 		}
 		return accountTransformer.toResponse(account);
@@ -48,10 +49,10 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 	@Override
 	public AccountResponse changePassword(ChangePassRequest changePassRequest) {
 		Account account = accountRepository.findById(changePassRequest.getId()).get();
-		if (!changePassRequest.getOldPassword().equals(account.getPassword()) || changePassRequest.getNewPassword() == null) {
+		if (!changePassRequest.getOldPassword().equals(account.getPassword())
+				|| changePassRequest.getNewPassword() == null) {
 			accountTransformer.toResponse(account);
 			throw new AccountException("Đổi mật khẩu không thành công!");
-
 		}
 
 		account.setPassword(changePassRequest.getNewPassword());
@@ -100,22 +101,18 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 	}
 
 	private boolean isValidCreateAccount(String username, String password) {
-		if (ValidatorATM.validateUsername(username) == null) {
-			return false;
+		if (!ValidatorATM.validateUsername(username)) {
+			throw new AccountException("username không hợp lệ");
 		}
-
-		if (ValidatorATM.validatePassword(password) == null) {
-			return false;
+		if (!ValidatorATM.validatePassword(password)) {
+			throw new AccountException("password không hợp lệ");
 		}
 		if (username == null || password == null) {
-			return false;
+			throw new AccountException("yêu cầu nhập đầy đủ thông tin ");
 		}
-
 		if (!checkUserName(username)) {
-			Notification.alert("Tai khoan da ton tai");
-			return false;
+			throw new AccountException("Tài khoản đã tồn tại ");
 		}
-
 		return true;
 	}
 
