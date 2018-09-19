@@ -3,12 +3,14 @@ package com.homedirect.transformer.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Component;
 import com.homedirect.entity.TransactionHistory;
 import com.homedirect.response.TransactionResponse;
 
 @Component
-public class TransactionHistoryTransformerImpl {
+public class TransactionHistoryTransformer {
 
 	public TransactionResponse toTransactionHistory(TransactionHistory transactionHistory) {
 		TransactionResponse response = new TransactionResponse();
@@ -23,7 +25,12 @@ public class TransactionHistoryTransformerImpl {
 		return response;
 	}
 
+	// Sửa lại hàm toResponse.
 	public List<TransactionResponse> toResponse(List<TransactionHistory> transactionHistories) {
+		return transactionHistories.stream().map(this::toTransactionHistory).collect(Collectors.toList());
+	}
+	
+	public Iterable<TransactionResponse> toResponseIterable(Iterable<TransactionHistory> transactionHistories) {
 		if(transactionHistories == null) return new ArrayList<>();
 		List<TransactionResponse> responses = new ArrayList<TransactionResponse>();
 		transactionHistories.forEach(transaction -> {

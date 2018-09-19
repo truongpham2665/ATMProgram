@@ -1,4 +1,6 @@
-package com.homedirect.response;
+package com.homedirect.message;
+
+//Chuyển từ package Response
 
 public class AccountException extends RuntimeException {
 

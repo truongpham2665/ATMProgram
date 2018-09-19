@@ -3,7 +3,6 @@ package com.homedirect.service.impl;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,18 +11,17 @@ import com.homedirect.entity.Account;
 import com.homedirect.entity.QTransactionHistory;
 import com.homedirect.entity.TransactionHistory;
 import com.homedirect.entity.TransactionHistory.TransactionType;
+import com.homedirect.message.AccountException;
 import com.homedirect.repositories.TransactionRepository;
 import com.homedirect.request.DepositRequest;
 import com.homedirect.request.SearchTransactionHistoryRequest;
 import com.homedirect.request.TransferRequest;
 import com.homedirect.request.WithdrawRequest;
-import com.homedirect.response.AccountException;
 import com.homedirect.response.AccountResponse;
 import com.homedirect.response.TransactionResponse;
 import com.homedirect.service.TransactionService;
-import com.homedirect.transformer.impl.AccountTransformerImpl;
-import com.homedirect.transformer.impl.TransactionHistoryTransformerImpl;
-import com.homedirect.util.Notification;
+import com.homedirect.transformer.impl.AccountTransformer;
+import com.homedirect.transformer.impl.TransactionHistoryTransformer;
 import com.homedirect.validate.*;
 import com.querydsl.core.BooleanBuilder;
 
@@ -40,10 +38,10 @@ import com.querydsl.core.BooleanBuilder;
 public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> implements TransactionService {
 	
 	private @Autowired AccountServiceImpl accountService;
-	private @Autowired AccountTransformerImpl accountTransformer;
+	private @Autowired AccountTransformer accountTransformer;
 	private @Autowired ValidatorATM validator;
 	private @Autowired TransactionRepository transactionRepository;
-	private @Autowired TransactionHistoryTransformerImpl transactionTransformer;
+	private @Autowired TransactionHistoryTransformer transactionTransformer;
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
@@ -112,12 +110,10 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 
 	public boolean checkTransfer(String toAccountNumber, String fromAccountNumber) {
 		if (toAccountNumber.equals(fromAccountNumber)) {
-			Notification.alert("Khong the tu chuyen tien cho chinh minh");
 			return false;
 		}
 
 		if (accountService.checkAccountNumbers(toAccountNumber)) {
-			Notification.alert("So tai khoan nhan khong chinh xac");
 			return false;
 		}
 
@@ -127,35 +123,13 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 		return true;
 	}
 
-	// thay đổi hàm showHistoryTransaction
+	// Sửa kiểu trả về TransactionHistory -> TransactionResponse.
+	// Bỏ hàm showHistoryTransfer().
 	@Override
-	public List<TransactionResponse> showHistoryTransfer(String accountNumber, Byte type) {
-		if (accountNumber == null && type == null) {
-			List<TransactionHistory> transactionHistory = transactionRepository.findAll();
-			return transactionTransformer.toResponse(transactionHistory);
-		}
-
-		if (accountNumber == null) {
-			List<TransactionHistory> transactionHistory = transactionRepository.findByType(type);
-			return transactionTransformer.toResponse(transactionHistory);
-		}
-
-		if (type == null) {
-			List<TransactionHistory> transactionHistory = transactionRepository.findByFromAccount(accountNumber);
-			return transactionTransformer.toResponse(transactionHistory);
-		}
-
-		List<TransactionHistory> transactionHistory = transactionRepository.findByFromAccountAndType(accountNumber,
-				type);
-		return transactionTransformer.toResponse(transactionHistory);
-	}
-	
-	@Override
-	public Iterable<TransactionHistory> searchHistory(SearchTransactionHistoryRequest q) {
+	public Iterable<TransactionResponse> searchHistory(SearchTransactionHistoryRequest q) {
 		if (q == null) {
 			return null;
 		}
-		
 		QTransactionHistory history = QTransactionHistory.transactionHistory;
 		BooleanBuilder where = new BooleanBuilder();
 		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
@@ -168,6 +142,6 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		return transactionRepository.findAll(where);
+		return transactionTransformer.toResponseIterable(transactionRepository.findAll(where));
 	}
 }

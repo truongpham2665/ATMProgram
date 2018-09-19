@@ -1,17 +1,11 @@
 package com.homedirect.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.homedirect.entity.TransactionHistory;
 import com.homedirect.request.DepositRequest;
 import com.homedirect.request.SearchTransactionHistoryRequest;
 import com.homedirect.request.TransferRequest;
@@ -47,7 +41,7 @@ public class TransactionController {
 	}
 
 	@PostMapping(value = "/show-history")
-	public Iterable<TransactionHistory> search(@RequestBody SearchTransactionHistoryRequest q) {
+	public Iterable<TransactionResponse> search(@RequestBody SearchTransactionHistoryRequest q) {
 		return transactionService.searchHistory(q);
 	}
 }

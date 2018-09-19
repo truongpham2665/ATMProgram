@@ -4,6 +4,8 @@ import static com.homedirect.constant.ConstantAccount.DEFAULT_AMOUNT;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.homedirect.entity.Account;
@@ -14,7 +16,7 @@ import com.homedirect.validate.ValidatorATM;
 // thêm method toResponseList
 
 @Component
-public class AccountTransformerImpl {
+public class AccountTransformer {
 	
 	private @Autowired ValidatorATM validator;
 	
@@ -35,17 +37,21 @@ public class AccountTransformerImpl {
 		return response;
 	}
 	
+	// Sửa hàm toResponseList(). 
 	public List<AccountResponse> toResponseList(List<Account> accounts) {
-		if (accounts == null) return new ArrayList<>();
+		return accounts.stream().map(this::toResponse).collect(Collectors.toList());
+	}
+	
+	public Iterable<AccountResponse> toResponseIterable(Iterable<Account> accountIterable) {
+		if (accountIterable == null) return new ArrayList<>();
 		List<AccountResponse> accountResponses = new ArrayList<>();
-		accounts.forEach(account -> {
+		accountIterable.forEach(account -> {
 			AccountResponse response = new AccountResponse();
 			response.setAccountNumber(account.getAccountNumber());
 			response.setUsername(account.getUsername());
 			response.setAmount(account.getAmount());
 			accountResponses.add(response);
 		});
-		
 		return accountResponses;
 	}
 }

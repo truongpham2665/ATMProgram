@@ -1,8 +1,10 @@
-package com.homedirect.response;
+package com.homedirect.message;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+//Chuyển từ package Response
 
 public abstract class ApiSubError {
 

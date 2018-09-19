@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.homedirect.entity.Account;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
 import com.homedirect.response.AccountResponse;
@@ -41,19 +39,13 @@ public class AccountController {
 		return accountService.getOneAccount(id);
 	}
 
-	@GetMapping(value = "/search-accounts")
-	public AccountResponse searchAccounts(@RequestParam(value = "username", required = false) String username, 
-												@RequestParam(value = "accountNumber", required = false) String accountNumber) {
-		return accountService.searchAccount(username, accountNumber);
-	}
-
 	@PutMapping(value = "/change-password")
 	public AccountResponse changeAccount(@RequestBody ChangePassRequest changePassRequest) {
 		return accountService.changePassword(changePassRequest);
 	}
 	
 	@GetMapping(value = "/search")
-	public Iterable<Account> search(@RequestParam String q) {
+	public Iterable<AccountResponse> search(@RequestParam String q) {
 		return accountService.searchAccounts(q);
 	}
 }

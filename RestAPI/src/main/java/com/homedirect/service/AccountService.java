@@ -19,9 +19,9 @@ public interface AccountService {
 	
 	Account findByAccountNumber(String accountNumber);
 	
-	AccountResponse searchAccount(String username, String accountNumber);
-	
-	Iterable<Account> searchAccounts(String q);
+	Iterable<AccountResponse> searchAccounts(String q);
 	
 	boolean checkAccountNumbers(String accountNumber);
+	
+	AccountResponse getAccountById(int id);
 }

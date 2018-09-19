@@ -1,16 +1,16 @@
 package com.homedirect.service.impl;
 
-import com.homedirect.response.AccountException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.homedirect.entity.Account;
 import com.homedirect.entity.QAccount;
+import com.homedirect.message.AccountException;
 import com.homedirect.repositories.AccountRepository;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
 import com.homedirect.response.AccountResponse;
 import com.homedirect.service.AccountService;
-import com.homedirect.transformer.impl.AccountTransformerImpl;
+import com.homedirect.transformer.impl.AccountTransformer;
 import com.querydsl.core.BooleanBuilder;
 import com.homedirect.validate.ValidatorATM;
 
@@ -20,7 +20,7 @@ import com.homedirect.validate.ValidatorATM;
 public class AccountServiceImpl extends ServiceAbstract<Account> implements AccountService {
 
 	private @Autowired AccountRepository accountRepository;
-	private @Autowired AccountTransformerImpl accountTransformer;
+	private @Autowired AccountTransformer accountTransformer;
 
 	@Override
 	public AccountResponse creatAcc(AccountRequest request) {
@@ -60,14 +60,16 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 		return accountTransformer.toResponse(account);
 	}
 
-	public Iterable<Account> searchAccounts(String q) {
+	// Đổi kiểu trả về Account -> AccountResponse.
+	@Override
+	public Iterable<AccountResponse> searchAccounts(String q) {
 		QAccount account = QAccount.account;
 		BooleanBuilder where = new BooleanBuilder();
 		if (q == null || q == "") {
 			return null;
 		}
 		where.or(account.username.containsIgnoreCase(q)).or(account.accountNumber.containsIgnoreCase(q));
-		return accountRepository.findAll(where);
+		return accountTransformer.toResponseIterable(accountRepository.findAll(where));
 	}
 
 	@Override
@@ -88,6 +90,7 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 		return true;
 	}
 
+	@Override
 	public AccountResponse getAccount(AccountRequest request) {
 		Account account = accountRepository.findByUsernameAndPassword(request.getUsername(), request.getPassword());
 		return accountTransformer.toResponse(account);
@@ -116,18 +119,8 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 		return true;
 	}
 
+	@Override
 	public AccountResponse getAccountById(int id) {
 		return accountTransformer.toResponse(accountRepository.findAll().get(id));
-	}
-
-	@Override
-	public AccountResponse searchAccount(String username, String accountNumber) {
-		if (username == null) {
-			return accountTransformer.toResponse(accountRepository.findByAccountNumber(accountNumber));
-		}
-		if (accountNumber == null) {
-			return accountTransformer.toResponse(accountRepository.findByUsername(username));
-		}
-		return accountTransformer.toResponse(accountRepository.findByUsernameAndAccountNumber(username, accountNumber));
 	}
 }

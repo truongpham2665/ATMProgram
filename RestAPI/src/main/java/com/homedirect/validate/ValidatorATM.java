@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Random;
-import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import static com.homedirect.constant.ConstantAccount.*;

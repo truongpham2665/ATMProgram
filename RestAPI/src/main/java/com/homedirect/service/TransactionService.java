@@ -1,8 +1,5 @@
 package com.homedirect.service;
 
-import java.util.List;
-
-import com.homedirect.entity.TransactionHistory;
 import com.homedirect.request.DepositRequest;
 import com.homedirect.request.SearchTransactionHistoryRequest;
 import com.homedirect.request.TransferRequest;
@@ -22,7 +19,5 @@ public interface TransactionService {
 	void saveHistoryTransfer(String sourceAccountNumber, String reciverAccountNumber, Double transferAmount,
 			String status, String content, Byte type);
 	
-	Iterable<TransactionHistory> searchHistory(SearchTransactionHistoryRequest q);
-	
-	List<TransactionResponse> showHistoryTransfer(String accountNumber, Byte type);
+	Iterable<TransactionResponse> searchHistory(SearchTransactionHistoryRequest q);
 }

@@ -1,4 +1,4 @@
-package com.homedirect.response;
+package com.homedirect.message;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+
+//Chuyển từ package Response
 
 public class ApiError {
 
