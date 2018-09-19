@@ -52,8 +52,8 @@ public class AccountController {
 		return accountService.changePassword(changePassRequest);
 	}
 	
-	@GetMapping(value = "/search/{q}")
-	public Iterable<Account> search(@PathVariable String q) {
+	@GetMapping(value = "/search")
+	public Iterable<Account> search(@RequestParam String q) {
 		return accountService.searchAccounts(q);
 	}
 }

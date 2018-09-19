@@ -43,26 +43,29 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 		return accountTransformer.toResponse(account);
 	}
 
-	// nếu sai trả về tài khoản hiện tại. thay return null = return accountTransfomer.toResponse(account)
+	// nếu sai trả về tài khoản hiện tại. thay return null = return
+	// accountTransfomer.toResponse(account)
 	@Override
 	public AccountResponse changePassword(ChangePassRequest changePassRequest) {
 		Account account = accountRepository.findById(changePassRequest.getId()).get();
 		if (!changePassRequest.getOldPassword().equals(account.getPassword()) || changePassRequest.getNewPassword() == null) {
 			accountTransformer.toResponse(account);
 			throw new AccountException("Đổi mật khẩu không thành công!");
+
 		}
 
 		account.setPassword(changePassRequest.getNewPassword());
 		accountRepository.save(account);
 		return accountTransformer.toResponse(account);
 	}
-	
+
 	public Iterable<Account> searchAccounts(String q) {
 		QAccount account = QAccount.account;
 		BooleanBuilder where = new BooleanBuilder();
-		if (q != null) {
-			where.and(account.username.containsIgnoreCase(q));
+		if (q == null || q == "") {
+			return null;
 		}
+		where.or(account.username.containsIgnoreCase(q)).or(account.accountNumber.containsIgnoreCase(q));
 		return accountRepository.findAll(where);
 	}
 
@@ -115,7 +118,7 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 
 		return true;
 	}
-	
+
 	public AccountResponse getAccountById(int id) {
 		return accountTransformer.toResponse(accountRepository.findAll().get(id));
 	}
