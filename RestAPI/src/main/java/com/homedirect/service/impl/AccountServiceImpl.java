@@ -38,10 +38,8 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 	public AccountResponse login(AccountRequest request) {
 		Account account = accountRepository.findByUsernameAndPassword(request.getUsername(), request.getPassword());
 		if (account == null) {
-			Notification.alert("Dang nhap that bai");
-			return null;
+			throw new AccountException("Dang nhap that bai");
 		}
-		Notification.alert("Dang nhap thanh cong");
 		return accountTransformer.toResponse(account);
 	}
 
@@ -50,8 +48,8 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 	public AccountResponse changePassword(ChangePassRequest changePassRequest) {
 		Account account = accountRepository.findById(changePassRequest.getId()).get();
 		if (!changePassRequest.getOldPassword().equals(account.getPassword()) || changePassRequest.getNewPassword() == null) {
-			System.out.println("khong hop le");
-			return accountTransformer.toResponse(account);
+			accountTransformer.toResponse(account);
+			throw new AccountException("Đổi mật khẩu không thành công!");
 		}
 
 		account.setPassword(changePassRequest.getNewPassword());

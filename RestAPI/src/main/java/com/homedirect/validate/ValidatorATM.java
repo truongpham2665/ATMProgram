@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import static com.homedirect.constant.ConstantAccount.*;
 import com.homedirect.constant.ConstantTransaction;
+import com.homedirect.entity.Account;
+import com.homedirect.request.TransferRequest;
 import com.homedirect.service.AccountService;
 
 @Component
@@ -39,7 +41,6 @@ public class ValidatorATM {
 			return true;
 		}
 		if (amount <= 0 || amount % 10000 != 0) {
-			System.out.println("So tien phai lon hon 0 va la boi so cua 10,000");
 			return true;
 		}
 		return false;
@@ -119,5 +120,23 @@ public class ValidatorATM {
 			generateAccountNumber();
 		}
 		return outAccountNumber;
+	}
+	
+	public boolean inValidRequestNumberAccount(TransferRequest request) {
+		return false;
+	}
+	
+	public boolean isValidateAccountNumber(String fromAccountNumber, String toAccountNumber) {
+		Account fromAccount = accountService.findByAccountNumber(fromAccountNumber);
+		if (fromAccount == null) {
+			return false;
+		}
+		
+		Account toAccount = accountService.findByAccountNumber(toAccountNumber);
+		if (toAccount == null) {
+			return false;
+		}
+		
+		return true;
 	}
 }

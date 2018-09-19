@@ -12,6 +12,7 @@ import com.homedirect.repositories.TransactionRepository;
 import com.homedirect.request.DepositRequest;
 import com.homedirect.request.TransferRequest;
 import com.homedirect.request.WithdrawRequest;
+import com.homedirect.response.AccountException;
 import com.homedirect.response.AccountResponse;
 import com.homedirect.response.TransactionResponse;
 import com.homedirect.service.TransactionService;
@@ -26,6 +27,8 @@ import com.homedirect.validate.*;
 // String content = transferRequest.getContent();
 // Double amount = transferRequest.getAmount();
 // đổi kiểu trả về từ Account -> AccountResponse
+// thay return null == throws New AccountException
+// thêm điều kiện dòng 75, 76
 
 @Service
 public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> implements TransactionService {
@@ -34,6 +37,7 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 	private @Autowired AccountServiceImpl accountService;
 	private @Autowired TransactionHistoryTransformerImpl transactionTransformer;
 	private @Autowired AccountTransformerImpl accountTransformer;
+	private @Autowired ValidatorATM validator;
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
@@ -41,7 +45,7 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 		Account account = accountService.findById(depositRequest.getId()).get(); // thêm get() line 28,46;
 		Double amount = depositRequest.getAmount();
 		if (ValidatorATM.validatorDeposit(depositRequest.getAmount())) {
-			return null;
+			throw new AccountException("Nạp tiền thất bại \n So tien phai lon hon 0 va la boi so cua 10,000");
 		}
 
 		account.setAmount(account.getAmount() + amount);
@@ -57,9 +61,8 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 		Double amount = withdrawRequest.getAmount();
 		Account account = accountService.findById(withdrawRequest.getId()).get();
 		if (ValidatorATM.validatorWithdraw(amount, account.getAmount())) {
-			return null;
+			throw new AccountException("Rút tiền thất bại! \n Số dư không đủ \n Hoặc số tiền phải lớn hơn 0 và là bội số của 10,000");
 		}
-
 		account.setAmount(account.getAmount() - (amount + ConstantTransaction.FEE_TRANSFER));
 		saveHistoryTransfer(account.getAccountNumber(), null, amount, ConstantTransaction.STATUS_SUCCESS,
 				ConstantTransaction.CONTENT_WITHDRAW, TransactionType.WITHDRAW);
@@ -70,28 +73,25 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public AccountResponse transfer(TransferRequest Request) {
-		Account fromAccount = accountService.findByAccountNumber(Request.getFromAccountNumber());
-		try {
-			if (!checkTransfer(Request.getToAccountNumber(), Request.getFromAccountNumber())
-					|| ValidatorATM.validatorWithdraw(Request.getAmount(), fromAccount.getAmount())) {
-				return null;
-			}
-
-			Account toAccount = accountService.findByAccountNumber(Request.getToAccountNumber());
-			fromAccount.setAmount(fromAccount.getAmount() - Request.getAmount() - ConstantTransaction.FEE_TRANSFER);
-			toAccount.setAmount(toAccount.getAmount() + Request.getAmount());
-
-			accountService.save(fromAccount);
-			accountService.save(toAccount);
-			saveHistoryTransfer(toAccount.getAccountNumber(), Request.getToAccountNumber(),Request.getAmount(),
-					ConstantTransaction.STATUS_SUCCESS, Request.getContent(),TransactionType.TRANSFER);
-
-		} catch (Exception e) {
-			saveHistoryTransfer(Request.getFromAccountNumber(), Request.getToAccountNumber(),Request.getAmount(),
-					ConstantTransaction.STATUS_FAIL, Request.getContent(),TransactionType.TRANSFER);
-			e.printStackTrace();
-			return null;
+		if (!validator.isValidateAccountNumber(Request.getFromAccountNumber(), Request.getToAccountNumber())) {
+			throw new AccountException("số tài khoản không đúng");
 		}
+		Account fromAccount = accountService.findByAccountNumber(Request.getFromAccountNumber());
+		Account toAccount = accountService.findByAccountNumber(Request.getToAccountNumber());
+		if (!checkTransfer(Request.getToAccountNumber(), Request.getFromAccountNumber())
+				|| ValidatorATM.validatorWithdraw(Request.getAmount(), fromAccount.getAmount())) {
+			throw new AccountException(
+					"Chuyển tiền thất bại! \n Số dư không đủ \n Hoặc số tiền phải lớn hơn 0 và là bội số của 10,000");
+		}
+		
+		fromAccount.setAmount(fromAccount.getAmount() - Request.getAmount() - ConstantTransaction.FEE_TRANSFER);
+		toAccount.setAmount(toAccount.getAmount() + Request.getAmount());
+
+		accountService.save(fromAccount);
+		accountService.save(toAccount);
+		saveHistoryTransfer(toAccount.getAccountNumber(), Request.getToAccountNumber(), Request.getAmount(),
+				ConstantTransaction.STATUS_SUCCESS, Request.getContent(), TransactionType.TRANSFER);
+
 		return accountTransformer.toResponse(fromAccount);
 	}
 
@@ -114,9 +114,13 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 			Notification.alert("So tai khoan nhan khong chinh xac");
 			return false;
 		}
+
+		if (toAccountNumber == null || fromAccountNumber == null) {
+			return false;
+		}
 		return true;
 	}
-	
+
 	@Override
 	public List<TransactionResponse> showHistory(Integer id) {
 		Account account = accountService.findById(id).get();
@@ -129,22 +133,23 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 	// thay đổi hàm showHistoryTransaction
 	@Override
 	public List<TransactionResponse> showHistoryTransfer(String accountNumber, Byte type) {
-		if(accountNumber == null && type == null) {
+		if (accountNumber == null && type == null) {
 			List<TransactionHistory> transactionHistory = transactionRepository.findAll();
 			return transactionTransformer.toResponse(transactionHistory);
 		}
-		
-		if(accountNumber == null) {
+
+		if (accountNumber == null) {
 			List<TransactionHistory> transactionHistory = transactionRepository.findByType(type);
 			return transactionTransformer.toResponse(transactionHistory);
 		}
-		
-		if(type == null) {
+
+		if (type == null) {
 			List<TransactionHistory> transactionHistory = transactionRepository.findByFromAccount(accountNumber);
 			return transactionTransformer.toResponse(transactionHistory);
 		}
-		
-		List<TransactionHistory> transactionHistory = transactionRepository.findByFromAccountAndType(accountNumber, type);
+
+		List<TransactionHistory> transactionHistory = transactionRepository.findByFromAccountAndType(accountNumber,
+				type);
 		return transactionTransformer.toResponse(transactionHistory);
 	}
 }
