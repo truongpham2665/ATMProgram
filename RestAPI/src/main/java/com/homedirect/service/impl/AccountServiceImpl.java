@@ -72,12 +72,13 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 		return accountTransformer.toResponseIterable(accountRepository.findAll(where));
 	}
 
+	// đổi tham số (Integer id) -> (String accountNumber)
 	@Override
-	public AccountResponse getOneAccount(Integer id) {
-		Account account = accountRepository.findById(id).get();
-		return accountTransformer.toResponse(account);
+	public AccountResponse getOneAccount(String accountNumber) {
+		Account account = accountRepository.findByAccountNumber(accountNumber);
+			return accountTransformer.toResponse(account);
 	}
-
+	
 	@Override
 	public Account findByAccountNumber(String accountNumber) {
 		return accountRepository.findByAccountNumber(accountNumber);

@@ -34,9 +34,9 @@ public class AccountController {
 		return accountService.creatAcc(request);
 	}
 	
-	@GetMapping(value = "/show-account/{id}") 
-	public AccountResponse showAccount(@PathVariable Integer id) {
-		return accountService.getOneAccount(id);
+	@GetMapping(value = "/show-account/{accountNumber}") 
+	public AccountResponse showAccount(@PathVariable String accountNumber) {
+		return accountService.getOneAccount(accountNumber);
 	}
 
 	@PutMapping(value = "/change-password")

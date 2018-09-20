@@ -15,7 +15,7 @@ public interface AccountService {
 	
 	AccountResponse getAccount(AccountRequest request);
 	
-	AccountResponse getOneAccount(Integer id);
+	AccountResponse getOneAccount(String accountNumber);
 	
 	Account findByAccountNumber(String accountNumber);
 	
