@@ -22,6 +22,7 @@ public class AccountTransformer {
 	
 	public Account toAccount(AccountRequest request) {
 		Account newAccount = new Account();
+		newAccount.setId(request.getId());
 		newAccount.setAccountNumber(validator.generateAccountNumber());
 		newAccount.setUsername(request.getUsername());
 		newAccount.setPassword(request.getPassword());
@@ -31,6 +32,7 @@ public class AccountTransformer {
 
 	public AccountResponse toResponse(Account account) {
 		AccountResponse response = new AccountResponse();
+		response.setId(account.getId());
 		response.setAccountNumber(account.getAccountNumber());
 		response.setUsername(account.getUsername());
 		response.setAmount(account.getAmount());

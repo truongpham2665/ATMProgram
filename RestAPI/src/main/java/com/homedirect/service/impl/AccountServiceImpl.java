@@ -1,5 +1,7 @@
 package com.homedirect.service.impl;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.homedirect.entity.Account;
@@ -39,7 +41,7 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 		Account account = accountRepository.findByUsernameAndPassword(request.getUsername(), request.getPassword());
 		if (account == null) {
 			new AccountResponse();
-			throw new AccountException("Dang nhap that bai");
+			throw new AccountException("Đăng nhập thất bại");
 		}
 		return accountTransformer.toResponse(account);
 	}
@@ -72,13 +74,13 @@ public class AccountServiceImpl extends ServiceAbstract<Account> implements Acco
 		return accountTransformer.toResponseIterable(accountRepository.findAll(where));
 	}
 
-	// đổi tham số (Integer id) -> (String accountNumber)
+	// đổi tham số (Integer id) -> (String accountNumber) --> (int id)
 	@Override
-	public AccountResponse getOneAccount(String accountNumber) {
-		Account account = accountRepository.findByAccountNumber(accountNumber);
-			return accountTransformer.toResponse(account);
+	public AccountResponse getOneAccount(int id) {
+		Optional<Account> account = accountRepository.findById(id);
+		return accountTransformer.toResponse(account.get());
 	}
-	
+
 	@Override
 	public Account findByAccountNumber(String accountNumber) {
 		return accountRepository.findByAccountNumber(accountNumber);
