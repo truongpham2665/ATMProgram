@@ -6,22 +6,21 @@ import com.homedirect.request.ChangePassRequest;
 import com.homedirect.response.AccountResponse;
 
 public interface AccountService {
-	
+
 	public AccountResponse creatAcc(AccountRequest request);
 
 	public AccountResponse login(AccountRequest request);
 
 	public AccountResponse changePassword(ChangePassRequest changePassRequest);
-	
+
 	AccountResponse getAccount(AccountRequest request);
-	
+
 	AccountResponse getOneAccount(int id);
-	
+
 	Account findByAccountNumber(String accountNumber);
-	
+
 	Iterable<AccountResponse> searchAccounts(String q);
-	
-	boolean checkAccountNumbers(String accountNumber);
-	
-	AccountResponse getAccountById(int id);
+
+//	boolean checkAccountNumbers(String accountNumber);
+
 }

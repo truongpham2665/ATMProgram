@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public abstract class ServiceAbstract<T> {
+public abstract class AbstractService<T> {
 
 
 	protected @Autowired JpaRepository<T, Integer> jpaRepository;

@@ -20,8 +20,8 @@ import com.homedirect.request.WithdrawRequest;
 import com.homedirect.response.AccountResponse;
 import com.homedirect.response.TransactionResponse;
 import com.homedirect.service.TransactionService;
-import com.homedirect.transformer.impl.AccountTransformer;
-import com.homedirect.transformer.impl.TransactionHistoryTransformer;
+import com.homedirect.transformer.AccountTransformer;
+import com.homedirect.transformer.TransactionHistoryTransformer;
 import com.homedirect.validate.*;
 import com.querydsl.core.BooleanBuilder;
 
@@ -34,12 +34,18 @@ import com.querydsl.core.BooleanBuilder;
 // thay return null == throws New AccountException
 // thêm điều kiện dòng 75, 76
 
+
+
+//chia Validator -> 2: ValidatorATM(check voi database) && ValidatorInputATM (check input)
+//ValidateATM: checkAccountNumber && checkUserName
+
 @Service
-public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> implements TransactionService {
-	
+public class TransactionServiceImpl extends AbstractService<TransactionHistory> implements TransactionService {
+
 	private @Autowired AccountServiceImpl accountService;
 	private @Autowired AccountTransformer accountTransformer;
-	private @Autowired ValidatorATM validator;
+	private @Autowired ValidatorATM validatorATM;
+	private @Autowired ValidatorInputATM validatorInputATM;
 	private @Autowired TransactionRepository transactionRepository;
 	private @Autowired TransactionHistoryTransformer transactionTransformer;
 
@@ -48,7 +54,7 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 	public AccountResponse deposit(DepositRequest depositRequest) {
 		Account account = accountService.findById(depositRequest.getId()).get(); // thêm get() line 28,46;
 		Double amount = depositRequest.getAmount();
-		if (ValidatorATM.validatorDeposit(depositRequest.getAmount())) {
+		if (ValidatorInputATM.validatorDeposit(depositRequest.getAmount())) {
 			throw new AccountException("Nạp tiền thất bại \n So tien phai lon hon 0 va la boi so cua 10,000");
 		}
 
@@ -64,8 +70,9 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 	public AccountResponse withdraw(WithdrawRequest withdrawRequest) {
 		Double amount = withdrawRequest.getAmount();
 		Account account = accountService.findById(withdrawRequest.getId()).get();
-		if (ValidatorATM.validatorWithdraw(amount, account.getAmount())) {
-			throw new AccountException("Rút tiền thất bại! \n Số dư không đủ \n Hoặc số tiền phải lớn hơn 0 và là bội số của 10,000");
+		if (ValidatorInputATM.validatorWithdraw(amount, account.getAmount())) {
+			throw new AccountException(
+					"Rút tiền thất bại! \n Số dư không đủ \n Hoặc số tiền phải lớn hơn 0 và là bội số của 10,000");
 		}
 		account.setAmount(account.getAmount() - (amount + ConstantTransaction.FEE_TRANSFER));
 		saveHistoryTransfer(account.getAccountNumber(), null, amount, ConstantTransaction.STATUS_SUCCESS,
@@ -77,17 +84,17 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public AccountResponse transfer(TransferRequest Request) {
-		if (!validator.isValidateAccountNumber(Request.getFromAccountNumber(), Request.getToAccountNumber())) {
+		if (!validatorInputATM.isValidateAccountNumber(Request.getFromAccountNumber(), Request.getToAccountNumber())) {
 			throw new AccountException("số tài khoản không đúng");
 		}
 		Account fromAccount = accountService.findByAccountNumber(Request.getFromAccountNumber());
 		Account toAccount = accountService.findByAccountNumber(Request.getToAccountNumber());
 		if (!checkTransfer(Request.getToAccountNumber(), Request.getFromAccountNumber())
-				|| ValidatorATM.validatorWithdraw(Request.getAmount(), fromAccount.getAmount())) {
+				|| ValidatorInputATM.validatorWithdraw(Request.getAmount(), fromAccount.getAmount())) {
 			throw new AccountException(
 					"Chuyển tiền thất bại! \n Số dư không đủ \n Hoặc số tiền phải lớn hơn 0 và là bội số của 10,000");
 		}
-		
+
 		fromAccount.setAmount(fromAccount.getAmount() - Request.getAmount() - ConstantTransaction.FEE_TRANSFER);
 		toAccount.setAmount(toAccount.getAmount() + Request.getAmount());
 
@@ -104,7 +111,7 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 			String status, String content, Byte type) {
 
 		TransactionHistory history = new TransactionHistory(sourceAccountNumber, reciverAccountNumber, transferAmount,
-				ValidatorATM.getDate(), status, content, type);
+				ValidatorInputATM.getDate(), status, content, type);
 		save(history);
 	}
 
@@ -113,7 +120,7 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 			return false;
 		}
 
-		if (accountService.checkAccountNumbers(toAccountNumber)) {
+		if (validatorATM.checkAccountNumbers(toAccountNumber)) {
 			return false;
 		}
 
@@ -136,12 +143,32 @@ public class TransactionServiceImpl extends ServiceAbstract<TransactionHistory> 
 		try {
 			Date fromDate = format.parse(q.getFromDate());
 			Date toDate = format.parse(q.getToDate());
-			java.sql.Date sqlFromDate = new java.sql.Date(fromDate.getTime());
-			java.sql.Date sqlToDate = new java.sql.Date(toDate.getTime());
-			where.and(history.fromAccount.eq(q.getAccountNumber())).and(history.type.eq(q.getType())).and(history.time.between(sqlFromDate, sqlToDate));
+			Date sqlFromDate = new Date(fromDate.getTime());
+			Date sqlToDate = new Date(toDate.getTime());
+			where.and(history.fromAccount.eq(q.getAccountNumber())).and(history.type.eq(q.getType()))
+					.and(history.time.between(sqlFromDate, sqlToDate));
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		return transactionTransformer.toResponseIterable(transactionRepository.findAll(where));
 	}
+//	public Page<TransactionResponse> searchHistory(SearchTransactionHistoryRequest q) {
+//		if (q == null) {
+//			return null;
+//		}
+//		QTransactionHistory history = QTransactionHistory.transactionHistory;
+//		BooleanBuilder where = new BooleanBuilder();
+//		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+//		try {
+//			Date fromDate = format.parse(q.getFromDate());
+//			Date toDate = format.parse(q.getToDate());
+//			Date sqlFromDate = new Date(fromDate.getTime());
+//			Date sqlToDate = new Date(toDate.getTime());
+//			where.and(history.fromAccount.eq(q.getAccountNumber())).and(history.type.eq(q.getType()))
+//					.and(history.time.between(sqlFromDate, sqlToDate));
+//		} catch (ParseException e) {
+//			e.printStackTrace();
+//		}
+//		return (Page<TransactionResponse>) transactionTransformer.toResponseIterable(transactionRepository.findAll(where, q.getId()));
+//	}
 }

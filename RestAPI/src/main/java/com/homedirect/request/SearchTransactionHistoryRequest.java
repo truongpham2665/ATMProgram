@@ -2,10 +2,19 @@ package com.homedirect.request;
 
 public class SearchTransactionHistoryRequest {
 
+	private int id;
 	private String accountNumber;
 	private String fromDate;
 	private String toDate;
 	private byte type;
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	public String getAccountNumber() {
 		return accountNumber;
