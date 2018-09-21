@@ -37,7 +37,7 @@ public class TransactionController {
 	}
 
 	@PostMapping(value = "/show-history")
-	public Page<TransactionResponse> search(@RequestBody SearchTransactionHistoryRequest q) {
+	public Iterable<TransactionResponse> search(@RequestBody SearchTransactionHistoryRequest q) {
 		return transactionService.searchHistory(q);
 	}
 }

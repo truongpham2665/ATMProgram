@@ -51,7 +51,7 @@ public class ValidatorInputATM {
 			System.out.println("Số tiền phải lớn hơn 0, nhỏ hơn 10,000,000 và là bội số của 10,000");
 			return true;
 		}
-		if (oldAmount - amount - ConstantTransaction.FEE_TRANSFER < 50000) {
+		if (oldAmount - amount - ConstantTransaction.FEE_TRANSFER < ConstantTransaction.DEFAULT_BALANCE) {
 			System.out.println("Số dư tài khoản hiện không đủ");
 			return true;
 		}

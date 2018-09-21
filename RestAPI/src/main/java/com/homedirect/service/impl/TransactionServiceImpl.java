@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -124,7 +123,7 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 	}
 
 	@Override
-	public Page<TransactionResponse> searchHistory(SearchTransactionHistoryRequest q) {
+	public Iterable<TransactionResponse> searchHistory(SearchTransactionHistoryRequest q) {
 		if (q == null) {
 			return null;
 		}
@@ -141,7 +140,6 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		return (Page<TransactionResponse>) transactionTransformer
-				.toResponseIterable(transactionRepository.findAll(where));
+		return transactionTransformer.toResponseIterable(transactionRepository.findAll(where));
 	}
 }

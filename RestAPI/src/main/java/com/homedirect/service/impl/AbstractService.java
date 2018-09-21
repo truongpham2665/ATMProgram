@@ -21,5 +21,4 @@ public abstract class AbstractService<T> {
 	public Optional<T> findById(int id) {
 		return jpaRepository.findById(id);
 	}
-
 }

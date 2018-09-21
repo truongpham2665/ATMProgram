@@ -1,7 +1,5 @@
 package com.homedirect.service;
 
-import org.springframework.data.domain.Page;
-
 import com.homedirect.request.DepositRequest;
 import com.homedirect.request.SearchTransactionHistoryRequest;
 import com.homedirect.request.TransferRequest;
@@ -20,5 +18,5 @@ public interface TransactionService {
 	void saveHistoryTransfer(String fromAccountNumber, String toAccountNumber, Double transferAmount, String status,
 			String content, Byte type);
 
-	Page<TransactionResponse> searchHistory(SearchTransactionHistoryRequest q);
+	Iterable<TransactionResponse> searchHistory(SearchTransactionHistoryRequest q);
 }
