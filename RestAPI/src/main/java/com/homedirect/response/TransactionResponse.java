@@ -5,8 +5,8 @@ import java.util.Date;
 public class TransactionResponse {
 
 	private int id;
-	private String fromAccountNumber;
-	private String toAccountNumber;
+	private int fromId;
+	private int toId;
 	private String content;
 	private String status;
 	private Date time;
@@ -21,20 +21,20 @@ public class TransactionResponse {
 		this.id = id;
 	}
 
-	public String getFromAccountNumber() {
-		return fromAccountNumber;
+	public int getFromId() {
+		return fromId;
 	}
 
-	public void setFromAccountNumber(String fromAccountNumber) {
-		this.fromAccountNumber = fromAccountNumber;
+	public void setFromId(int fromId) {
+		this.fromId = fromId;
 	}
 
-	public String getToAccountNumber() {
-		return toAccountNumber;
+	public int getToId() {
+		return toId;
 	}
 
-	public void setToAccountNumber(String toAccountNumber) {
-		this.toAccountNumber = toAccountNumber;
+	public void setToId(int toId) {
+		this.toId = toId;
 	}
 
 	public String getContent() {

@@ -14,7 +14,7 @@ import com.homedirect.request.ChangePassRequest;
 import com.homedirect.response.AccountResponse;
 import com.homedirect.service.AccountService;
 import com.homedirect.transformer.AccountTransformer;
-import com.homedirect.validate.ValidatorATM;
+import com.homedirect.validate.ValidatorStorageATM;
 import com.homedirect.validate.ValidatorInputATM;
 import com.querydsl.core.BooleanBuilder;
 
@@ -25,7 +25,7 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 
 	private @Autowired AccountRepository accountRepository;
 	private @Autowired AccountTransformer accountTransformer;
-	private @Autowired ValidatorATM validatorATM;
+	private @Autowired ValidatorStorageATM validatorATM;
 
 	@Override
 	public AccountResponse creatAcc(AccountRequest request) {

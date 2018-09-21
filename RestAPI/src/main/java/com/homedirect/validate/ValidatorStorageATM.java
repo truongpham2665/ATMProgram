@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import com.homedirect.repositories.AccountRepository;
 
 @Component
-public class ValidatorATM {
+public class ValidatorStorageATM {
 
 	private @Autowired AccountRepository accountRepository;
 
@@ -15,6 +15,13 @@ public class ValidatorATM {
 			return false;
 		}
 		return true;
+	}
+	
+	public boolean checkId(int id) {
+		if (accountRepository.findById(id) == null) {
+			return true;
+		}
+		return false;
 	}
 
 	public boolean checkAccountNumbers(String accountNumber) {

@@ -1,5 +1,7 @@
 package com.homedirect.service;
 
+import java.util.Optional;
+
 import com.homedirect.entity.Account;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
@@ -17,9 +19,11 @@ public interface AccountService {
 
 	AccountResponse getOneAccount(int id);
 
-	Account findByAccountNumber(String accountNumber);
-
 	Iterable<AccountResponse> searchAccounts(String q);
+	
+	Optional<Account> findById(int id);
+
+	Account findByAccountNumber(String accountNumber);
 
 //	boolean checkAccountNumbers(String accountNumber);
 

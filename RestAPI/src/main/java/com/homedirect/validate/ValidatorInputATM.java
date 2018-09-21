@@ -3,6 +3,7 @@ package com.homedirect.validate;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,7 +18,7 @@ public class ValidatorInputATM {
 	private static final String USERNAME_PATTERN = "^[a-z0-9._-]{3,15}$";
 	private static final String PASSWORD_PATTERN = "((?=.d)(?=.[a-z])(?=.[A-Z])(?=.[!.#$@_+,?-]).{8,50})";
 
-	private @Autowired ValidatorATM validatorATM;
+	private @Autowired ValidatorStorageATM validatorATM;
 	private @Autowired AccountService accountService;
 
 	// chuyển kiểu trả về string -> boolean (username và password)
@@ -89,13 +90,14 @@ public class ValidatorInputATM {
 		return outAccountNumber;
 	}
 
-	public boolean isValidateAccountNumber(String fromAccountNumber, String toAccountNumber) {
-		Account fromAccount = accountService.findByAccountNumber(fromAccountNumber);
+	// chuyen accountNumber -> id
+	public boolean isValidateId(int fromId, int toId) {
+		Optional<Account> fromAccount = accountService.findById(fromId);
 		if (fromAccount == null) {
 			return false;
 		}
 
-		Account toAccount = accountService.findByAccountNumber(toAccountNumber);
+		Optional<Account> toAccount = accountService.findById(toId);
 		if (toAccount == null) {
 			return false;
 		}

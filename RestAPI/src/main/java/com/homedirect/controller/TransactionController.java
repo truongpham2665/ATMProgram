@@ -1,6 +1,7 @@
 package com.homedirect.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,7 +43,7 @@ public class TransactionController {
 	}
 
 	@PostMapping(value = "/show-history")
-	public Iterable<TransactionResponse> search(@RequestBody SearchTransactionHistoryRequest q) {
+	public Page<TransactionResponse> search(@RequestBody SearchTransactionHistoryRequest q) {
 		return transactionService.searchHistory(q);
 	}
 }

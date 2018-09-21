@@ -1,5 +1,7 @@
 package com.homedirect.service;
 
+import org.springframework.data.domain.Page;
+
 import com.homedirect.request.DepositRequest;
 import com.homedirect.request.SearchTransactionHistoryRequest;
 import com.homedirect.request.TransferRequest;
@@ -8,6 +10,7 @@ import com.homedirect.response.AccountResponse;
 import com.homedirect.response.TransactionResponse;
 
 // bỏ generic
+//thay Iterable -> Page
 public interface TransactionService {
 	
 	public AccountResponse deposit(DepositRequest depositRequest);
@@ -16,8 +19,8 @@ public interface TransactionService {
 
 	public AccountResponse transfer(TransferRequest transferRequest);
 
-	void saveHistoryTransfer(String sourceAccountNumber, String reciverAccountNumber, Double transferAmount,
+	void saveHistoryTransfer(Integer fromId , Integer toId, Double transferAmount,
 			String status, String content, Byte type);
 	
-	Iterable<TransactionResponse> searchHistory(SearchTransactionHistoryRequest q);
+	Page<TransactionResponse> searchHistory(SearchTransactionHistoryRequest q);
 }
