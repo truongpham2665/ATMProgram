@@ -49,11 +49,11 @@ public class ValidatorInputATM {
 			return true;
 		}
 		if (amount <= 0 || amount % 10000 != 0 || amount > ConstantTransaction.MAX_AMOUNT_WITHDRAW) {
-			System.out.println("So tien phai lon hon 0, nho hon 10,000,000 va la boi so cua 10,000");
+			System.out.println("Số tiền phải lớn hơn 0, nhỏ hơn 10,000,000 và là bội số của 10,000");
 			return true;
 		}
 		if (oldAmount - amount - ConstantTransaction.FEE_TRANSFER < 50000) {
-			System.out.println("So du tai khoan hien tai khong du");
+			System.out.println("Số dư tài khoản hiện không đủ");
 			return true;
 		}
 		return false;

@@ -19,7 +19,7 @@ public interface TransactionService {
 
 	public AccountResponse transfer(TransferRequest transferRequest);
 
-	void saveHistoryTransfer(Integer fromId , String toAccountNumber, Double transferAmount,
+	void saveHistoryTransfer(String fromAccountNumber , String toAccountNumber, Double transferAmount,
 			String status, String content, Byte type);
 	
 	Page<TransactionResponse> searchHistory(SearchTransactionHistoryRequest q);

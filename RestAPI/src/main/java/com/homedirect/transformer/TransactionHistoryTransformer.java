@@ -17,7 +17,7 @@ public class TransactionHistoryTransformer {
 	public TransactionResponse toTransactionHistory(TransactionHistory transactionHistory) {
 		TransactionResponse response = new TransactionResponse();
 		response.setId(transactionHistory.getId());
-		response.setFromId(transactionHistory.getFromAccount());
+		response.setFromAccountNumber(transactionHistory.getFromAccount());
 		response.setToAccountNumber(transactionHistory.getToAccount());
 		response.setTransferAmount(transactionHistory.getTransferAmount());
 		response.setTime(new Date());
@@ -38,7 +38,7 @@ public class TransactionHistoryTransformer {
 		transactionHistories.forEach(transaction -> {
 			TransactionResponse response = new TransactionResponse();
 			response.setId(transaction.getId());
-			response.setFromId(transaction.getFromAccount());
+			response.setFromAccountNumber(transaction.getFromAccount());
 			response.setToAccountNumber(transaction.getToAccount());
 			response.setTransferAmount(transaction.getTransferAmount());
 			response.setTime(transaction.getTime());

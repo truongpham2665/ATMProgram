@@ -1,0 +1,10 @@
+# Comments in YAML look like this.
+
+################
+# SCALAR TYPES #
+################
+
+# Our root object (which continues for the entire document) will be a map,
+# which is equivalent to a dictionary, hash or object in other languages.
+key: 
+default_balance_value : 50000

@@ -13,7 +13,7 @@ public class TransactionHistory {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer Id;
-	private Integer fromAccount;
+	private String fromAccount;
 	private String toAccount;
 	private Double transferAmount;
 	private Date time;
@@ -31,7 +31,7 @@ public class TransactionHistory {
 	public TransactionHistory() {
 	}
 
-	public TransactionHistory(Integer fromAccount, String toAccount, Double transferAmount, Date time,
+	public TransactionHistory(String fromAccount, String toAccount, Double transferAmount, Date time,
 			String status, String content, Byte type) {
 		this.fromAccount = fromAccount;
 		this.toAccount = toAccount;
@@ -50,11 +50,11 @@ public class TransactionHistory {
 		Id = id;
 	}
 
-	public Integer getFromAccount() {
+	public String getFromAccount() {
 		return fromAccount;
 	}
 
-	public void setFromAccount(Integer fromAccount) {
+	public void setFromAccount(String fromAccount) {
 		this.fromAccount = fromAccount;
 	}
 

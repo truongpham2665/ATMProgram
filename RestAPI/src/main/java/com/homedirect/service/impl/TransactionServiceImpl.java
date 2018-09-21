@@ -61,7 +61,7 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 		}
 
 		account.setAmount(account.getAmount() + amount);
-		saveHistoryTransfer(account.getId(), null, amount, ConstantTransaction.STATUS_SUCCESS,
+		saveHistoryTransfer(account.getAccountNumber(), null, amount, ConstantTransaction.STATUS_SUCCESS,
 				ConstantTransaction.CONTENT_DEPOSIT, TransactionType.DEPOSIT);
 
 		return accountTransformer.toResponse(accountService.save(account));
@@ -77,7 +77,7 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 					"Rút tiền thất bại! \n Số dư không đủ \n Hoặc số tiền phải lớn hơn 0 và là bội số của 10,000");
 		}
 		account.setAmount(account.getAmount() - (amount + ConstantTransaction.FEE_TRANSFER));
-		saveHistoryTransfer(account.getId(), null, amount, ConstantTransaction.STATUS_SUCCESS,
+		saveHistoryTransfer(account.getAccountNumber(), null, amount, ConstantTransaction.STATUS_SUCCESS,
 				ConstantTransaction.CONTENT_WITHDRAW, TransactionType.WITHDRAW);
 
 		return accountTransformer.toResponse(accountService.save(account));
@@ -105,17 +105,17 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 		accountService.save(fromAccount);
 		accountService.save(toAccount);
 
-		saveHistoryTransfer(Request.getFromId(), Request.getToAccountNumber(), Request.getAmount(),
+		saveHistoryTransfer(fromAccount.getAccountNumber(), Request.getToAccountNumber(), Request.getAmount(),
 				ConstantTransaction.STATUS_SUCCESS, Request.getContent(), TransactionType.TRANSFER);
 
 		return accountTransformer.toResponse(fromAccount);
 	}
 
 	@Override
-	public void saveHistoryTransfer(Integer fromId, String toAccountNumber, Double transferAmount, String status,
+	public void saveHistoryTransfer(String fromAccountNumber, String toAccountNumber, Double transferAmount, String status,
 			String content, Byte type) {
 
-		TransactionHistory history = new TransactionHistory(fromId, toAccountNumber, transferAmount,
+		TransactionHistory history = new TransactionHistory(fromAccountNumber, toAccountNumber, transferAmount,
 				ValidatorInputATM.getDate(), status, content, type);
 		save(history);
 	}
@@ -169,7 +169,7 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 			Date toDate = format.parse(q.getToDate());
 			Date sqlFromDate = new Date(fromDate.getTime());
 			Date sqlToDate = new Date(toDate.getTime());
-			where.and(history.fromAccount.eq(q.getId())).and(history.type.eq(q.getType()))
+			where.and(history.fromAccount.eq(q.getAccountNumber())).and(history.type.eq(q.getType()))
 					.and(history.time.between(sqlFromDate, sqlToDate));
 		} catch (ParseException e) {
 			e.printStackTrace();
