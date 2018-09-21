@@ -16,12 +16,6 @@ import com.homedirect.response.AccountResponse;
 import com.homedirect.response.TransactionResponse;
 import com.homedirect.service.TransactionService;
 
-// chuyen cac method boolean sang AccountResponse /
-// if (transactionService.deposit(depositRequest)) {
-// return null;
-// bỏ thay bằng return transactionService.deposit(depositRequest);
-// đổi kiểu trả về từ Account -> AccountResponse/ Transaction -> TransactionResponse
-
 @RestController
 @RequestMapping("/transactions")
 public class TransactionController {

@@ -8,4 +8,5 @@ public class ConstantTransaction {
 	public final static int MAX_AMOUNT_WITHDRAW = 10000000;
 	public final static String CONTENT_WITHDRAW = "Rut tien";
 	public final static String CONTENT_DEPOSIT = "Gui tien";
+	public final static String CONTENT_TRANSFER = "Chuyen tien";
 }

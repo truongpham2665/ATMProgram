@@ -14,9 +14,6 @@ import com.homedirect.request.ChangePassRequest;
 import com.homedirect.response.AccountResponse;
 import com.homedirect.service.AccountService;
 
-// Sửa method getAccountList
-// Đổi kiểu trả về Account -> AccountResponse
-
 @RestController
 @RequestMapping("/accounts")
 public class AccountController {
@@ -33,8 +30,8 @@ public class AccountController {
 	public AccountResponse addAccount(@RequestBody AccountRequest request) {
 		return accountService.creatAcc(request);
 	}
-	
-	@GetMapping(value = "/show-account/{id}") 
+
+	@GetMapping(value = "/show-account/{id}")
 	public AccountResponse showAccount(@PathVariable int id) {
 		return accountService.getOneAccount(id);
 	}
@@ -43,7 +40,7 @@ public class AccountController {
 	public AccountResponse changeAccount(@RequestBody ChangePassRequest changePassRequest) {
 		return accountService.changePassword(changePassRequest);
 	}
-	
+
 	@GetMapping(value = "/search")
 	public Iterable<AccountResponse> search(@RequestParam String q) {
 		return accountService.searchAccounts(q);

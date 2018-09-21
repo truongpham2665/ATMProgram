@@ -7,9 +7,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.Id;
 
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Account {
-	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer Id;
@@ -17,7 +17,7 @@ public class Account {
 	private String username;
 	private String password;
 	private Double amount;
-	
+
 	public Integer getId() {
 		return Id;
 	}

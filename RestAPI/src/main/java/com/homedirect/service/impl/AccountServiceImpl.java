@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import com.homedirect.entity.Account;
 import com.homedirect.entity.QAccount;
 import com.homedirect.message.AccountException;
-import com.homedirect.repositories.AccountRepository;
+import com.homedirect.repository.AccountRepository;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
 import com.homedirect.response.AccountResponse;
@@ -17,8 +17,6 @@ import com.homedirect.transformer.AccountTransformer;
 import com.homedirect.validate.ValidatorStorageATM;
 import com.homedirect.validate.ValidatorInputATM;
 import com.querydsl.core.BooleanBuilder;
-
-// viết thêm method isValidCreateAccount(), 
 
 @Service
 public class AccountServiceImpl extends AbstractService<Account> implements AccountService {
@@ -38,7 +36,6 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		return accountTransformer.toResponse(account);
 	}
 
-	// đăng nhập thất bại trả về 1 account null.
 	@Override
 	public AccountResponse login(AccountRequest request) {
 		Account account = accountRepository.findByUsernameAndPassword(request.getUsername(), request.getPassword());
@@ -49,8 +46,6 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		return accountTransformer.toResponse(account);
 	}
 
-	// nếu sai trả về tài khoản hiện tại. thay return null = return
-	// accountTransfomer.toResponse(account)
 	@Override
 	public AccountResponse changePassword(ChangePassRequest changePassRequest) {
 		Account account = accountRepository.findById(changePassRequest.getId()).get();
@@ -65,7 +60,6 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		return accountTransformer.toResponse(account);
 	}
 
-	// Đổi kiểu trả về Account -> AccountResponse.
 	@Override
 	public Iterable<AccountResponse> searchAccounts(String q) {
 		QAccount account = QAccount.account;
@@ -77,7 +71,6 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		return accountTransformer.toResponseIterable(accountRepository.findAll(where));
 	}
 
-	// đổi tham số (Integer id) -> (String accountNumber) --> (int id)
 	@Override
 	public AccountResponse getOneAccount(int id) {
 		Optional<Account> account = accountRepository.findById(id);

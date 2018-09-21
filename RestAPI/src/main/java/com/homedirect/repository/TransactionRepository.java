@@ -1,4 +1,4 @@
-package com.homedirect.repositories;
+package com.homedirect.repository;
 
 import java.util.List;
 

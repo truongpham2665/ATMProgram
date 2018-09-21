@@ -15,7 +15,7 @@ import com.homedirect.entity.QTransactionHistory;
 import com.homedirect.entity.TransactionHistory;
 import com.homedirect.entity.TransactionHistory.TransactionType;
 import com.homedirect.message.AccountException;
-import com.homedirect.repositories.TransactionRepository;
+import com.homedirect.repository.TransactionRepository;
 import com.homedirect.request.DepositRequest;
 import com.homedirect.request.SearchTransactionHistoryRequest;
 import com.homedirect.request.TransferRequest;
@@ -28,18 +28,6 @@ import com.homedirect.transformer.TransactionHistoryTransformer;
 import com.homedirect.validate.ValidatorInputATM;
 import com.homedirect.validate.ValidatorStorageATM;
 import com.querydsl.core.BooleanBuilder;
-
-// thay String username... = request.get.getUsername...
-// String sourceAccountNumber = transferRequest.getSourceAccountNumber();
-// String receiverAccountNumber = transferRequest.getReceiverAccountNumber();
-// String content = transferRequest.getContent();
-// Double amount = transferRequest.getAmount();
-// đổi kiểu trả về từ Account -> AccountResponse
-// thay return null == throws New AccountException
-// thêm điều kiện dòng 75, 76
-
-//chia Validator -> 2: ValidatorATM(check voi database) && ValidatorInputATM (check input)
-//ValidateATM: checkAccountNumber && checkUserName
 
 @Service
 public class TransactionServiceImpl extends AbstractService<TransactionHistory> implements TransactionService {
@@ -54,7 +42,7 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public AccountResponse deposit(DepositRequest depositRequest) {
-		Account account = accountService.findById(depositRequest.getId()).get(); // thêm get() line 28,46;
+		Account account = accountService.findById(depositRequest.getId()).get();
 		Double amount = depositRequest.getAmount();
 		if (ValidatorInputATM.validatorDeposit(depositRequest.getAmount())) {
 			throw new AccountException("Nạp tiền thất bại \n So tien phai lon hon 0 va la boi so cua 10,000");
@@ -106,14 +94,14 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 		accountService.save(toAccount);
 
 		saveHistoryTransfer(fromAccount.getAccountNumber(), Request.getToAccountNumber(), Request.getAmount(),
-				ConstantTransaction.STATUS_SUCCESS, Request.getContent(), TransactionType.TRANSFER);
+				ConstantTransaction.STATUS_SUCCESS, ConstantTransaction.CONTENT_TRANSFER, TransactionType.TRANSFER);
 
 		return accountTransformer.toResponse(fromAccount);
 	}
 
 	@Override
-	public void saveHistoryTransfer(String fromAccountNumber, String toAccountNumber, Double transferAmount, String status,
-			String content, Byte type) {
+	public void saveHistoryTransfer(String fromAccountNumber, String toAccountNumber, Double transferAmount,
+			String status, String content, Byte type) {
 
 		TransactionHistory history = new TransactionHistory(fromAccountNumber, toAccountNumber, transferAmount,
 				ValidatorInputATM.getDate(), status, content, type);
@@ -135,28 +123,7 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 		return true;
 	}
 
-	// Sửa kiểu trả về TransactionHistory -> TransactionResponse.
-	// Bỏ hàm showHistoryTransfer().
 	@Override
-//	public Iterable<TransactionResponse> searchHistory(SearchTransactionHistoryRequest q) {
-//		if (q == null) {
-//			return null;
-//		}
-//		QTransactionHistory history = QTransactionHistory.transactionHistory;
-//		BooleanBuilder where = new BooleanBuilder();
-//		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-//		try {
-//			Date fromDate = format.parse(q.getFromDate());
-//			Date toDate = format.parse(q.getToDate());
-//			Date sqlFromDate = new Date(fromDate.getTime());
-//			Date sqlToDate = new Date(toDate.getTime());
-//			where.and(history.fromAccount.eq(q.getAccountNumber())).and(history.type.eq(q.getType()))
-//					.and(history.time.between(sqlFromDate, sqlToDate));
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//		}
-//		return transactionTransformer.toResponseIterable(transactionRepository.findAll(where));
-//	}
 	public Page<TransactionResponse> searchHistory(SearchTransactionHistoryRequest q) {
 		if (q == null) {
 			return null;

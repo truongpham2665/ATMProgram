@@ -31,8 +31,8 @@ public class TransactionHistory {
 	public TransactionHistory() {
 	}
 
-	public TransactionHistory(String fromAccount, String toAccount, Double transferAmount, Date time,
-			String status, String content, Byte type) {
+	public TransactionHistory(String fromAccount, String toAccount, Double transferAmount, Date time, String status,
+			String content, Byte type) {
 		this.fromAccount = fromAccount;
 		this.toAccount = toAccount;
 		this.transferAmount = transferAmount;

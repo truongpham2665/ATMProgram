@@ -1,7 +1,5 @@
 package com.homedirect.message;
 
-//Chuyển từ package Response
-
 import java.util.NoSuchElementException;
 
 import javax.persistence.EntityNotFoundException;
@@ -40,19 +38,19 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<>(apiError, apiError.getStatus());
 	}
 
-//		 other exception handlers below
 	@ExceptionHandler(NoSuchElementException.class)
 	protected ResponseEntity<Object> handleNoSuchElement(NoSuchElementException ex) {
 		ApiError apiError = new ApiError(HttpStatus.NOT_FOUND);
 		apiError.setMessage("Không tìm thấy");
 		return buildResponseEntity(apiError);
 	}
-	
+
 	@Override
-    protected ResponseEntity<Object> handleHttpMessageNotWritable(HttpMessageNotWritableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
-        String error = "Lỗi viết JSON ";
-        return buildResponseEntity(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, error, ex));
-    }
+	protected ResponseEntity<Object> handleHttpMessageNotWritable(HttpMessageNotWritableException ex,
+			HttpHeaders headers, HttpStatus status, WebRequest request) {
+		String error = "Lỗi viết JSON ";
+		return buildResponseEntity(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, error, ex));
+	}
 
 	protected ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
@@ -104,7 +102,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 		return buildResponseEntity(apiError);
 	}
 
-//		@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
 	protected ResponseEntity<Object> processMethodNotSupportedException(HttpRequestMethodNotSupportedException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
 		String error = "Phương thức không được hỗ trợ";

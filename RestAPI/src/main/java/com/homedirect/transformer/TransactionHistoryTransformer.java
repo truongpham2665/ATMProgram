@@ -9,8 +9,6 @@ import org.springframework.stereotype.Component;
 import com.homedirect.entity.TransactionHistory;
 import com.homedirect.response.TransactionResponse;
 
-//sua fromAccountNumber -> fromId
-
 @Component
 public class TransactionHistoryTransformer {
 
@@ -27,13 +25,13 @@ public class TransactionHistoryTransformer {
 		return response;
 	}
 
-	// Sửa lại hàm toResponse.
 	public List<TransactionResponse> toResponse(List<TransactionHistory> transactionHistories) {
 		return transactionHistories.stream().map(this::toTransactionHistory).collect(Collectors.toList());
 	}
-	
+
 	public Iterable<TransactionResponse> toResponseIterable(Iterable<TransactionHistory> transactionHistories) {
-		if(transactionHistories == null) return new ArrayList<>();
+		if (transactionHistories == null)
+			return new ArrayList<>();
 		List<TransactionResponse> responses = new ArrayList<TransactionResponse>();
 		transactionHistories.forEach(transaction -> {
 			TransactionResponse response = new TransactionResponse();
@@ -47,7 +45,6 @@ public class TransactionHistoryTransformer {
 			response.setType(transaction.getType());
 			responses.add(response);
 		});
-		
 		return responses;
 	}
 }

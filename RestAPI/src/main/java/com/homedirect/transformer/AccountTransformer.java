@@ -14,13 +14,11 @@ import com.homedirect.request.AccountRequest;
 import com.homedirect.response.AccountResponse;
 import com.homedirect.validate.ValidatorInputATM;
 
-// thêm method toResponseList
-
 @Component
 public class AccountTransformer {
-	
+
 	private @Autowired ValidatorInputATM validatorInputATM;
-	
+
 	public Account toAccount(AccountRequest request) {
 		Account newAccount = new Account();
 		newAccount.setId(request.getId());
@@ -39,14 +37,14 @@ public class AccountTransformer {
 		response.setAmount(account.getAmount());
 		return response;
 	}
-	
-	// Sửa hàm toResponseList(). 
+
 	public List<AccountResponse> toResponseList(List<Account> accounts) {
 		return accounts.stream().map(this::toResponse).collect(Collectors.toList());
 	}
-	
+
 	public Iterable<AccountResponse> toResponseIterable(Iterable<Account> accountIterable) {
-		if (accountIterable == null) return new ArrayList<>();
+		if (accountIterable == null)
+			return new ArrayList<>();
 		List<AccountResponse> accountResponses = new ArrayList<>();
 		accountIterable.forEach(account -> {
 			AccountResponse response = new AccountResponse();

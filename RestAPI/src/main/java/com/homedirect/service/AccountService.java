@@ -20,11 +20,8 @@ public interface AccountService {
 	AccountResponse getOneAccount(int id);
 
 	Iterable<AccountResponse> searchAccounts(String q);
-	
+
 	Optional<Account> findById(int id);
 
 	Account findByAccountNumber(String accountNumber);
-
-//	boolean checkAccountNumbers(String accountNumber);
-
 }

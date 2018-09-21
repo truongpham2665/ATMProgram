@@ -25,7 +25,6 @@ public class ValidatorInputATM {
 	private @Autowired ValidatorStorageATM validatorATM;
 	private @Autowired AccountService accountService;
 
-	// chuyển kiểu trả về string -> boolean (username và password)
 	public static boolean validateUsername(String userName) {
 		return userName.length() > USERNAME_LENG || isValidUsername(userName);
 	}
@@ -59,12 +58,10 @@ public class ValidatorInputATM {
 		return false;
 	}
 
-	// thay hàm checkWhiteSpace() -> isValidUsername
 	public static boolean isValidUsername(String username) {
 		return username.matches(USERNAME_PATTERN);
 	}
 
-	// thay hàm checkLetterAndDigit() -> isValidPassword
 	public static boolean isValidPassword(String password) {
 		return password.matches(PASSWORD_PATTERN);
 	}
@@ -94,7 +91,6 @@ public class ValidatorInputATM {
 		return outAccountNumber;
 	}
 
-	// chuyen fromAccountNumber -> fromId
 	public boolean isValidateInputTransfer(int fromId, String toAccountNuber) {
 		Optional<Account> fromAccount = accountService.findById(fromId);
 		if (fromAccount == null) {

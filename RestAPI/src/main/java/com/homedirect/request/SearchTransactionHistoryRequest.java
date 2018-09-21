@@ -47,5 +47,4 @@ public class SearchTransactionHistoryRequest {
 	public void setType(byte type) {
 		this.type = type;
 	}
-
 }

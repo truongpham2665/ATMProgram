@@ -3,7 +3,7 @@ package com.homedirect.validate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.homedirect.repositories.AccountRepository;
+import com.homedirect.repository.AccountRepository;
 
 @Component
 public class ValidatorStorageATM {
