@@ -6,7 +6,7 @@ public class TransactionResponse {
 
 	private int id;
 	private int fromId;
-	private int toId;
+	private String toAccountNumber;
 	private String content;
 	private String status;
 	private Date time;
@@ -29,12 +29,12 @@ public class TransactionResponse {
 		this.fromId = fromId;
 	}
 
-	public int getToId() {
-		return toId;
+	public String getToAccountNumber() {
+		return toAccountNumber;
 	}
 
-	public void setToId(int toId) {
-		this.toId = toId;
+	public void setToAccountNumber(String toAccountNumber) {
+		this.toAccountNumber = toAccountNumber;
 	}
 
 	public String getContent() {

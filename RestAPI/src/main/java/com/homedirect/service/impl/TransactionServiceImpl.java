@@ -3,12 +3,12 @@ package com.homedirect.service.impl;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import com.homedirect.constant.ConstantTransaction;
 import com.homedirect.entity.Account;
 import com.homedirect.entity.QTransactionHistory;
@@ -25,7 +25,8 @@ import com.homedirect.response.TransactionResponse;
 import com.homedirect.service.TransactionService;
 import com.homedirect.transformer.AccountTransformer;
 import com.homedirect.transformer.TransactionHistoryTransformer;
-import com.homedirect.validate.*;
+import com.homedirect.validate.ValidatorInputATM;
+import com.homedirect.validate.ValidatorStorageATM;
 import com.querydsl.core.BooleanBuilder;
 
 // thay String username... = request.get.getUsername...
@@ -36,8 +37,6 @@ import com.querydsl.core.BooleanBuilder;
 // đổi kiểu trả về từ Account -> AccountResponse
 // thay return null == throws New AccountException
 // thêm điều kiện dòng 75, 76
-
-
 
 //chia Validator -> 2: ValidatorATM(check voi database) && ValidatorInputATM (check input)
 //ValidateATM: checkAccountNumber && checkUserName
@@ -87,34 +86,36 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public AccountResponse transfer(TransferRequest Request) {
-		if (!validatorInputATM.isValidateId(Request.getFromId(), Request.getToId())) {
+		if (!validatorInputATM.isValidateInputTransfer(Request.getFromId(), Request.getToAccountNumber())) {
+			System.out.println(Request.getFromId() + Request.getToAccountNumber());
 			throw new AccountException("số tài khoản không đúng");
 		}
-		Optional<Account> fromAccount = accountService.findById(Request.getFromId());
-		Optional<Account> toAccount = accountService.findById(Request.getToId());
-		if (!checkTransfer(Request.getToId(), Request.getFromId())
-				|| ValidatorInputATM.validatorWithdraw(Request.getAmount(), fromAccount.get().getAmount())) {
+
+		Account fromAccount = accountService.findById(Request.getFromId()).get();
+		Account toAccount = accountService.findByAccountNumber(Request.getToAccountNumber());
+		if (!checkTransfer(toAccount.getId(), Request.getFromId())
+				|| ValidatorInputATM.validatorWithdraw(Request.getAmount(), fromAccount.getAmount())) {
 			throw new AccountException(
 					"Chuyển tiền thất bại! \n Số dư không đủ \n Hoặc số tiền phải lớn hơn 0 và là bội số của 10,000");
 		}
 
-		fromAccount.get().setAmount(fromAccount.get().getAmount() - Request.getAmount() - ConstantTransaction.FEE_TRANSFER);
-		toAccount.get().setAmount(toAccount.get().getAmount() + Request.getAmount());
+		fromAccount.setAmount(fromAccount.getAmount() - Request.getAmount() - ConstantTransaction.FEE_TRANSFER);
+		toAccount.setAmount(toAccount.getAmount() + Request.getAmount());
 
-		accountService.save(fromAccount.get());
-		accountService.save(toAccount.get());
-		
-		saveHistoryTransfer(Request.getFromId(), Request.getToId(), Request.getAmount(),
+		accountService.save(fromAccount);
+		accountService.save(toAccount);
+
+		saveHistoryTransfer(Request.getFromId(), Request.getToAccountNumber(), Request.getAmount(),
 				ConstantTransaction.STATUS_SUCCESS, Request.getContent(), TransactionType.TRANSFER);
 
-		return accountTransformer.toResponse(fromAccount.get());
+		return accountTransformer.toResponse(fromAccount);
 	}
 
 	@Override
-	public void saveHistoryTransfer(Integer fromId, Integer toId, Double transferAmount,
-			String status, String content, Byte type) {
+	public void saveHistoryTransfer(Integer fromId, String toAccountNumber, Double transferAmount, String status,
+			String content, Byte type) {
 
-		TransactionHistory history = new TransactionHistory(fromId, toId, transferAmount,
+		TransactionHistory history = new TransactionHistory(fromId, toAccountNumber, transferAmount,
 				ValidatorInputATM.getDate(), status, content, type);
 		save(history);
 	}
@@ -133,6 +134,7 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 		}
 		return true;
 	}
+
 	// Sửa kiểu trả về TransactionHistory -> TransactionResponse.
 	// Bỏ hàm showHistoryTransfer().
 	@Override
@@ -172,6 +174,7 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
-		return (Page<TransactionResponse>) transactionTransformer.toResponseIterable(transactionRepository.findAll(where));
+		return (Page<TransactionResponse>) transactionTransformer
+				.toResponseIterable(transactionRepository.findAll(where));
 	}
 }

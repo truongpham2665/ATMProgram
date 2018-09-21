@@ -2,19 +2,19 @@ package com.homedirect.request;
 
 public class TransferRequest {
 
-	private int toId;
+//	private int toId;
 	private int fromId;
-//	private String toAccountNumber;
+	private String toAccountNumber;
 //	private String fromAccountNumber;
 	private Double amount;
 	private String content;
 
-	public int getToId() {
-		return toId;
+	public String getToAccountNumber() {
+		return toAccountNumber;
 	}
 
-	public void setToId(int toId) {
-		this.toId = toId;
+	public void setToAccountNumber(String toAccountNumber) {
+		this.toAccountNumber = toAccountNumber;
 	}
 
 	public int getFromId() {

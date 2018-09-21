@@ -1,13 +1,17 @@
 package com.homedirect.validate;
 
+import static com.homedirect.constant.ConstantAccount.PASSWORD_LENG;
+import static com.homedirect.constant.ConstantAccount.USERNAME_LENG;
+
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Random;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import static com.homedirect.constant.ConstantAccount.*;
+
 import com.homedirect.constant.ConstantTransaction;
 import com.homedirect.entity.Account;
 import com.homedirect.service.AccountService;
@@ -90,18 +94,16 @@ public class ValidatorInputATM {
 		return outAccountNumber;
 	}
 
-	// chuyen accountNumber -> id
-	public boolean isValidateId(int fromId, int toId) {
+	// chuyen fromAccountNumber -> fromId
+	public boolean isValidateInputTransfer(int fromId, String toAccountNuber) {
 		Optional<Account> fromAccount = accountService.findById(fromId);
 		if (fromAccount == null) {
 			return false;
 		}
-
-		Optional<Account> toAccount = accountService.findById(toId);
+		Account toAccount = accountService.findByAccountNumber(toAccountNuber);
 		if (toAccount == null) {
 			return false;
 		}
-
 		return true;
 	}
 }

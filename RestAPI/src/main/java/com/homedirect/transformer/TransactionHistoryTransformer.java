@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import com.homedirect.entity.TransactionHistory;
 import com.homedirect.response.TransactionResponse;
 
+//sua fromAccountNumber -> fromId
+
 @Component
 public class TransactionHistoryTransformer {
 
@@ -16,7 +18,7 @@ public class TransactionHistoryTransformer {
 		TransactionResponse response = new TransactionResponse();
 		response.setId(transactionHistory.getId());
 		response.setFromId(transactionHistory.getFromAccount());
-		response.setToId(transactionHistory.getToAccount());
+		response.setToAccountNumber(transactionHistory.getToAccount());
 		response.setTransferAmount(transactionHistory.getTransferAmount());
 		response.setTime(new Date());
 		response.setStatus(transactionHistory.getStatus());
@@ -37,7 +39,7 @@ public class TransactionHistoryTransformer {
 			TransactionResponse response = new TransactionResponse();
 			response.setId(transaction.getId());
 			response.setFromId(transaction.getFromAccount());
-			response.setToId(transaction.getToAccount());
+			response.setToAccountNumber(transaction.getToAccount());
 			response.setTransferAmount(transaction.getTransferAmount());
 			response.setTime(transaction.getTime());
 			response.setStatus(transaction.getStatus());
