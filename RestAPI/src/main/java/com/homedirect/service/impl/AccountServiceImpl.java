@@ -1,12 +1,15 @@
 package com.homedirect.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.homedirect.entity.Account;
-import com.homedirect.entity.QAccount;
 import com.homedirect.message.AccountException;
 import com.homedirect.repository.AccountRepository;
 import com.homedirect.request.AccountRequest;
@@ -16,7 +19,6 @@ import com.homedirect.service.AccountService;
 import com.homedirect.transformer.AccountTransformer;
 import com.homedirect.validate.ValidatorInputATM;
 import com.homedirect.validate.ValidatorStorageATM;
-import com.querydsl.core.BooleanBuilder;
 
 @Service
 public class AccountServiceImpl extends AbstractService<Account> implements AccountService {
@@ -61,14 +63,10 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	}
 
 	@Override
-	public Iterable<AccountResponse> searchAccounts(String q) {
-		QAccount account = QAccount.account;
-		BooleanBuilder where = new BooleanBuilder();
-		if (q == null || q == "") {
-			return null;
-		}
-		where.or(account.username.containsIgnoreCase(q)).or(account.accountNumber.containsIgnoreCase(q));
-		return accountTransformer.toResponseIterable(accountRepository.findAll(where));
+	public List<AccountResponse> searchAccounts(String username, int pageNo, int pageSize) {
+		Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("username"));
+		List<Account> accounts = accountRepository.findByUsernameContaining(username, pageable);
+		return accountTransformer.toResponseList(accounts);
 	}
 
 	@Override

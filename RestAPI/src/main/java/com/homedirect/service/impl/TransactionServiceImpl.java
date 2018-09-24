@@ -1,22 +1,20 @@
 package com.homedirect.service.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.homedirect.constant.ConstantTransaction;
 import com.homedirect.entity.Account;
-import com.homedirect.entity.QTransactionHistory;
 import com.homedirect.entity.TransactionHistory;
 import com.homedirect.entity.TransactionHistory.TransactionType;
 import com.homedirect.message.AccountException;
 import com.homedirect.repository.TransactionRepository;
 import com.homedirect.request.DepositRequest;
-import com.homedirect.request.SearchTransactionHistoryRequest;
 import com.homedirect.request.TransferRequest;
 import com.homedirect.request.WithdrawRequest;
 import com.homedirect.response.AccountResponse;
@@ -26,7 +24,6 @@ import com.homedirect.transformer.AccountTransformer;
 import com.homedirect.transformer.TransactionHistoryTransformer;
 import com.homedirect.validate.ValidatorInputATM;
 import com.homedirect.validate.ValidatorStorageATM;
-import com.querydsl.core.BooleanBuilder;
 
 @Service
 public class TransactionServiceImpl extends AbstractService<TransactionHistory> implements TransactionService {
@@ -123,23 +120,40 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 	}
 
 	@Override
-	public Iterable<TransactionResponse> searchHistory(SearchTransactionHistoryRequest q) {
-		if (q == null) {
-			return null;
+	public List<TransactionResponse> searchHistory(Integer accountId, String fromDate, String toDate, Byte type, int pageNo, int pageSize) {
+		Account account = accountService.findById(accountId).get();
+		Pageable pageable = PageRequest.of(pageNo, pageSize);
+		if (fromDate == null && toDate == null && type == null) {
+			List<TransactionHistory> histories = transactionRepository.findByFromAccount(account.getAccountNumber(), pageable);
+			return transactionTransformer.toResponse(histories);
 		}
-		QTransactionHistory history = QTransactionHistory.transactionHistory;
-		BooleanBuilder where = new BooleanBuilder();
-		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-		try {
-			Date fromDate = format.parse(q.getFromDate());
-			Date toDate = format.parse(q.getToDate());
-			Date sqlFromDate = new Date(fromDate.getTime());
-			Date sqlToDate = new Date(toDate.getTime());
-			where.and(history.fromAccount.eq(q.getAccountNumber())).and(history.type.eq(q.getType()))
-					.and(history.time.between(sqlFromDate, sqlToDate));
-		} catch (ParseException e) {
-			e.printStackTrace();
+		if (fromDate == null && toDate == null) {
+			List<TransactionHistory> histories = transactionRepository.findByFromAccountAndType(account.getAccountNumber(), type, pageable);
+			return transactionTransformer.toResponse(histories);
 		}
-		return transactionTransformer.toResponseIterable(transactionRepository.findAll(where));
+		if (type == null && toDate == null) {
+			List<TransactionHistory> histories = transactionRepository.findByFromAccountAndTimeGreaterThan(account.getAccountNumber(), fromDate, pageable);
+			return transactionTransformer.toResponse(histories);
+		}
+		if (type == null && fromDate == null) {
+			List<TransactionHistory> histories = transactionRepository.findByFromAccountAndTimeLessThan(account.getAccountNumber(), toDate, pageable);
+			return transactionTransformer.toResponse(histories);
+		}
+		if (type == null) {
+			List<TransactionHistory> histories = transactionRepository.findByFromAccountAndTimeBetween(account.getAccountNumber(), fromDate, toDate, pageable);
+			return transactionTransformer.toResponse(histories);
+		}
+//		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+//		try {
+//			Date fromDate = format.parse(q.getFromDate());
+//			Date toDate = format.parse(q.getToDate());
+//			Date sqlFromDate = new Date(fromDate.getTime());
+//			Date sqlToDate = new Date(toDate.getTime());
+//			where.and(history.fromAccount.eq(q.getAccountNumber())).and(history.type.eq(q.getType()))
+//					.and(history.time.between(sqlFromDate, sqlToDate));
+//		} catch (ParseException e) {
+//			e.printStackTrace();
+//		}
+		throw new AccountException("không tồn tại giao dịch!");
 	}
 }

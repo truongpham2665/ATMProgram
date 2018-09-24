@@ -1,5 +1,7 @@
 package com.homedirect.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,7 +45,9 @@ public class AccountController {
 	}
 
 	@GetMapping(value = "/search")
-	public Iterable<AccountResponse> search(@RequestParam String q) {
-		return accountService.searchAccounts(q);
+	public List<AccountResponse> search(@RequestParam String username,
+										@RequestParam(defaultValue = "0") int pageNo,
+										@RequestParam(defaultValue = "10") int pageSize) {
+		return accountService.searchAccounts(username, pageNo, pageSize);
 	}
 }

@@ -1,5 +1,6 @@
 package com.homedirect.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.homedirect.entity.Account;
@@ -19,7 +20,7 @@ public interface AccountService {
 
 	AccountResponse getOneAccount(int id);
 
-	Iterable<AccountResponse> searchAccounts(String q);
+	List<AccountResponse> searchAccounts(String username, int pageNo, int pageSize);
 
 	Optional<Account> findById(int id);
 
