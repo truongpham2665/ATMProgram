@@ -8,7 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public abstract class AbstractService<T> {
 
-	protected @Autowired JpaRepository<T, Integer> jpaRepository;
+	@Autowired
+	protected JpaRepository<T, Integer> jpaRepository;
 
 	protected T save(T t) {
 		return jpaRepository.save(t);

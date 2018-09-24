@@ -1,5 +1,7 @@
 package com.homedirect.service.impl;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +62,9 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 			throw new AccountException(
 					"Rút tiền thất bại! \n Số dư không đủ \n Hoặc số tiền phải lớn hơn 0 và là bội số của 10,000");
 		}
+		if (!account.getPassword().equals(withdrawRequest.getPassword())) {
+			throw new AccountException("nhập sai password!");
+		}
 		account.setAmount(account.getAmount() - (amount + ConstantTransaction.FEE_TRANSFER));
 		saveHistoryTransfer(account.getAccountNumber(), null, amount, ConstantTransaction.STATUS_SUCCESS,
 				ConstantTransaction.CONTENT_WITHDRAW, TransactionType.WITHDRAW);
@@ -81,6 +86,9 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 				|| ValidatorInputATM.validatorWithdraw(Request.getAmount(), fromAccount.getAmount())) {
 			throw new AccountException(
 					"Chuyển tiền thất bại! \n Số dư không đủ \n Hoặc số tiền phải lớn hơn 0 và là bội số của 10,000");
+		}
+		if (!toAccount.getPassword().equals(Request.getPassword())) {
+			throw new AccountException("nhập sai password!");
 		}
 
 		fromAccount.setAmount(fromAccount.getAmount() - Request.getAmount() - ConstantTransaction.FEE_TRANSFER);
@@ -120,40 +128,50 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 	}
 
 	@Override
-	public List<TransactionResponse> searchHistory(Integer accountId, String fromDate, String toDate, Byte type, int pageNo, int pageSize) {
+	public List<TransactionResponse> searchHistory(Integer accountId, String fromDate, String toDate, Byte type,
+			int pageNo, int pageSize) {
 		Account account = accountService.findById(accountId).get();
-		Pageable pageable = PageRequest.of(pageNo, pageSize);
-		if (fromDate == null && toDate == null && type == null) {
-			List<TransactionHistory> histories = transactionRepository.findByFromAccount(account.getAccountNumber(), pageable);
-			return transactionTransformer.toResponse(histories);
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			Pageable pageable = PageRequest.of(pageNo, pageSize);
+			if (fromDate == null && toDate == null && type == null) {
+				List<TransactionHistory> histories = transactionRepository.
+						findByFromAccount(account.getAccountNumber(),pageable);
+				return transactionTransformer.toResponse(histories);
+			}
+			if (fromDate == null && toDate ==null) {
+				List<TransactionHistory> histories = transactionRepository.
+						findByFromAccountAndType(account.getAccountNumber(), type, pageable);
+				return transactionTransformer.toResponse(histories);
+			}
+			if (type == null && toDate == null) {
+				List<TransactionHistory> histories = transactionRepository
+						.findByFromAccountAndTimeGreaterThan(account.getAccountNumber(), format.parse(fromDate), pageable);
+				return transactionTransformer.toResponse(histories);
+			}
+			if (type == null && fromDate == null) {
+				List<TransactionHistory> histories = transactionRepository
+						.findByFromAccountAndTimeLessThan(account.getAccountNumber(), format.parse(toDate), pageable);
+				return transactionTransformer.toResponse(histories);
+			}
+			if (fromDate == null) {
+				List<TransactionHistory> histories = transactionRepository.
+						findByFromAccountAndTypeAndTime(account.getAccountNumber(), type, format.parse(toDate));
+				return transactionTransformer.toResponse(histories);
+			}
+			if (toDate == null) {
+				List<TransactionHistory> histories = transactionRepository.
+						findByFromAccountAndTypeAndTime(account.getAccountNumber(), type, format.parse(fromDate));
+				return transactionTransformer.toResponse(histories);
+			}
+			if (type == null) {
+				List<TransactionHistory> histories = transactionRepository.
+						findByFromAccountAndTimeBetween(account.getAccountNumber(), format.parse(fromDate), format.parse(toDate), pageable);
+				return transactionTransformer.toResponse(histories);
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
 		}
-		if (fromDate == null && toDate == null) {
-			List<TransactionHistory> histories = transactionRepository.findByFromAccountAndType(account.getAccountNumber(), type, pageable);
-			return transactionTransformer.toResponse(histories);
-		}
-		if (type == null && toDate == null) {
-			List<TransactionHistory> histories = transactionRepository.findByFromAccountAndTimeGreaterThan(account.getAccountNumber(), fromDate, pageable);
-			return transactionTransformer.toResponse(histories);
-		}
-		if (type == null && fromDate == null) {
-			List<TransactionHistory> histories = transactionRepository.findByFromAccountAndTimeLessThan(account.getAccountNumber(), toDate, pageable);
-			return transactionTransformer.toResponse(histories);
-		}
-		if (type == null) {
-			List<TransactionHistory> histories = transactionRepository.findByFromAccountAndTimeBetween(account.getAccountNumber(), fromDate, toDate, pageable);
-			return transactionTransformer.toResponse(histories);
-		}
-//		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-//		try {
-//			Date fromDate = format.parse(q.getFromDate());
-//			Date toDate = format.parse(q.getToDate());
-//			Date sqlFromDate = new Date(fromDate.getTime());
-//			Date sqlToDate = new Date(toDate.getTime());
-//			where.and(history.fromAccount.eq(q.getAccountNumber())).and(history.type.eq(q.getType()))
-//					.and(history.time.between(sqlFromDate, sqlToDate));
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//		}
-		throw new AccountException("không tồn tại giao dịch!");
+		throw new AccountException("hiện tại không giao dịch nào!");
 	}
 }

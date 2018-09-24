@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 import com.homedirect.entity.Account;
 import com.homedirect.repository.AccountRepository;
-import com.homedirect.request.ChangePassRequest;
 
 @Component
 public class ValidatorStorageATM {
@@ -34,7 +33,7 @@ public class ValidatorStorageATM {
 	}
 
 	public boolean validateChangePassword(String oldPassword, String newPassword, Account account) {
-		if ((!oldPassword.equals(account.getPassword())
+		if ((!account.getPassword().equals(oldPassword)
 				|| newPassword == null)
 				|| !ValidatorInputATM.isValidPassword(newPassword)) {
 			return false;

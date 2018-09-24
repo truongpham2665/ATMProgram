@@ -38,7 +38,7 @@ public class TransactionController {
 	}
 
 	@GetMapping(value = "/show-history")
-	public List<TransactionResponse> search(@RequestParam(value = "accountId", required = false) Integer accountId,
+	public List<TransactionResponse> search(@RequestParam(value = "accountId") Integer accountId,
 											@RequestParam(value = "fromDate", required = false) String fromDate,
 											@RequestParam(value = "toDate", required = false) String toDate,
 											@RequestParam(value = "type", required = false) Byte type,
