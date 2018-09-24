@@ -20,14 +20,17 @@ public interface AccountService {
 
 	AccountResponse getOneAccount(int id);
 
-	Iterable<AccountResponse> searchAccounts(String q);
+	List<AccountResponse> searchAccounts(String username, int pageNo, int pageSize);
 
 	Optional<Account> findById(int id);
 
 	Account findByAccountNumber(String accountNumber);
+<<<<<<< HEAD
 	
 	void deleteAccountById(int id);
 	
 	List<AccountResponse> findAllAccount();
 	
+=======
+>>>>>>> 5f832f4e54677272a5cef9273264cd5453d0c2bc
 }

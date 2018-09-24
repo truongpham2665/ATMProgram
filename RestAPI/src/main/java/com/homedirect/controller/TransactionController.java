@@ -1,14 +1,16 @@
 package com.homedirect.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.homedirect.request.DepositRequest;
-import com.homedirect.request.SearchTransactionHistoryRequest;
 import com.homedirect.request.TransferRequest;
 import com.homedirect.request.WithdrawRequest;
 import com.homedirect.response.AccountResponse;
@@ -35,8 +37,13 @@ public class TransactionController {
 		return transactionService.transfer(transferRequest);
 	}
 
-	@PostMapping(value = "/show-history")
-	public Iterable<TransactionResponse> search(@RequestBody SearchTransactionHistoryRequest q) {
-		return transactionService.searchHistory(q);
+	@GetMapping(value = "/show-history")
+	public List<TransactionResponse> search(@RequestParam(value = "accountId", required = false) Integer accountId,
+											@RequestParam(value = "fromDate", required = false) String fromDate,
+											@RequestParam(value = "toDate", required = false) String toDate,
+											@RequestParam(value = "type", required = false) Byte type,
+											@RequestParam(defaultValue = "0") int pageNo,
+											@RequestParam(defaultValue = "10") int pageSize) {
+		return transactionService.searchHistory(accountId, fromDate, toDate, type, pageNo, pageSize);
 	}
 }
