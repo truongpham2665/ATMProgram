@@ -103,4 +103,14 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		}
 		return true;
 	}
+
+	@Autowired
+	private AccountServiceImpl(AccountRepository accountRepository) {
+		this.accountRepository = accountRepository;
+	}
+
+//	@Override
+//	public void deleteAccountById(int id) {
+//		accountRepository.deleteById(id);
+//	}
 }

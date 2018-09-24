@@ -46,4 +46,14 @@ public class AccountController {
 	public Iterable<AccountResponse> search(@RequestParam String q) {
 		return accountService.searchAccounts(q);
 	}
+
+//	@DeleteMapping(value = "/delete/{id}")
+//		public ResponseEntity<Void> delete(@PathVariable("id") int id) {
+//			try {
+//				accountService.deleteAccountById(id);
+//				return new ResponseEntity<Void>(HttpStatus.OK);
+//			} catch (Exception e) {
+//			return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+//		}
+//	}
 }
