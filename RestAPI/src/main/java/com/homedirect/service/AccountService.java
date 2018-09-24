@@ -25,6 +25,6 @@ public interface AccountService {
 
 	Account findByAccountNumber(String accountNumber);
 	
-//	void deleteAccountById(int id);
+	void deleteAccountById(int id);
 	
 }
