@@ -19,7 +19,7 @@ public class ValidatorInputATM {
 	private static final String USERNAME_PATTERN = "^[a-z0-9._-]{3,15}$";
 	private static final String PASSWORD_PATTERN = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}";
 	private DecimalFormat decimalFormat;
-	private @Autowired	ValidatorStorageATM validatorStorageATM;
+	private @Autowired ValidatorStorageATM validatorStorageATM;
 	private @Autowired AccountService accountService;
 
 	public static boolean validateUsername(String userName) {
