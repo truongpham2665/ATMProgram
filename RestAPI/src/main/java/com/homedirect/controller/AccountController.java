@@ -1,5 +1,7 @@
 package com.homedirect.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +35,11 @@ public class AccountController {
 	@PostMapping(value = "/create")
 	public AccountResponse addAccount(@RequestBody AccountRequest request) {
 		return accountService.creatAcc(request);
+	}
+	
+	@GetMapping(value = "/show-accounts")
+	public List<AccountResponse> showAllAccount() {
+		return accountService.findAllAccount();
 	}
 
 	@GetMapping(value = "/show-account/{id}")

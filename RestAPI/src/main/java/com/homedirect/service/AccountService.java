@@ -1,5 +1,6 @@
 package com.homedirect.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.homedirect.entity.Account;
@@ -26,5 +27,7 @@ public interface AccountService {
 	Account findByAccountNumber(String accountNumber);
 	
 	void deleteAccountById(int id);
+	
+	List<AccountResponse> findAllAccount();
 	
 }

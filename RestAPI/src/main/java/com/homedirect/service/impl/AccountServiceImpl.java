@@ -1,5 +1,6 @@
 package com.homedirect.service.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,6 +113,12 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	@Override
 	public void deleteAccountById(int id) {
 		accountRepository.deleteById(id);
+	}
+
+	@Override
+	public List<AccountResponse> findAllAccount() {
+		List<Account> accounts = accountRepository.findAll();
+		return accountTransformer.toResponseList(accounts);
 	}
 
 }

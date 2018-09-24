@@ -1,5 +1,6 @@
 package com.homedirect.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -21,4 +22,5 @@ public interface AccountRepository extends JpaRepository<Account, Integer>, Quer
 
 	Account findByUsernameAndAccountNumber(String username, String accountNumber);
 
+	List<Account> findAll();
 }

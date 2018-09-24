@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 import com.homedirect.entity.Account;
 import com.homedirect.repository.AccountRepository;
-import com.homedirect.request.ChangePassRequest;
 
 @Component
 public class ValidatorStorageATM {
