@@ -25,4 +25,8 @@ public interface AccountService {
 	Optional<Account> findById(int id);
 
 	Account findByAccountNumber(String accountNumber);
+	
+	void deleteAccountById(int id);
+	
+	List<AccountResponse> findAllAccount();
 }

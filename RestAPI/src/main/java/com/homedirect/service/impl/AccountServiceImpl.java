@@ -54,7 +54,7 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		if (!validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
 				changePassRequest.getNewPassword(), account)) {
 			accountTransformer.toResponse(account);
-			throw new AccountException("Đổi mật khẩu không thành công!");
+//			throw new AccountException("Đổi mật khẩu không thành công!");
 		}
 
 		account.setPassword(changePassRequest.getNewPassword());
@@ -105,5 +105,16 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	@Autowired
 	private AccountServiceImpl(AccountRepository accountRepository) {
 		this.accountRepository = accountRepository;
+	}
+
+	@Override
+	public void deleteAccountById(int id) {
+		accountRepository.deleteById(id);
+	}
+
+	@Override
+	public List<AccountResponse> findAllAccount() {
+		List<Account> accounts = accountRepository.findAll();
+		return accountTransformer.toResponseList(accounts);
 	}
 }

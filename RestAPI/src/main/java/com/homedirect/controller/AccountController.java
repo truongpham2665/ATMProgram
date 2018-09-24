@@ -33,6 +33,11 @@ public class AccountController {
 	public AccountResponse addAccount(@RequestBody AccountRequest request) {
 		return accountService.creatAcc(request);
 	}
+	
+	@GetMapping(value = "/show-accounts")
+	public List<AccountResponse> showAllAccount() {
+		return accountService.findAllAccount();
+	}
 
 	@GetMapping(value = "/show-account/{id}")
 	public AccountResponse showAccount(@PathVariable int id) {
