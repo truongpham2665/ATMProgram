@@ -12,16 +12,16 @@ import com.homedirect.entity.Account;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Integer>, QuerydslPredicateExecutor<Account> {
-	
+
 	Optional<Account> findById(Integer id);
 	
 	List<Account> findByUsernameContaining(String username, Pageable pageable);
 	
 	Account findByUsername(String name);
-	
+
 	Account findByAccountNumber(String accountNumber);
 
 	Account findByUsernameAndPassword(String username, String password);
-	
+
 	Account findByUsernameAndAccountNumber(String username, String accountNumber);
 }

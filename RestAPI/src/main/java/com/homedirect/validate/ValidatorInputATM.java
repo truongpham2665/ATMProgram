@@ -1,8 +1,5 @@
 package com.homedirect.validate;
 
-import static com.homedirect.constant.ConstantAccount.PASSWORD_LENG;
-import static com.homedirect.constant.ConstantAccount.USERNAME_LENG;
-
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.Date;
@@ -20,17 +17,17 @@ import com.homedirect.service.AccountService;
 public class ValidatorInputATM {
 
 	private static final String USERNAME_PATTERN = "^[a-z0-9._-]{3,15}$";
-	private static final String PASSWORD_PATTERN = "((?=.d)(?=.[a-z])(?=.[A-Z])(?=.[!.#$@_+,?-]).{8,50})";
-
-	private @Autowired ValidatorStorageATM validatorATM;
+	private static final String PASSWORD_PATTERN = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}";
+	private DecimalFormat decimalFormat;
+	private @Autowired ValidatorStorageATM validatorStorageATM;
 	private @Autowired AccountService accountService;
 
 	public static boolean validateUsername(String userName) {
-		return userName.length() > USERNAME_LENG || isValidUsername(userName);
+		return isValidUsername(userName);
 	}
 
 	public static boolean validatePassword(String password) {
-		return password.length() > PASSWORD_LENG || isValidPassword(password);
+		return isValidPassword(password);
 	}
 
 	public static boolean validatorDeposit(Double amount) {
@@ -85,7 +82,7 @@ public class ValidatorInputATM {
 		int accountNumber = rd.nextInt(max);
 		DecimalFormat format = new DecimalFormat("0000");
 		String outAccountNumber = pattern + format.format(accountNumber);
-		while (!validatorATM.checkAccountNumbers(outAccountNumber)) {
+		while (!validatorStorageATM.checkAccountNumbers(outAccountNumber)) {
 			generateAccountNumber();
 		}
 		return outAccountNumber;
@@ -101,5 +98,16 @@ public class ValidatorInputATM {
 			return false;
 		}
 		return true;
+	}
+
+	public String numberFormat(String pattern, double value) {
+		decimalFormat = new DecimalFormat(pattern);
+		String output = decimalFormat.format(value);
+		return output;
+	}
+
+	public String setAmount(double amount) {
+		String pattern = "###,###,###";
+		return numberFormat(pattern, amount);
 	}
 }

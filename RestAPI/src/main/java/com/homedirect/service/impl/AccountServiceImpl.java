@@ -25,7 +25,7 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 
 	private @Autowired AccountRepository accountRepository;
 	private @Autowired AccountTransformer accountTransformer;
-	private @Autowired ValidatorStorageATM validatorATM;
+	private @Autowired ValidatorStorageATM validatorStorageATM;
 
 	@Override
 	public AccountResponse creatAcc(AccountRequest request) {
@@ -51,8 +51,8 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	@Override
 	public AccountResponse changePassword(ChangePassRequest changePassRequest) {
 		Account account = accountRepository.findById(changePassRequest.getId()).get();
-		if (!changePassRequest.getOldPassword().equals(account.getPassword())
-				|| changePassRequest.getNewPassword() == null) {
+		if (!validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
+				changePassRequest.getNewPassword(), account)) {
 			accountTransformer.toResponse(account);
 			throw new AccountException("Đổi mật khẩu không thành công!");
 		}
@@ -96,9 +96,14 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		if (username == null || password == null) {
 			throw new AccountException("yêu cầu nhập đầy đủ thông tin ");
 		}
-		if (!validatorATM.checkUserName(username)) {
+		if (!validatorStorageATM.checkUserName(username)) {
 			throw new AccountException("Tài khoản đã tồn tại ");
 		}
 		return true;
+	}
+
+	@Autowired
+	private AccountServiceImpl(AccountRepository accountRepository) {
+		this.accountRepository = accountRepository;
 	}
 }
