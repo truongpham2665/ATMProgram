@@ -3,11 +3,9 @@ package com.homedirect.entity;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import javax.persistence.Id;
 
 @Entity
-@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
 public class Account {
 
 	@Id

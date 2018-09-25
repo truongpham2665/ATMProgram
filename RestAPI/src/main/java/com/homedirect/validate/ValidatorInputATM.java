@@ -11,12 +11,14 @@ import org.springframework.stereotype.Component;
 
 import com.homedirect.constant.ConstantTransaction;
 import com.homedirect.entity.Account;
+import com.homedirect.message.ATMException;
+import com.homedirect.message.MessageException;
 import com.homedirect.service.AccountService;
 
 @Component
 public class ValidatorInputATM {
 
-	private static final String USERNAME_PATTERN = "^[a-z0-9._-]{3,15}$";
+	private static final String USERNAME_PATTERN = "^[a-zA-Z0-9._-]{3,15}$";
 	private static final String PASSWORD_PATTERN = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}";
 	private DecimalFormat decimalFormat;
 	private @Autowired ValidatorStorageATM validatorStorageATM;
@@ -63,22 +65,18 @@ public class ValidatorInputATM {
 		return password.matches(PASSWORD_PATTERN);
 	}
 	
-	public boolean isValidCreateAccount(String username, String password) {
+	public boolean isValidCreateAccount(String username, String password) throws ATMException {
 		if (!validateUsername(username)) {
-//			throw new AccountException("username không hợp lệ");
-			return false;
+			throw new ATMException(MessageException.usernameIsValid());
 		}
 		if (!validatePassword(password)) {
-//			throw new AccountException("password không hợp lệ");
-			return false;
+			throw new ATMException(MessageException.passwordIsValid());
 		}
 		if (username == null || password == null) {
-//			throw new AccountException("yêu cầu nhập đầy đủ thông tin ");
-			return false;
+			throw new ATMException(MessageException.missField());
 		}
 		if (!validatorStorageATM.checkUserName(username)) {
-//			throw new AccountException("Tài khoản đã tồn tại ");
-			return false;
+			throw new ATMException(MessageException.accountIsExist());
 		}
 		return true;
 	}

@@ -1,4 +1,4 @@
-package com.homedirect.service.impl;
+package com.homedirect.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,9 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public abstract class AbstractService<T> {
 
-	protected @Autowired JpaRepository<T, Integer> jpaRepository;
+	@Autowired
+	protected JpaRepository<T, Integer> jpaRepository;
 
-	protected T save(T t) {
+	public T save(T t) {
 		return jpaRepository.save(t);
 	}
 

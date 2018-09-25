@@ -11,21 +11,13 @@ public class ATMReponse {
 	public ATMReponse() {
 	}
 
-	public ATMReponse(MyException code) {
-		super();
-		this.code = code.getCode();
-		this.message = code.getDescription();
-	}
-
 	public ATMReponse(MyException code, Object object) {
-		super();
 		this.code = code.getCode();
 		this.message = code.getDescription();
 		this.object = object;
 	}
 
 	public ATMReponse(String message, Object object) {
-		super();
 		this.message = message;
 		this.object = object;
 	}

@@ -2,7 +2,6 @@ package com.homedirect.transformer;
 
 import static com.homedirect.constant.ConstantAccount.DEFAULT_AMOUNT;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,20 +39,5 @@ public class AccountTransformer {
 
 	public List<AccountResponse> toResponseList(List<Account> accounts) {
 		return accounts.stream().map(this::toResponse).collect(Collectors.toList());
-	}
-
-	public Iterable<AccountResponse> toResponseIterable(Iterable<Account> accountIterable) {
-		if (accountIterable == null)
-			return new ArrayList<>();
-		List<AccountResponse> accountResponses = new ArrayList<>();
-		accountIterable.forEach(account -> {
-			AccountResponse response = new AccountResponse();
-			response.setId(account.getId());
-			response.setAccountNumber(account.getAccountNumber());
-			response.setUsername(account.getUsername());
-			response.setAmount(account.getAmount());
-			accountResponses.add(response);
-		});
-		return accountResponses;
 	}
 }

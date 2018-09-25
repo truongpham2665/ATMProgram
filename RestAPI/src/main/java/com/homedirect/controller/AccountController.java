@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.homedirect.entity.Account;
+import com.homedirect.message.ATMException;
 import com.homedirect.message.MyException;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
@@ -29,23 +30,23 @@ public class AccountController {
 	private @Autowired AccountTransformer accountTransformer;
 
 	@PostMapping(value = "/login")
-	public ATMReponse login(@RequestBody AccountRequest request) {
+	public ATMReponse login(@RequestBody AccountRequest request) throws ATMException  {
 		Account account = accountService.login(request);
 		try {
 			new ATMReponse(accountTransformer.toResponse(account));
-		} catch (NullPointerException e) {
-			return myExceptionFalse(MyException.LOGIN_FALSE);
+		} catch (Exception e) {
+			new ATMReponse(e.getMessage(), null);
 		}
 		return success(account);
 	}
 
 	@PostMapping(value = "/create")
-	public ATMReponse addAccount(@RequestBody AccountRequest request) {
+	public ATMReponse addAccount(@RequestBody AccountRequest request) throws ATMException {
 		Account account = accountService.creatAcc(request);
 		try {
 			new ATMReponse(accountTransformer.toResponse(account));
 		} catch (NullPointerException e) {
-			return myExceptionFalse(MyException.CREATE_FALSE);
+			new ATMReponse(e.getMessage(), null);
 		}
 		return success(account);
 	}
@@ -61,12 +62,12 @@ public class AccountController {
 	}
 
 	@PutMapping(value = "/change-password")
-	public ATMReponse changeAccount(@RequestBody ChangePassRequest changePassRequest) {
+	public ATMReponse changeAccount(@RequestBody ChangePassRequest changePassRequest) throws ATMException {
 		Account account = accountService.changePassword(changePassRequest);
 		try {
 			new ATMReponse(accountTransformer.toResponse(account));
-		} catch (NullPointerException e) {
-			myExceptionFalse(MyException.CHANGEPASS_FALSE);
+		} catch (Exception e) {
+			new ATMReponse(e.getMessage(), null);
 		}
 		return success(account);
 	}
@@ -79,9 +80,5 @@ public class AccountController {
 
 	private ATMReponse success(Account account) {
 		return new ATMReponse(MyException.SUCCESS, accountTransformer.toResponse(account));
-	}
-
-	private ATMReponse myExceptionFalse(MyException myException) {
-		return new ATMReponse(myException);
 	}
 }

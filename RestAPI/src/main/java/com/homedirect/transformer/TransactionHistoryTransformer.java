@@ -1,6 +1,5 @@
 package com.homedirect.transformer;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,24 +26,5 @@ public class TransactionHistoryTransformer {
 
 	public List<TransactionResponse> toResponse(List<TransactionHistory> transactionHistories) {
 		return transactionHistories.stream().map(this::toTransactionHistory).collect(Collectors.toList());
-	}
-
-	public Iterable<TransactionResponse> toResponseIterable(Iterable<TransactionHistory> transactionHistories) {
-		if (transactionHistories == null)
-			return new ArrayList<>();
-		List<TransactionResponse> responses = new ArrayList<TransactionResponse>();
-		transactionHistories.forEach(transaction -> {
-			TransactionResponse response = new TransactionResponse();
-			response.setId(transaction.getId());
-			response.setFromAccountNumber(transaction.getFromAccount());
-			response.setToAccountNumber(transaction.getToAccount());
-			response.setTransferAmount(transaction.getTransferAmount());
-			response.setTime(transaction.getTime());
-			response.setStatus(transaction.getStatus());
-			response.setContent(transaction.getContent());
-			response.setType(transaction.getType());
-			responses.add(response);
-		});
-		return responses;
 	}
 }

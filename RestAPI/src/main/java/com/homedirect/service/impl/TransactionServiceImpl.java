@@ -1,5 +1,7 @@
 package com.homedirect.service.impl;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +14,15 @@ import com.homedirect.constant.ConstantTransaction;
 import com.homedirect.entity.Account;
 import com.homedirect.entity.TransactionHistory;
 import com.homedirect.entity.TransactionHistory.TransactionType;
+import com.homedirect.message.ATMException;
+import com.homedirect.message.MessageException;
 import com.homedirect.repository.TransactionRepository;
 import com.homedirect.request.DepositRequest;
 import com.homedirect.request.TransferRequest;
 import com.homedirect.request.WithdrawRequest;
-import com.homedirect.response.AccountResponse;
 import com.homedirect.response.TransactionResponse;
+import com.homedirect.service.AbstractService;
 import com.homedirect.service.TransactionService;
-import com.homedirect.transformer.AccountTransformer;
 import com.homedirect.transformer.TransactionHistoryTransformer;
 import com.homedirect.validate.ValidatorInputATM;
 import com.homedirect.validate.ValidatorStorageATM;
@@ -28,70 +31,69 @@ import com.homedirect.validate.ValidatorStorageATM;
 public class TransactionServiceImpl extends AbstractService<TransactionHistory> implements TransactionService {
 
 	private @Autowired AccountServiceImpl accountService;
-	private @Autowired AccountTransformer accountTransformer;
 	private @Autowired ValidatorStorageATM validatorStorageATM;
 	private @Autowired ValidatorInputATM validatorInputATM;
 	private @Autowired TransactionRepository transactionRepository;
 	private @Autowired TransactionHistoryTransformer transactionTransformer;
 
 	@Override
-	@Transactional(rollbackFor = Exception.class)
-	public AccountResponse deposit(DepositRequest depositRequest) {
+	public Account deposit(DepositRequest depositRequest) throws ATMException {
 		Account account = accountService.findById(depositRequest.getId()).get();
 		Double amount = depositRequest.getAmount();
 		if (ValidatorInputATM.validatorDeposit(depositRequest.getAmount())) {
-//			throw new AccountException("Nạp tiền thất bại \n So tien phai lon hon 0 va la boi so cua 10,000");
+			throw new ATMException(MessageException.depositFalse());
 		}
 
 		account.setAmount(account.getAmount() + amount);
 		saveHistoryTransfer(account.getAccountNumber(), null, amount, ConstantTransaction.STATUS_SUCCESS,
 				ConstantTransaction.CONTENT_DEPOSIT, TransactionType.DEPOSIT);
 
-		return accountTransformer.toResponse(accountService.save(account));
+		return account;
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class)
-	public AccountResponse withdraw(WithdrawRequest withdrawRequest) {
+	public Account withdraw(WithdrawRequest withdrawRequest) throws ATMException {
 		Double amount = withdrawRequest.getAmount();
 		Account account = accountService.findById(withdrawRequest.getId()).get();
 		if (ValidatorInputATM.validatorWithdraw(amount, account.getAmount())) {
-//			throw new AccountException(
-//					"Rút tiền thất bại! \n Số dư không đủ \n Hoặc số tiền phải lớn hơn 0 và là bội số của 10,000");
+			throw new ATMException(MessageException.withdrawFalse());
+		}
+		if (!account.getPassword().equals(withdrawRequest.getPassword())) {
+			return null;
 		}
 		account.setAmount(account.getAmount() - (amount + ConstantTransaction.FEE_TRANSFER));
 		saveHistoryTransfer(account.getAccountNumber(), null, amount, ConstantTransaction.STATUS_SUCCESS,
 				ConstantTransaction.CONTENT_WITHDRAW, TransactionType.WITHDRAW);
 
-		return accountTransformer.toResponse(accountService.save(account));
+		return account;
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public AccountResponse transfer(TransferRequest Request) {
-		if (!validatorInputATM.isValidateInputTransfer(Request.getFromId(), Request.getToAccountNumber())) {
-			System.out.println(Request.getFromId() + Request.getToAccountNumber());
-//			throw new AccountException("số tài khoản không đúng");
+	public Account transfer(TransferRequest request) throws ATMException, ATMException {
+		if (!validatorInputATM.isValidateInputTransfer(request.getFromId(), request.getToAccountNumber())) {
+			return null;
+		}
+		Account fromAccount = accountService.findById(request.getFromId()).get();
+		Account toAccount = accountService.findByAccountNumber(request.getToAccountNumber());
+		if (!checkTransfer(toAccount.getId(), request.getFromId())
+				|| ValidatorInputATM.validatorWithdraw(request.getAmount(), fromAccount.getAmount())) {
+			throw new ATMException(MessageException.transferFalse());
+		}
+		if (!fromAccount.getPassword().equals(request.getPassword())) {
+			throw new ATMException(MessageException.passwordIsValid());
 		}
 
-		Account fromAccount = accountService.findById(Request.getFromId()).get();
-		Account toAccount = accountService.findByAccountNumber(Request.getToAccountNumber());
-		if (!checkTransfer(toAccount.getId(), Request.getFromId())
-				|| ValidatorInputATM.validatorWithdraw(Request.getAmount(), fromAccount.getAmount())) {
-//			throw new AccountException(
-//					"Chuyển tiền thất bại! \n Số dư không đủ \n Hoặc số tiền phải lớn hơn 0 và là bội số của 10,000");
-		}
-
-		fromAccount.setAmount(fromAccount.getAmount() - Request.getAmount() - ConstantTransaction.FEE_TRANSFER);
-		toAccount.setAmount(toAccount.getAmount() + Request.getAmount());
+		fromAccount.setAmount(fromAccount.getAmount() - request.getAmount() - ConstantTransaction.FEE_TRANSFER);
+		toAccount.setAmount(toAccount.getAmount() + request.getAmount());
 
 		accountService.save(fromAccount);
 		accountService.save(toAccount);
 
-		saveHistoryTransfer(fromAccount.getAccountNumber(), Request.getToAccountNumber(), Request.getAmount(),
+		saveHistoryTransfer(fromAccount.getAccountNumber(), request.getToAccountNumber(), request.getAmount(),
 				ConstantTransaction.STATUS_SUCCESS, ConstantTransaction.CONTENT_TRANSFER, TransactionType.TRANSFER);
 
-		return accountTransformer.toResponse(fromAccount);
+		return fromAccount;
 	}
 
 	@Override
@@ -120,35 +122,49 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 
 	@Override
 	public List<TransactionResponse> searchHistory(Integer accountId, String fromDate, String toDate, Byte type,
-			int pageNo, int pageSize) {
+			int pageNo, int pageSize) throws ATMException {
 		Account account = accountService.findById(accountId).get();
-		Pageable pageable = PageRequest.of(pageNo, pageSize);
-		if (fromDate == null && toDate == null && type == null) {
-			List<TransactionHistory> histories = transactionRepository.findByFromAccount(account.getAccountNumber(),
-					pageable);
-			return transactionTransformer.toResponse(histories);
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		try {
+			Pageable pageable = PageRequest.of(pageNo, pageSize);
+			if (fromDate == null && toDate == null && type == null) {
+				List<TransactionHistory> histories = transactionRepository.findByFromAccount(account.getAccountNumber(),
+						pageable);
+				return transactionTransformer.toResponse(histories);
+			}
+			if (fromDate == null && toDate == null) {
+				List<TransactionHistory> histories = transactionRepository
+						.findByFromAccountAndType(account.getAccountNumber(), type, pageable);
+				return transactionTransformer.toResponse(histories);
+			}
+			if (type == null && toDate == null) {
+				List<TransactionHistory> histories = transactionRepository.findByFromAccountAndTimeGreaterThan(
+						account.getAccountNumber(), format.parse(fromDate), pageable);
+				return transactionTransformer.toResponse(histories);
+			}
+			if (type == null && fromDate == null) {
+				List<TransactionHistory> histories = transactionRepository
+						.findByFromAccountAndTimeLessThan(account.getAccountNumber(), format.parse(toDate), pageable);
+				return transactionTransformer.toResponse(histories);
+			}
+			if (fromDate == null) {
+				List<TransactionHistory> histories = transactionRepository
+						.findByFromAccountAndTypeAndTime(account.getAccountNumber(), type, format.parse(toDate));
+				return transactionTransformer.toResponse(histories);
+			}
+			if (toDate == null) {
+				List<TransactionHistory> histories = transactionRepository
+						.findByFromAccountAndTypeAndTime(account.getAccountNumber(), type, format.parse(fromDate));
+				return transactionTransformer.toResponse(histories);
+			}
+			if (type == null) {
+				List<TransactionHistory> histories = transactionRepository.findByFromAccountAndTimeBetween(
+						account.getAccountNumber(), format.parse(fromDate), format.parse(toDate), pageable);
+				return transactionTransformer.toResponse(histories);
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
 		}
-		if (fromDate == null && toDate == null) {
-			List<TransactionHistory> histories = transactionRepository
-					.findByFromAccountAndType(account.getAccountNumber(), type, pageable);
-			return transactionTransformer.toResponse(histories);
-		}
-		if (type == null && toDate == null) {
-			List<TransactionHistory> histories = transactionRepository
-					.findByFromAccountAndTimeGreaterThan(account.getAccountNumber(), fromDate, pageable);
-			return transactionTransformer.toResponse(histories);
-		}
-		if (type == null && fromDate == null) {
-			List<TransactionHistory> histories = transactionRepository
-					.findByFromAccountAndTimeLessThan(account.getAccountNumber(), toDate, pageable);
-			return transactionTransformer.toResponse(histories);
-		}
-		if (type == null) {
-			List<TransactionHistory> histories = transactionRepository
-					.findByFromAccountAndTimeBetween(account.getAccountNumber(), fromDate, toDate, pageable);
-			return transactionTransformer.toResponse(histories);
-		}
-		return null;
-		//throw new AccountException("không tồn tại giao dịch!");
+		throw new ATMException(MessageException.haveNotTransaction());
 	}
 }
