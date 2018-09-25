@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 import com.homedirect.constant.ConstantTransaction;
 import com.homedirect.entity.Account;
+import com.homedirect.message.ATMException;
+import com.homedirect.message.MessageException;
 import com.homedirect.service.AccountService;
 
 @Component
@@ -61,6 +63,22 @@ public class ValidatorInputATM {
 
 	public static boolean isValidPassword(String password) {
 		return password.matches(PASSWORD_PATTERN);
+	}
+	
+	public boolean isValidCreateAccount(String username, String password) throws ATMException {
+		if (!validateUsername(username)) {
+			throw new ATMException(MessageException.usernameIsValid());
+		}
+		if (!validatePassword(password)) {
+			throw new ATMException(MessageException.passwordIsValid());
+		}
+		if (username == null || password == null) {
+			throw new ATMException(MessageException.missField());
+		}
+		if (!validatorStorageATM.checkUserName(username)) {
+			throw new ATMException(MessageException.accountIsExist());
+		}
+		return true;
 	}
 
 	public static Date getDate() {

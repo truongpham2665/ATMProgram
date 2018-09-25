@@ -11,7 +11,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.homedirect.entity.Account;
-import com.homedirect.message.AccountException;
+import com.homedirect.message.ATMException;
+import com.homedirect.message.MessageException;
 import com.homedirect.repository.AccountRepository;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
@@ -29,47 +30,46 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	private @Autowired AccountRepository accountRepository;
 	private @Autowired AccountTransformer accountTransformer;
 	private @Autowired ValidatorStorageATM validatorStorageATM;
+	private @Autowired ValidatorInputATM validatorInputATM;
 
 	// mã hóa password = toMD5();
 	@Override
-	public AccountResponse creatAcc(AccountRequest request) {
-		if (!isValidCreateAccount(request.getUsername(), request.getPassword())) {
-			return new AccountResponse();
+	public Account creatAcc(AccountRequest request) throws ATMException {
+		if (!validatorInputATM.isValidCreateAccount(request.getUsername(), request.getPassword())) {
+			return null;
 		}
 		Account account = accountTransformer.toAccount(request);
 		account.setPassword(PasswordEncryption.toMD5(account.getPassword()));
 		accountRepository.save(account);
-
-		return accountTransformer.toResponse(account);
+		return account;
 	}
 
 	// login = password mã hóa bằng checkpw().
 	@Override
-	public AccountResponse login(AccountRequest request) {
+	public Account login(AccountRequest request) throws ATMException {
 		Account account = accountRepository.find(request.getUsername());
 		if (account == null) {
-			throw new AccountException("Tài khoản không tồn tại!");
+			throw new ATMException(MessageException.loginFalse());
 		}
 		
 		if (!BCrypt.checkpw(request.getPassword(), account.getPassword())) {
-			throw new AccountException("Nhập sai password!");
+			throw new ATMException(MessageException.passwordIsValid());
 		}
-		return accountTransformer.toResponse(account);
+		return account;
 	}
 
 	// mã hóa password sau khi đổi .
 	@Override
-	public AccountResponse changePassword(ChangePassRequest changePassRequest) {
+	public Account changePassword(ChangePassRequest changePassRequest) throws ATMException {
 		Account account = accountRepository.findById(changePassRequest.getId()).get();
 		if (!validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
 				changePassRequest.getNewPassword(), account)) {
-			accountTransformer.toResponse(account);
-			throw new AccountException("Đổi mật khẩu không thành công!");
+			throw new ATMException("Đôi password thất bại");
 		}
 
 		account.setPassword(PasswordEncryption.toMD5(changePassRequest.getNewPassword()));
 		accountRepository.save(account);
-		return accountTransformer.toResponse(account);
+		return account;
 	}
 
 	@Override
@@ -90,39 +90,9 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		return accountRepository.findByAccountNumber(accountNumber);
 	}
 
-	@Override
-	public AccountResponse getAccount(AccountRequest request) {
-		Account account = accountRepository.find(request.getUsername());
-		if (!BCrypt.checkpw(request.getPassword(), account.getPassword())) {
-			throw new AccountException("Tài khoản không tồn tại");
-		}
-		return accountTransformer.toResponse(account);
-	}
-
-	private boolean isValidCreateAccount(String username, String password) {
-		if (!ValidatorInputATM.validateUsername(username)) {
-			throw new AccountException("username không hợp lệ");
-		}
-		if (!ValidatorInputATM.validatePassword(password)) {
-			throw new AccountException("password không hợp lệ");
-		}
-		if (username == null || password == null) {
-			throw new AccountException("yêu cầu nhập đầy đủ thông tin ");
-		}
-		if (!validatorStorageATM.checkUserName(username)) {
-			throw new AccountException("Tài khoản đã tồn tại ");
-		}
-		return true;
-	}
-
 	@Autowired
 	private AccountServiceImpl(AccountRepository accountRepository) {
 		this.accountRepository = accountRepository;
-	}
-
-	@Override
-	public void deleteAccountById(int id) {
-		accountRepository.deleteById(id);
 	}
 
 	@Override

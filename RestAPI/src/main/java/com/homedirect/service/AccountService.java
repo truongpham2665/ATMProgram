@@ -4,19 +4,20 @@ import java.util.List;
 import java.util.Optional;
 
 import com.homedirect.entity.Account;
+import com.homedirect.message.ATMException;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
 import com.homedirect.response.AccountResponse;
 
 public interface AccountService {
 
-	public AccountResponse creatAcc(AccountRequest request);
+	Account creatAcc(AccountRequest request) throws ATMException;
 
-	public AccountResponse login(AccountRequest request);
+	Account login(AccountRequest request) throws ATMException;
 
-	public AccountResponse changePassword(ChangePassRequest changePassRequest);
+	Account changePassword(ChangePassRequest changePassRequest) throws ATMException;
 
-	AccountResponse getAccount(AccountRequest request);
+//	AccountResponse getAccount(AccountRequest request);S
 
 	AccountResponse getOneAccount(int id);
 
@@ -25,8 +26,7 @@ public interface AccountService {
 	Optional<Account> findById(int id);
 
 	Account findByAccountNumber(String accountNumber);
-	
-	void deleteAccountById(int id);
-	
+
 	List<AccountResponse> findAllAccount();
+
 }
