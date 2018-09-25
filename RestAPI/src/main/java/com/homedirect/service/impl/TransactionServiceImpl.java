@@ -21,6 +21,7 @@ import com.homedirect.request.TransferRequest;
 import com.homedirect.request.WithdrawRequest;
 import com.homedirect.response.AccountResponse;
 import com.homedirect.response.TransactionResponse;
+import com.homedirect.service.AbstractService;
 import com.homedirect.service.TransactionService;
 import com.homedirect.transformer.AccountTransformer;
 import com.homedirect.transformer.TransactionHistoryTransformer;
@@ -38,7 +39,6 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 	private @Autowired TransactionHistoryTransformer transactionTransformer;
 
 	@Override
-	@Transactional(rollbackFor = Exception.class)
 	public AccountResponse deposit(DepositRequest depositRequest) {
 		Account account = accountService.findById(depositRequest.getId()).get();
 		Double amount = depositRequest.getAmount();
@@ -54,7 +54,6 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 	}
 
 	@Override
-	@Transactional(rollbackFor = Exception.class)
 	public AccountResponse withdraw(WithdrawRequest withdrawRequest) {
 		Double amount = withdrawRequest.getAmount();
 		Account account = accountService.findById(withdrawRequest.getId()).get();
@@ -74,30 +73,28 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public AccountResponse transfer(TransferRequest Request) {
-		if (!validatorInputATM.isValidateInputTransfer(Request.getFromId(), Request.getToAccountNumber())) {
-			System.out.println(Request.getFromId() + Request.getToAccountNumber());
+	public AccountResponse transfer(TransferRequest request) {
+		if (!validatorInputATM.isValidateInputTransfer(request.getFromId(), request.getToAccountNumber())) {
 			throw new AccountException("số tài khoản không đúng");
 		}
-
-		Account fromAccount = accountService.findById(Request.getFromId()).get();
-		Account toAccount = accountService.findByAccountNumber(Request.getToAccountNumber());
-		if (!checkTransfer(toAccount.getId(), Request.getFromId())
-				|| ValidatorInputATM.validatorWithdraw(Request.getAmount(), fromAccount.getAmount())) {
+		Account fromAccount = accountService.findById(request.getFromId()).get();
+		Account toAccount = accountService.findByAccountNumber(request.getToAccountNumber());
+		if (!checkTransfer(toAccount.getId(), request.getFromId())
+				|| ValidatorInputATM.validatorWithdraw(request.getAmount(), fromAccount.getAmount())) {
 			throw new AccountException(
 					"Chuyển tiền thất bại! \n Số dư không đủ \n Hoặc số tiền phải lớn hơn 0 và là bội số của 10,000");
 		}
-		if (!toAccount.getPassword().equals(Request.getPassword())) {
+		if (!fromAccount.getPassword().equals(request.getPassword())) {
 			throw new AccountException("nhập sai password!");
 		}
 
-		fromAccount.setAmount(fromAccount.getAmount() - Request.getAmount() - ConstantTransaction.FEE_TRANSFER);
-		toAccount.setAmount(toAccount.getAmount() + Request.getAmount());
+		fromAccount.setAmount(fromAccount.getAmount() - request.getAmount() - ConstantTransaction.FEE_TRANSFER);
+		toAccount.setAmount(toAccount.getAmount() + request.getAmount());
 
 		accountService.save(fromAccount);
 		accountService.save(toAccount);
 
-		saveHistoryTransfer(fromAccount.getAccountNumber(), Request.getToAccountNumber(), Request.getAmount(),
+		saveHistoryTransfer(fromAccount.getAccountNumber(), request.getToAccountNumber(), request.getAmount(),
 				ConstantTransaction.STATUS_SUCCESS, ConstantTransaction.CONTENT_TRANSFER, TransactionType.TRANSFER);
 
 		return accountTransformer.toResponse(fromAccount);
@@ -128,8 +125,7 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 	}
 
 	@Override
-	public List<TransactionResponse> searchHistory(Integer accountId, String fromDate, String toDate, Byte type,
-			int pageNo, int pageSize) {
+	public List<TransactionResponse> searchHistory(Integer accountId, String fromDate, String toDate, Byte type, int pageNo, int pageSize) {
 		Account account = accountService.findById(accountId).get();
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		try {

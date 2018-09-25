@@ -1,4 +1,4 @@
-package com.homedirect.service.impl;
+package com.homedirect.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +11,7 @@ public abstract class AbstractService<T> {
 	@Autowired
 	protected JpaRepository<T, Integer> jpaRepository;
 
-	protected T save(T t) {
+	public T save(T t) {
 		return jpaRepository.save(t);
 	}
 

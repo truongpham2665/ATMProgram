@@ -15,6 +15,7 @@ import com.homedirect.repository.AccountRepository;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
 import com.homedirect.response.AccountResponse;
+import com.homedirect.service.AbstractService;
 import com.homedirect.service.AccountService;
 import com.homedirect.transformer.AccountTransformer;
 import com.homedirect.validate.ValidatorInputATM;
@@ -40,7 +41,7 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 
 	@Override
 	public AccountResponse login(AccountRequest request) {
-		Account account = accountRepository.findByUsernameAndPassword(request.getUsername(), request.getPassword());
+		Account account = accountRepository.find(request.getUsername(), request.getPassword());
 		if (account == null) {
 			new AccountResponse();
 			throw new AccountException("Đăng nhập thất bại");
@@ -54,7 +55,7 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		if (!validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
 				changePassRequest.getNewPassword(), account)) {
 			accountTransformer.toResponse(account);
-//			throw new AccountException("Đổi mật khẩu không thành công!");
+			throw new AccountException("Đổi mật khẩu không thành công!");
 		}
 
 		account.setPassword(changePassRequest.getNewPassword());
@@ -82,7 +83,7 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 
 	@Override
 	public AccountResponse getAccount(AccountRequest request) {
-		Account account = accountRepository.findByUsernameAndPassword(request.getUsername(), request.getPassword());
+		Account account = accountRepository.find(request.getUsername(), request.getPassword());
 		return accountTransformer.toResponse(account);
 	}
 
