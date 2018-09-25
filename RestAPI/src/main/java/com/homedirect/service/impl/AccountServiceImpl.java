@@ -10,7 +10,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.homedirect.entity.Account;
-import com.homedirect.message.AccountException;
 import com.homedirect.repository.AccountRepository;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
@@ -26,40 +25,51 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	private @Autowired AccountRepository accountRepository;
 	private @Autowired AccountTransformer accountTransformer;
 	private @Autowired ValidatorStorageATM validatorStorageATM;
+	private @Autowired ValidatorInputATM validatorInputATM;
 
 	@Override
-	public AccountResponse creatAcc(AccountRequest request) {
-		if (!isValidCreateAccount(request.getUsername(), request.getPassword())) {
-			return new AccountResponse();
+	public Account creatAcc(AccountRequest request) {
+		if (!validatorInputATM.isValidCreateAccount(request.getUsername(), request.getPassword())) {
+			return null;
 		}
 		Account account = accountTransformer.toAccount(request);
 		accountRepository.save(account);
-
-		return accountTransformer.toResponse(account);
+		return account;
 	}
 
 	@Override
-	public AccountResponse login(AccountRequest request) {
+	public Account login(AccountRequest request) {
 		Account account = accountRepository.findByUsernameAndPassword(request.getUsername(), request.getPassword());
 		if (account == null) {
-			new AccountResponse();
-			throw new AccountException("Đăng nhập thất bại");
+			System.out.println(account);
+			return null;
 		}
-		return accountTransformer.toResponse(account);
+		return account;
 	}
 
+//	@Override
+//	public Account changePassword(ChangePassRequest changePassRequest) {
+//		Account account = accountRepository.findById(changePassRequest.getId()).get();
+//		if (!validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
+//				changePassRequest.getNewPassword(), account)) {
+//			accountTransformer.toResponse(account);
+//		}
+//		account.setPassword(changePassRequest.getNewPassword());
+//		accountRepository.save(account);
+//		return account;
+//	}
+
 	@Override
-	public AccountResponse changePassword(ChangePassRequest changePassRequest) {
+	public Account changePassword(ChangePassRequest changePassRequest) {
 		Account account = accountRepository.findById(changePassRequest.getId()).get();
 		if (!validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
 				changePassRequest.getNewPassword(), account)) {
-			accountTransformer.toResponse(account);
-//			throw new AccountException("Đổi mật khẩu không thành công!");
+			return null;
 		}
 
 		account.setPassword(changePassRequest.getNewPassword());
 		accountRepository.save(account);
-		return accountTransformer.toResponse(account);
+		return account;
 	}
 
 	@Override
@@ -86,30 +96,9 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		return accountTransformer.toResponse(account);
 	}
 
-	private boolean isValidCreateAccount(String username, String password) {
-		if (!ValidatorInputATM.validateUsername(username)) {
-			throw new AccountException("username không hợp lệ");
-		}
-		if (!ValidatorInputATM.validatePassword(password)) {
-			throw new AccountException("password không hợp lệ");
-		}
-		if (username == null || password == null) {
-			throw new AccountException("yêu cầu nhập đầy đủ thông tin ");
-		}
-		if (!validatorStorageATM.checkUserName(username)) {
-			throw new AccountException("Tài khoản đã tồn tại ");
-		}
-		return true;
-	}
-
 	@Autowired
 	private AccountServiceImpl(AccountRepository accountRepository) {
 		this.accountRepository = accountRepository;
-	}
-
-	@Override
-	public void deleteAccountById(int id) {
-		accountRepository.deleteById(id);
 	}
 
 	@Override

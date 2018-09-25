@@ -62,6 +62,26 @@ public class ValidatorInputATM {
 	public static boolean isValidPassword(String password) {
 		return password.matches(PASSWORD_PATTERN);
 	}
+	
+	public boolean isValidCreateAccount(String username, String password) {
+		if (!validateUsername(username)) {
+//			throw new AccountException("username không hợp lệ");
+			return false;
+		}
+		if (!validatePassword(password)) {
+//			throw new AccountException("password không hợp lệ");
+			return false;
+		}
+		if (username == null || password == null) {
+//			throw new AccountException("yêu cầu nhập đầy đủ thông tin ");
+			return false;
+		}
+		if (!validatorStorageATM.checkUserName(username)) {
+//			throw new AccountException("Tài khoản đã tồn tại ");
+			return false;
+		}
+		return true;
+	}
 
 	public static Date getDate() {
 		java.util.Date currentime = new Date();

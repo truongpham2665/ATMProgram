@@ -10,11 +10,11 @@ import com.homedirect.response.AccountResponse;
 
 public interface AccountService {
 
-	public AccountResponse creatAcc(AccountRequest request);
+	Account creatAcc(AccountRequest request);
 
-	public AccountResponse login(AccountRequest request);
+	Account login(AccountRequest request);
 
-	public AccountResponse changePassword(ChangePassRequest changePassRequest);
+	Account changePassword(ChangePassRequest changePassRequest);
 
 	AccountResponse getAccount(AccountRequest request);
 
@@ -25,8 +25,7 @@ public interface AccountService {
 	Optional<Account> findById(int id);
 
 	Account findByAccountNumber(String accountNumber);
-	
-	void deleteAccountById(int id);
-	
+
 	List<AccountResponse> findAllAccount();
+
 }

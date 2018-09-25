@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.homedirect.entity.Account;
-import com.homedirect.message.AccountException;
 import com.homedirect.repository.AccountRepository;
 
 @Component
@@ -35,15 +34,15 @@ public class ValidatorStorageATM {
 
 	public boolean validateChangePassword(String oldPassword, String newPassword, Account account) {
 		if (oldPassword == null || newPassword == null) {
-			throw new AccountException("Nhập thiếu trường pasword");
+//			throw new AccountException("Nhập thiếu trường pasword");
 		}
 
 		if (!oldPassword.equals(account.getPassword())) {
-			throw new AccountException("Password hiện tại không đúng");
+//			throw new AccountException("Password hiện tại không đúng");
 		}
 
 		if (!ValidatorInputATM.isValidPassword(newPassword)) {
-			throw new AccountException("Password phải có ít nhất 1 ký tự in hoa, 1 chữ thường, 1kys tự đặc biệt, 1 chữ số và độ dài tối thiểu 8 ký tự");
+//			throw new AccountException("Password phải có ít nhất 1 ký tự in hoa, 1 chữ thường, 1kys tự đặc biệt, 1 chữ số và độ dài tối thiểu 8 ký tự");
 		}
 		return true;
 	}
