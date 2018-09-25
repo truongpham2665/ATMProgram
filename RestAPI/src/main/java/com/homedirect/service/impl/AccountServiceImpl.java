@@ -50,6 +50,7 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		if (account == null) {
 			throw new AccountException("Tài khoản không tồn tại!");
 		}
+		
 		if (!BCrypt.checkpw(request.getPassword(), account.getPassword())) {
 			throw new AccountException("Nhập sai password!");
 		}
