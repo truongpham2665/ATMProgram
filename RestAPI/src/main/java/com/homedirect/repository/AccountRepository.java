@@ -23,8 +23,8 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 	Account findByAccountNumber(String accountNumber);	
 
 	//sử dụng query db 
-	@Query(value = "SELECT * FROM account p where BINARY p.username = ?1 and BINARY p.password = ?2", nativeQuery = true)
-	Account find(@Param("username") String username, @Param("password") String password);
+	@Query(value = "SELECT * FROM account p where BINARY p.username = ?1", nativeQuery = true)
+	Account find(@Param("username") String username);
 
 	Account findByUsernameAndAccountNumber(String username, String accountNumber);
 

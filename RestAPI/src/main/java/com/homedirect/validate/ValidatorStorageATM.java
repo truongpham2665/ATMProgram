@@ -1,5 +1,6 @@
 package com.homedirect.validate;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -33,15 +34,14 @@ public class ValidatorStorageATM {
 		return false;
 	}
 
+	// thêm điều kiện checkpw();
 	public boolean validateChangePassword(String oldPassword, String newPassword, Account account) {
 		if (oldPassword == null || newPassword == null) {
 			throw new AccountException("Nhập thiếu trường pasword");
 		}
-
-		if (!oldPassword.equals(account.getPassword())) {
+		if (!BCrypt.checkpw(oldPassword, account.getPassword())) {
 			throw new AccountException("Password hiện tại không đúng");
 		}
-
 		if (!ValidatorInputATM.isValidPassword(newPassword)) {
 			throw new AccountException("Password phải có ít nhất 1 ký tự in hoa, 1 chữ thường, 1 ký tự đặc biệt, 1 chữ số và độ dài tối thiểu 8 ký tự");
 		}

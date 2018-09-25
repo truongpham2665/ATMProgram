@@ -3,6 +3,7 @@ package com.homedirect.service.impl;
 import java.util.List;
 import java.util.Optional;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,7 @@ import com.homedirect.response.AccountResponse;
 import com.homedirect.service.AbstractService;
 import com.homedirect.service.AccountService;
 import com.homedirect.transformer.AccountTransformer;
+import com.homedirect.transformer.PasswordEncryption;
 import com.homedirect.validate.ValidatorInputATM;
 import com.homedirect.validate.ValidatorStorageATM;
 
@@ -28,27 +30,33 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	private @Autowired AccountTransformer accountTransformer;
 	private @Autowired ValidatorStorageATM validatorStorageATM;
 
+	// mã hóa password = toMD5();
 	@Override
 	public AccountResponse creatAcc(AccountRequest request) {
 		if (!isValidCreateAccount(request.getUsername(), request.getPassword())) {
 			return new AccountResponse();
 		}
 		Account account = accountTransformer.toAccount(request);
+		account.setPassword(PasswordEncryption.toMD5(account.getPassword()));
 		accountRepository.save(account);
 
 		return accountTransformer.toResponse(account);
 	}
 
+	// login = password mã hóa bằng checkpw().
 	@Override
 	public AccountResponse login(AccountRequest request) {
-		Account account = accountRepository.find(request.getUsername(), request.getPassword());
+		Account account = accountRepository.find(request.getUsername());
 		if (account == null) {
-			new AccountResponse();
-			throw new AccountException("Đăng nhập thất bại");
+			throw new AccountException("Tài khoản không tồn tại!");
+		}
+		if (!BCrypt.checkpw(request.getPassword(), account.getPassword())) {
+			throw new AccountException("Nhập sai password!");
 		}
 		return accountTransformer.toResponse(account);
 	}
 
+	// mã hóa password sau khi đổi .
 	@Override
 	public AccountResponse changePassword(ChangePassRequest changePassRequest) {
 		Account account = accountRepository.findById(changePassRequest.getId()).get();
@@ -58,7 +66,7 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 			throw new AccountException("Đổi mật khẩu không thành công!");
 		}
 
-		account.setPassword(changePassRequest.getNewPassword());
+		account.setPassword(PasswordEncryption.toMD5(changePassRequest.getNewPassword()));
 		accountRepository.save(account);
 		return accountTransformer.toResponse(account);
 	}
@@ -83,7 +91,10 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 
 	@Override
 	public AccountResponse getAccount(AccountRequest request) {
-		Account account = accountRepository.find(request.getUsername(), request.getPassword());
+		Account account = accountRepository.find(request.getUsername());
+		if (!BCrypt.checkpw(request.getPassword(), account.getPassword())) {
+			throw new AccountException("Tài khoản không tồn tại");
+		}
 		return accountTransformer.toResponse(account);
 	}
 
