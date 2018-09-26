@@ -1,6 +1,5 @@
 package com.homedirect.service.impl;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -162,8 +161,8 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 						account.getAccountNumber(), format.parse(fromDate), format.parse(toDate), pageable);
 				return transactionTransformer.toResponse(histories);
 			}
-		} catch (ParseException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			throw new ATMException(MessageException.haveNotTransaction());
 		}
 		throw new ATMException(MessageException.haveNotTransaction());
 	}

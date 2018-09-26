@@ -1,9 +1,8 @@
 package com.homedirect.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,12 +22,12 @@ import com.homedirect.transformer.AccountTransformer;
 //them AbstractMyException + MessageException + ErrorMyCode 
 
 @RestController
-@RequestMapping("/accounts")
+@RequestMapping("/")
 public class AccountController extends AbstractController<AccountResponse> {
 
 	private @Autowired AccountService accountService;
 	private @Autowired AccountTransformer transformer;
-	
+
 	@PostMapping(value = "/login")
 	public ATMReponse<?> login(@RequestBody AccountRequest request) {
 		try {
@@ -50,12 +49,16 @@ public class AccountController extends AbstractController<AccountResponse> {
 	}
 
 	@GetMapping(value = "/show-accounts")
-	public List<Account> showAllAccount() {
-		return accountService.findAllAccount();
+	public ATMReponse<?> showAllAccount() {
+		try {
+			return success(transformer.toResponseList(accountService.findAllAccount()));
+		} catch (Exception e) {
+			return notFound(e.getMessage());
+		}
 	}
 
-	@GetMapping(value = "/show-account")
-	public ATMReponse<?> showAccount(@RequestParam int id) {
+	@GetMapping(value = "/show-accounts/{id}")
+	public ATMReponse<?> showAccount(@PathVariable int id) {
 		try {
 			Account account = accountService.getOneAccount(id);
 			return success(transformer.toResponse(account));
@@ -78,10 +81,9 @@ public class AccountController extends AbstractController<AccountResponse> {
 	public ATMReponse<?> search(@RequestParam String username, @RequestParam(defaultValue = "0") int pageNo,
 			@RequestParam(defaultValue = "10") int pageSize) {
 		try {
-		return success(transformer.toResponseList(accountService.searchAccounts(username, pageNo, pageSize)));
+			return success(transformer.toResponseList(accountService.searchAccounts(username, pageNo, pageSize)));
 		} catch (Exception e) {
-			// TODO: handle exception
-			return errorFalse(e.getMessage()); 
+			return errorFalse(e.getMessage());
 		}
 	}
 }
