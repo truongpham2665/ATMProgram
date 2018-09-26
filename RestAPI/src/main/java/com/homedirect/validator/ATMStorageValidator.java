@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.homedirect.entity.Account;
+import com.homedirect.exception.ATMException;
+import com.homedirect.exception.MessageException;
 import com.homedirect.repository.AccountRepository;
 
 @Component
@@ -34,18 +36,15 @@ public class ATMStorageValidator {
 	}
 
 	// thêm điều kiện checkpw();
-	public boolean validateChangePassword(String oldPassword, String newPassword, Account account) {
+	public boolean validateChangePassword(String oldPassword, String newPassword, Account account) throws ATMException {
 		if (oldPassword == null || newPassword == null) {
-			return false;
-		}
-		if (!oldPassword.equals(account.getPassword())) {
-			return false;
+			throw new ATMException(MessageException.missField());
 		}
 		if (!BCrypt.checkpw(oldPassword, account.getPassword())) {
-			return false;
+			throw new ATMException(MessageException.passwordIsValid());
 		}
 		if (!ATMInputValidator.isValidPassword(newPassword)) {
-			return false;
+			throw new ATMException(MessageException.passwordIsValid());
 		}
 		return true;
 	}

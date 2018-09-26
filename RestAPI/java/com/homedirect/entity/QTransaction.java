@@ -10,14 +10,14 @@ import com.querydsl.core.types.Path;
 
 
 /**
- * QTransactionHistory is a Querydsl query type for TransactionHistory
+ * QTransaction is a Querydsl query type for Transaction
  */
 @Generated("com.querydsl.codegen.EntitySerializer")
-public class QTransactionHistory extends EntityPathBase<TransactionHistory> {
+public class QTransaction extends EntityPathBase<Transaction> {
 
-    private static final long serialVersionUID = -31145144L;
+    private static final long serialVersionUID = -1722744916L;
 
-    public static final QTransactionHistory transactionHistory = new QTransactionHistory("transactionHistory");
+    public static final QTransaction transaction = new QTransaction("transaction");
 
     public final StringPath content = createString("content");
 
@@ -35,16 +35,16 @@ public class QTransactionHistory extends EntityPathBase<TransactionHistory> {
 
     public final NumberPath<Byte> type = createNumber("type", Byte.class);
 
-    public QTransactionHistory(String variable) {
-        super(TransactionHistory.class, forVariable(variable));
+    public QTransaction(String variable) {
+        super(Transaction.class, forVariable(variable));
     }
 
-    public QTransactionHistory(Path<? extends TransactionHistory> path) {
+    public QTransaction(Path<? extends Transaction> path) {
         super(path.getType(), path.getMetadata());
     }
 
-    public QTransactionHistory(PathMetadata metadata) {
-        super(TransactionHistory.class, metadata);
+    public QTransaction(PathMetadata metadata) {
+        super(Transaction.class, metadata);
     }
 
 }
