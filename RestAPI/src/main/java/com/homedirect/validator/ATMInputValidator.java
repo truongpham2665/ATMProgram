@@ -106,7 +106,7 @@ public class ATMInputValidator {
 		return outAccountNumber;
 	}
 
-	public boolean isValidateInputTransfer(int fromId, String toAccountNumber) {
+	public boolean isValidateInputTransfer(int fromId, String toAccountNumber) throws ATMException {
 		Optional<Account> fromAccount = accountService.findById(fromId);
 		if (fromAccount == null) {
 			return false;

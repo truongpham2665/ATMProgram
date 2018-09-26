@@ -67,7 +67,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 	@Transactional(rollbackFor = Exception.class)
 	public Transaction transfer(TransferRequest request) throws ATMException {
 		if (!validatorInputATM.isValidateInputTransfer(request.getFromId(), request.getToAccountNumber())) {
-			return null;
+			throw new ATMException(MessageException.missField());
 		}
 		Account fromAccount = accountService.findById(request.getFromId()).get();
 		Account toAccount = accountService.findByAccountNumber(request.getToAccountNumber());
@@ -87,7 +87,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 		accountService.save(toAccount);
 
 		return saveTransaction(fromAccount.getAccountNumber(), request.getToAccountNumber(), request.getAmount(),
-				Transaction.Constant.STATUS_SUCCESS, Transaction.Constant.CONTENT_TRANSFER, TransactionType.TRANSFER);
+				Transaction.Constant.STATUS_SUCCESS, request.getContent(), TransactionType.TRANSFER);
 	}
 
 	@Override
