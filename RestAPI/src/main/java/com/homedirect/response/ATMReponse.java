@@ -15,11 +15,6 @@ public class ATMReponse {
 		this.accountResponse = accountResponse;
 	}
 
-	public ATMReponse(String message, AccountResponse accountResponse) {
-		this.message = message;
-		this.accountResponse = accountResponse;
-	}
-
 	public ATMReponse(AccountResponse accountResponse) {
 		this.accountResponse = accountResponse;
 	}

@@ -51,6 +51,7 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		if (account == null) {
 			throw new ATMException(MessageException.loginFalse());
 		}
+		
 		if (!BCrypt.checkpw(request.getPassword(), account.getPassword())) {
 			throw new ATMException(MessageException.passwordIsValid());
 		}

@@ -106,12 +106,12 @@ public class ValidatorInputATM {
 		return outAccountNumber;
 	}
 
-	public boolean isValidateInputTransfer(int fromId, String toAccountNuber) {
+	public boolean isValidateInputTransfer(int fromId, String toAccountNumber) {
 		Optional<Account> fromAccount = accountService.findById(fromId);
 		if (fromAccount == null) {
 			return false;
 		}
-		Account toAccount = accountService.findByAccountNumber(toAccountNuber);
+		Account toAccount = accountService.findByAccountNumber(toAccountNumber);
 		if (toAccount == null) {
 			return false;
 		}

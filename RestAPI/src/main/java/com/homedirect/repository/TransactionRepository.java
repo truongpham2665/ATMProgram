@@ -13,15 +13,15 @@ import com.homedirect.entity.TransactionHistory;
 public interface TransactionRepository
 		extends JpaRepository<TransactionHistory, Integer> {
 
-	List<TransactionHistory> findByFromAccount(String accountNumber, Pageable pageable);
+	List<TransactionHistory> findByFromAccountContaining(String accountNumber, Pageable pageable);
 
-	List<TransactionHistory> findByFromAccountAndTimeLessThan(String accountNumber, Date toDate, Pageable pageable);
+	List<TransactionHistory> findByFromAccountAndTime(String accountNumber, Date toDate, Pageable pageable);
 	
 	List<TransactionHistory> findByFromAccountAndTypeAndTime(String accountNumber, Byte type, Date DateTime);
 	
 	List<TransactionHistory> findByFromAccountAndTimeBetween(String accountNumber, Date fromDate, Date toDate, Pageable pageable);
 
-	List<TransactionHistory> findByFromAccountAndType(String accountNumber, Byte type, Pageable pageable);
+	List<TransactionHistory> findByFromAccountAndTypeLike(String accountNumber, Byte type, Pageable pageable);
 	
-	List<TransactionHistory> findByFromAccountAndTimeGreaterThan(String accountNumber, Date fromDate, Pageable pageable);
+	List<TransactionHistory> findByFromAccountAndTimeLike(String accountNumber, Date fromDate, Pageable pageable);
 }
