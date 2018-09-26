@@ -17,7 +17,8 @@ public class ATMReponse {
 		this.object = object;
 	}
 
-	public ATMReponse(String message, Object object) {
+	public ATMReponse(int code, String message, Object object) {
+		this.code = code;
 		this.message = message;
 		this.object = object;
 	}

@@ -128,23 +128,23 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 		try {
 			Pageable pageable = PageRequest.of(pageNo, pageSize);
 			if (fromDate == null && toDate == null && type == null) {
-				List<TransactionHistory> histories = transactionRepository.findByFromAccount(account.getAccountNumber(),
+				List<TransactionHistory> histories = transactionRepository.findByFromAccountContaining(account.getAccountNumber(),
 						pageable);
 				return transactionTransformer.toResponse(histories);
 			}
 			if (fromDate == null && toDate == null) {
 				List<TransactionHistory> histories = transactionRepository
-						.findByFromAccountAndType(account.getAccountNumber(), type, pageable);
+						.findByFromAccountAndTypeLike(account.getAccountNumber(), type, pageable);
 				return transactionTransformer.toResponse(histories);
 			}
 			if (type == null && toDate == null) {
-				List<TransactionHistory> histories = transactionRepository.findByFromAccountAndTimeGreaterThan(
+				List<TransactionHistory> histories = transactionRepository.findByFromAccountAndTimeLike(
 						account.getAccountNumber(), format.parse(fromDate), pageable);
 				return transactionTransformer.toResponse(histories);
 			}
 			if (type == null && fromDate == null) {
 				List<TransactionHistory> histories = transactionRepository
-						.findByFromAccountAndTimeLessThan(account.getAccountNumber(), format.parse(toDate), pageable);
+						.findByFromAccountAndTimeLike(account.getAccountNumber(), format.parse(toDate), pageable);
 				return transactionTransformer.toResponse(histories);
 			}
 			if (fromDate == null) {

@@ -33,7 +33,7 @@ public class TransactionController {
 		try {
 			new ATMReponse(accountTransformer.toResponse(account));
 		} catch (Exception e) {
-			new ATMReponse(e.getMessage(), null);
+			new ATMReponse(99, e.getMessage(), null);
 		}
 		return success(account);
 	}
@@ -44,7 +44,7 @@ public class TransactionController {
 		try {
 			new ATMReponse(accountTransformer.toResponse(account));
 		} catch (Exception e) {
-			new ATMReponse(e.getMessage(), null);
+			new ATMReponse(99, e.getMessage(), null);
 		}
 		return success(account);
 	}
@@ -55,7 +55,7 @@ public class TransactionController {
 		try {
 			new ATMReponse(accountTransformer.toResponse(account));
 		} catch (Exception e) {
-			new ATMReponse(e.getMessage(), null);
+			new ATMReponse(99, e.getMessage(), null);
 		}
 		return success(account);
 	}
