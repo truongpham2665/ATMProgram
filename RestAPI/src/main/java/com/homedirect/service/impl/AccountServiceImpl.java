@@ -1,7 +1,6 @@
 package com.homedirect.service.impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,7 @@ import com.homedirect.message.MessageException;
 import com.homedirect.repository.AccountRepository;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
+import com.homedirect.response.ATMReponse;
 import com.homedirect.response.AccountResponse;
 import com.homedirect.service.AbstractService;
 import com.homedirect.service.AccountService;
@@ -73,16 +73,16 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	}
 
 	@Override
-	public List<AccountResponse> searchAccounts(String username, int pageNo, int pageSize) {
+	public List<ATMReponse> searchAccounts(String username, int pageNo, int pageSize) {
 		Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("username"));
 		List<Account> accounts = accountRepository.findByUsernameContaining(username, pageable);
-		return accountTransformer.toResponseList(accounts);
+		List<AccountResponse> accountResponses = accountTransformer.toResponseList(accounts);
+		return accountTransformer.toATMResponseList(accountResponses);
 	}
 
 	@Override
-	public AccountResponse getOneAccount(int id) {
-		Optional<Account> account = accountRepository.findById(id);
-		return accountTransformer.toResponse(account.get());
+	public Account getOneAccount(int id) {
+		return accountRepository.findById(id).get();
 	}
 
 	@Override

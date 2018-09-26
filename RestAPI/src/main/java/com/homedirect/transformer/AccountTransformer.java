@@ -8,8 +8,11 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.homedirect.constant.ErrorMyCode;
 import com.homedirect.entity.Account;
+import com.homedirect.message.MessageException;
 import com.homedirect.request.AccountRequest;
+import com.homedirect.response.ATMReponse;
 import com.homedirect.response.AccountResponse;
 import com.homedirect.validate.ValidatorInputATM;
 
@@ -36,8 +39,20 @@ public class AccountTransformer {
 		response.setAmount(account.getAmount());
 		return response;
 	}
+	
+	public ATMReponse toATMResponse(AccountResponse accountResponse) {
+		ATMReponse atmResponse = new ATMReponse();
+		atmResponse.setCode(ErrorMyCode.SUCCESS);
+		atmResponse.setMessage(MessageException.success());
+		atmResponse.setAccountResponse(accountResponse);
+		return atmResponse;
+	}
 
 	public List<AccountResponse> toResponseList(List<Account> accounts) {
 		return accounts.stream().map(this::toResponse).collect(Collectors.toList());
+	}
+	
+	public List<ATMReponse> toATMResponseList(List<AccountResponse> accountResponses) {
+		return accountResponses.stream().map(this::toATMResponse).collect(Collectors.toList());
 	}
 }

@@ -45,4 +45,8 @@ public class MessageException {
 	public static String changePassFalse() {
 		return "Đổi password thất bại";
 	}
+	
+	public static String notFound() {
+		return "Không tìm thấy";
+	}
 }

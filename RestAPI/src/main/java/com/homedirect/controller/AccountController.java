@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.homedirect.entity.Account;
+import com.homedirect.message.MessageException;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
 import com.homedirect.response.ATMReponse;
@@ -35,9 +36,7 @@ public class AccountController extends AbstractMyException {
 			return success(account);
 		} catch (Exception e) {
 			return errorFalse(e.getMessage());
-
 		}
-
 	}
 
 	@PostMapping(value = "/create")
@@ -56,8 +55,13 @@ public class AccountController extends AbstractMyException {
 	}
 
 	@GetMapping(value = "/show-account")
-	public AccountResponse showAccount(@RequestParam int id) {
-		return accountService.getOneAccount(id);
+	public ATMReponse showAccount(@RequestParam int id) {
+		try {
+			Account account = accountService.getOneAccount(id);
+			return success(account);
+		} catch (Exception e) {
+			return notFound(MessageException.notFound());
+		}
 	}
 
 	@PutMapping(value = "/change-password")
@@ -71,7 +75,7 @@ public class AccountController extends AbstractMyException {
 	}
 
 	@GetMapping(value = "/search")
-	public List<AccountResponse> search(@RequestParam String username, @RequestParam(defaultValue = "0") int pageNo,
+	public List<ATMReponse> search(@RequestParam String username, @RequestParam(defaultValue = "0") int pageNo,
 			@RequestParam(defaultValue = "10") int pageSize) {
 		return accountService.searchAccounts(username, pageNo, pageSize);
 	}
