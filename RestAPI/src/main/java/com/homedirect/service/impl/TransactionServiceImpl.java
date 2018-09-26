@@ -55,9 +55,6 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 		if (ATMInputValidator.validatorWithdraw(amount, account.getAmount())) {
 			throw new ATMException(MessageException.withdrawFalse());
 		}
-//		if (!account.getPassword().equals(withdrawRequest.getPassword())) {
-//			return null;
-//		}
 		if (!BCrypt.checkpw(withdrawRequest.getPassword(), account.getPassword())) {
 			throw new ATMException(MessageException.passwordIsValid());
 		}
@@ -78,7 +75,8 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 				|| ATMInputValidator.validatorWithdraw(request.getAmount(), fromAccount.getAmount())) {
 			throw new ATMException(MessageException.transferFalse());
 		}
-		if (!fromAccount.getPassword().equals(request.getPassword())) {
+
+		if (!BCrypt.checkpw(request.getPassword(), fromAccount.getPassword())) {
 			throw new ATMException(MessageException.passwordIsValid());
 		}
 
@@ -117,8 +115,8 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 	}
 
 	@Override
-	public List<TransactionResponse> search(Integer accountId, String fromDate, String toDate, Byte type,
-			int pageNo, int pageSize) throws ATMException {
+	public List<TransactionResponse> search(Integer accountId, String fromDate, String toDate, Byte type, int pageNo,
+			int pageSize) throws ATMException {
 		Account account = accountService.findById(accountId).get();
 		if (account == null) {
 			throw new ATMException(MessageException.haveNotTransaction());
@@ -127,8 +125,8 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 		try {
 			Pageable pageable = PageRequest.of(pageNo, pageSize);
 			if (fromDate == null && toDate == null && type == null) {
-				List<Transaction> histories = transactionRepository.findByFromAccountContaining(account.getAccountNumber(),
-						pageable);
+				List<Transaction> histories = transactionRepository
+						.findByFromAccountContaining(account.getAccountNumber(), pageable);
 				return transactionTransformer.toResponse(histories);
 			}
 			if (fromDate == null && toDate == null) {
@@ -137,8 +135,8 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 				return transactionTransformer.toResponse(histories);
 			}
 			if (type == null && toDate == null) {
-				List<Transaction> histories = transactionRepository.findByFromAccountAndTimeLike(
-						account.getAccountNumber(), format.parse(fromDate), pageable);
+				List<Transaction> histories = transactionRepository
+						.findByFromAccountAndTimeLike(account.getAccountNumber(), format.parse(fromDate), pageable);
 				return transactionTransformer.toResponse(histories);
 			}
 			if (type == null && fromDate == null) {
