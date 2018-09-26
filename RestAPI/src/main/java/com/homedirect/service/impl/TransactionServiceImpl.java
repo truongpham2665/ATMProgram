@@ -3,6 +3,7 @@ package com.homedirect.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -54,8 +55,11 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 		if (ATMInputValidator.validatorWithdraw(amount, account.getAmount())) {
 			throw new ATMException(MessageException.withdrawFalse());
 		}
-		if (!account.getPassword().equals(withdrawRequest.getPassword())) {
-			return null;
+//		if (!account.getPassword().equals(withdrawRequest.getPassword())) {
+//			return null;
+//		}
+		if (!BCrypt.checkpw(withdrawRequest.getPassword(), account.getPassword())) {
+			throw new ATMException(MessageException.passwordIsValid());
 		}
 		account.setAmount(account.getAmount() - (amount + Transaction.Constant.FEE_TRANSFER));
 		return saveTransaction(account.getAccountNumber(), null, amount, Transaction.Constant.STATUS_SUCCESS,
