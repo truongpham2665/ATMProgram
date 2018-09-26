@@ -1,6 +1,11 @@
 package com.homedirect.message;
 
 public class MessageException {
+	
+	public static String success() {
+		return "Success";
+	}
+	
 	public static String usernameIsValid() {
 		return "username không hợp lệ";
 	}
@@ -35,5 +40,9 @@ public class MessageException {
 	
 	public static String haveNotTransaction() {
 		return "Không có giao dịch nào";
+	}
+	
+	public static String changePassFalse() {
+		return "Đổi password thất bại";
 	}
 }

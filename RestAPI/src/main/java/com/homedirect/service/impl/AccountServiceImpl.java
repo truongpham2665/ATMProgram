@@ -63,7 +63,7 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		Account account = accountRepository.findById(changePassRequest.getId()).get();
 		if (!validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
 				changePassRequest.getNewPassword(), account)) {
-			throw new ATMException("Đôi password thất bại");
+			throw new ATMException(MessageException.changePassFalse());
 		}
 
 		account.setPassword(PasswordEncryption.toMD5(changePassRequest.getNewPassword()));

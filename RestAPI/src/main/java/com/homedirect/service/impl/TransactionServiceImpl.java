@@ -70,7 +70,7 @@ public class TransactionServiceImpl extends AbstractService<TransactionHistory> 
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public Account transfer(TransferRequest request) throws ATMException, ATMException {
+	public Account transfer(TransferRequest request) throws ATMException {
 		if (!validatorInputATM.isValidateInputTransfer(request.getFromId(), request.getToAccountNumber())) {
 			return null;
 		}
