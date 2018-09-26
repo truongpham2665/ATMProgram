@@ -1,21 +1,20 @@
 package com.homedirect.transformer;
 
-import static com.homedirect.constant.ConstantAccount.DEFAULT_AMOUNT;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import com.homedirect.entity.Account;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.response.AccountResponse;
-import com.homedirect.validate.ValidatorInputATM;
+import com.homedirect.validator.ATMInputValidator;
 
 @Component
 public class AccountTransformer {
 
-	private @Autowired ValidatorInputATM validatorInputATM;
+	private @Autowired ATMInputValidator validatorInputATM;
 
 	public Account toAccount(AccountRequest request) {
 		Account newAccount = new Account();
@@ -23,7 +22,7 @@ public class AccountTransformer {
 		newAccount.setAccountNumber(validatorInputATM.generateAccountNumber());
 		newAccount.setUsername(request.getUsername());
 		newAccount.setPassword(request.getPassword());
-		newAccount.setAmount(DEFAULT_AMOUNT);
+		newAccount.setAmount(Account.Constant.DEFAULT_AMOUNT);
 		return newAccount;
 	}
 

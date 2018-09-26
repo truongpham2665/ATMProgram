@@ -10,8 +10,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.homedirect.entity.Account;
-import com.homedirect.message.ATMException;
-import com.homedirect.message.MessageException;
+import com.homedirect.exception.ATMException;
+import com.homedirect.exception.MessageException;
 import com.homedirect.repository.AccountRepository;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
@@ -19,16 +19,16 @@ import com.homedirect.service.AbstractService;
 import com.homedirect.service.AccountService;
 import com.homedirect.transformer.AccountTransformer;
 import com.homedirect.transformer.PasswordEncryption;
-import com.homedirect.validate.ValidatorInputATM;
-import com.homedirect.validate.ValidatorStorageATM;
+import com.homedirect.validator.ATMInputValidator;
+import com.homedirect.validator.ATMStorageValidator;
 
 @Service
 public class AccountServiceImpl extends AbstractService<Account> implements AccountService {
 
 	private @Autowired AccountRepository accountRepository;
 	private @Autowired AccountTransformer accountTransformer;
-	private @Autowired ValidatorStorageATM validatorStorageATM;
-	private @Autowired ValidatorInputATM validatorInputATM;
+	private @Autowired ATMStorageValidator validatorStorageATM;
+	private @Autowired ATMInputValidator validatorInputATM;
 
 	// mã hóa password = toMD5();
 	@Override

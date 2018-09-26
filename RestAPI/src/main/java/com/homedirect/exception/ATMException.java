@@ -1,4 +1,4 @@
-package com.homedirect.message;
+package com.homedirect.exception;
 
 public class ATMException extends Exception {
 

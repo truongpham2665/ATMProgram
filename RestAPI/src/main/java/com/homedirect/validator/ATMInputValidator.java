@@ -1,4 +1,4 @@
-package com.homedirect.validate;
+package com.homedirect.validator;
 
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
@@ -9,19 +9,19 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.homedirect.constant.ConstantTransaction;
 import com.homedirect.entity.Account;
-import com.homedirect.message.ATMException;
-import com.homedirect.message.MessageException;
+import com.homedirect.entity.Transaction;
+import com.homedirect.exception.ATMException;
+import com.homedirect.exception.MessageException;
 import com.homedirect.service.AccountService;
 
 @Component
-public class ValidatorInputATM {
+public class ATMInputValidator {
 
 	private static final String USERNAME_PATTERN = "^[a-zA-Z0-9._-]{3,15}$";
 	private static final String PASSWORD_PATTERN = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}";
 	private DecimalFormat decimalFormat;
-	private @Autowired ValidatorStorageATM validatorStorageATM;
+	private @Autowired ATMStorageValidator validatorStorageATM;
 	private @Autowired AccountService accountService;
 
 	public static boolean validateUsername(String userName) {
@@ -46,11 +46,11 @@ public class ValidatorInputATM {
 		if (amount == null) {
 			return true;
 		}
-		if (amount <= 0 || amount % 10000 != 0 || amount > ConstantTransaction.MAX_AMOUNT_WITHDRAW) {
+		if (amount <= 0 || amount % 10000 != 0 || amount > Transaction.Constant.MAX_AMOUNT_WITHDRAW) {
 			System.out.println("Số tiền phải lớn hơn 0, nhỏ hơn 10,000,000 và là bội số của 10,000");
 			return true;
 		}
-		if (oldAmount - amount - ConstantTransaction.FEE_TRANSFER < ConstantTransaction.DEFAULT_BALANCE) {
+		if (oldAmount - amount - Transaction.Constant.FEE_TRANSFER < Transaction.Constant.DEFAULT_BALANCE) {
 			System.out.println("Số dư tài khoản hiện không đủ");
 			return true;
 		}

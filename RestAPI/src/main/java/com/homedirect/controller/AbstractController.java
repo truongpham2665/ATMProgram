@@ -3,7 +3,8 @@ package com.homedirect.controller;
 import java.util.List;
 
 import static com.homedirect.constant.ErrorMyCode.*;
-import com.homedirect.message.MessageException;
+
+import com.homedirect.exception.MessageException;
 import com.homedirect.response.ATMReponse;
 
 public abstract class AbstractController<T> {

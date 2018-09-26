@@ -8,7 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
-public class TransactionHistory {
+public class Transaction {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,13 +25,24 @@ public class TransactionHistory {
 		public static final byte DEPOSIT = 1;
 		public static final byte WITHDRAW = 2;
 		public static final byte TRANSFER = 3;
-
+	}
+	
+	public static class Constant {
+		public final static String STATUS_SUCCESS = "Thanh Cong";
+		public final static String STATUS_FAIL = "That Bai";
+		public final static int FEE_TRANSFER = 999;
+		public final static int LIMIT_SHOW_HISTORY = 5;
+		public final static Double DEFAULT_BALANCE = 50000d;
+		public final static int MAX_AMOUNT_WITHDRAW = 10000000;
+		public final static String CONTENT_WITHDRAW = "Rut tien";
+		public final static String CONTENT_DEPOSIT = "Gui tien";
+		public final static String CONTENT_TRANSFER = "Chuyen tien";
 	}
 
-	public TransactionHistory() {
+	public Transaction() {
 	}
 
-	public TransactionHistory(String fromAccount, String toAccount, Double transferAmount, Date time, String status,
+	public Transaction(String fromAccount, String toAccount, Double transferAmount, Date time, String status,
 			String content, Byte type) {
 		this.fromAccount = fromAccount;
 		this.toAccount = toAccount;

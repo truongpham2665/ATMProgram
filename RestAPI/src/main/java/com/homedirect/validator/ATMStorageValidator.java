@@ -1,4 +1,4 @@
-package com.homedirect.validate;
+package com.homedirect.validator;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +8,7 @@ import com.homedirect.entity.Account;
 import com.homedirect.repository.AccountRepository;
 
 @Component
-public class ValidatorStorageATM {
+public class ATMStorageValidator {
 
 	private @Autowired AccountRepository accountRepository;
 
@@ -44,7 +44,7 @@ public class ValidatorStorageATM {
 		if (!BCrypt.checkpw(oldPassword, account.getPassword())) {
 			return false;
 		}
-		if (!ValidatorInputATM.isValidPassword(newPassword)) {
+		if (!ATMInputValidator.isValidPassword(newPassword)) {
 			return false;
 		}
 		return true;

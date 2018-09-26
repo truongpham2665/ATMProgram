@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
-import com.homedirect.entity.TransactionHistory;
+import com.homedirect.entity.Transaction;
 import com.homedirect.response.TransactionResponse;
 
 @Component
-public class TransactionHistoryTransformer {
+public class TransactionTransformer {
 
-	public TransactionResponse toTransactionHistory(TransactionHistory transactionHistory) {
+	public TransactionResponse toResponse(Transaction transactionHistory) {
 		TransactionResponse response = new TransactionResponse();
 		response.setId(transactionHistory.getId());
 		response.setFromAccountNumber(transactionHistory.getFromAccount());
@@ -24,7 +24,7 @@ public class TransactionHistoryTransformer {
 		return response;
 	}
 
-	public List<TransactionResponse> toResponse(List<TransactionHistory> transactionHistories) {
-		return transactionHistories.stream().map(this::toTransactionHistory).collect(Collectors.toList());
+	public List<TransactionResponse> toResponse(List<Transaction> transactionHistories) {
+		return transactionHistories.stream().map(this::toResponse).collect(Collectors.toList());
 	}
 }

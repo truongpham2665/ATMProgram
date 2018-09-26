@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.homedirect.entity.Account;
-import com.homedirect.message.ATMException;
+import com.homedirect.exception.ATMException;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
 

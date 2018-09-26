@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.homedirect.entity.Account;
-import com.homedirect.message.MessageException;
+import com.homedirect.exception.MessageException;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
 import com.homedirect.response.ATMReponse;
@@ -22,7 +22,7 @@ import com.homedirect.transformer.AccountTransformer;
 //them AbstractMyException + MessageException + ErrorMyCode 
 
 @RestController
-@RequestMapping("/")
+@RequestMapping("/accounts")
 public class AccountController extends AbstractController<AccountResponse> {
 
 	private @Autowired AccountService accountService;
@@ -38,8 +38,8 @@ public class AccountController extends AbstractController<AccountResponse> {
 		}
 	}
 
-	@PostMapping(value = "/create")
-	public ATMReponse<?> addAccount(@RequestBody AccountRequest request) {
+	@PostMapping
+	public ATMReponse<?> create(@RequestBody AccountRequest request) {
 		try {
 			Account account = accountService.creatAcc(request);
 			return success(transformer.toResponse(account));
@@ -48,7 +48,7 @@ public class AccountController extends AbstractController<AccountResponse> {
 		}
 	}
 
-	@GetMapping(value = "/show-accounts")
+	@GetMapping
 	public ATMReponse<?> showAllAccount() {
 		try {
 			return success(transformer.toResponseList(accountService.findAllAccount()));
@@ -57,7 +57,7 @@ public class AccountController extends AbstractController<AccountResponse> {
 		}
 	}
 
-	@GetMapping(value = "/show-accounts/{id}")
+	@GetMapping(value = "/{id}")
 	public ATMReponse<?> showAccount(@PathVariable int id) {
 		try {
 			Account account = accountService.getOneAccount(id);
