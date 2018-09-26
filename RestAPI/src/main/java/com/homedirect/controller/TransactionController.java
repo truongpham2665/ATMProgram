@@ -17,12 +17,11 @@ import com.homedirect.request.TransferRequest;
 import com.homedirect.request.WithdrawRequest;
 import com.homedirect.response.ATMReponse;
 import com.homedirect.response.TransactionResponse;
-import com.homedirect.service.AbstractMyException;
 import com.homedirect.service.TransactionService;
 
 @RestController
 @RequestMapping("/transactions")
-public class TransactionController extends AbstractMyException {
+public class TransactionController extends AbstractController {
 	private @Autowired TransactionService transactionService;
 
 	@PutMapping(value = "/deposit")
@@ -34,7 +33,6 @@ public class TransactionController extends AbstractMyException {
 			return errorFalse(e.getMessage());
 //=======
 //			new ATMReponse(99, e.getMessage(), null);
-//>>>>>>> 87e2a7fdbc91727ce3e5e4935fda3dae27ce7ee4
 		}
 	}
 
@@ -47,7 +45,6 @@ public class TransactionController extends AbstractMyException {
 			return errorFalse(e.getMessage());
 //=======
 //			new ATMReponse(99, e.getMessage(), null);
-//>>>>>>> 87e2a7fdbc91727ce3e5e4935fda3dae27ce7ee4
 		}
 	}
 
@@ -60,7 +57,6 @@ public class TransactionController extends AbstractMyException {
 			return errorFalse(e.getMessage());
 //=======
 //			new ATMReponse(99, e.getMessage(), null);
-//>>>>>>> 87e2a7fdbc91727ce3e5e4935fda3dae27ce7ee4
 		}
 	}
 

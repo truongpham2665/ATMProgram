@@ -15,7 +15,6 @@ import com.homedirect.message.MessageException;
 import com.homedirect.repository.AccountRepository;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
-import com.homedirect.response.ATMReponse;
 import com.homedirect.response.AccountResponse;
 import com.homedirect.service.AbstractService;
 import com.homedirect.service.AccountService;
@@ -73,11 +72,9 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	}
 
 	@Override
-	public List<ATMReponse> searchAccounts(String username, int pageNo, int pageSize) {
+	public List<Account> searchAccounts(String username, int pageNo, int pageSize) {
 		Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("username"));
-		List<Account> accounts = accountRepository.findByUsernameContaining(username, pageable);
-		List<AccountResponse> accountResponses = accountTransformer.toResponseList(accounts);
-		return accountTransformer.toATMResponseList(accountResponses);
+		return accountRepository.findByUsernameContaining(username, pageable);
 	}
 
 	@Override
@@ -96,8 +93,7 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	}
 
 	@Override
-	public List<AccountResponse> findAllAccount() {
-		List<Account> accounts = accountRepository.findAll();
-		return accountTransformer.toResponseList(accounts);
+	public List<Account> findAllAccount() {
+		return accountRepository.findAll();
 	}
 }

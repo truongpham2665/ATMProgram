@@ -7,7 +7,6 @@ import com.homedirect.entity.Account;
 import com.homedirect.message.ATMException;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
-import com.homedirect.response.ATMReponse;
 import com.homedirect.response.AccountResponse;
 
 public interface AccountService {
@@ -20,12 +19,12 @@ public interface AccountService {
 
 	Account getOneAccount(int id);
 
-	List<ATMReponse> searchAccounts(String username, int pageNo, int pageSize);
+	List<Account> searchAccounts(String username, int pageNo, int pageSize);
 
 	Optional<Account> findById(int id);
 
 	Account findByAccountNumber(String accountNumber);
 
-	List<AccountResponse> findAllAccount();
+	List<Account> findAllAccount();
 
 }

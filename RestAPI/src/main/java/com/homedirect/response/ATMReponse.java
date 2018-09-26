@@ -1,24 +1,20 @@
 package com.homedirect.response;
 
-public class ATMReponse {
+public class ATMReponse<T> {
 
 	private int code;
 	private String message;
-	private AccountResponse accountResponse;
+	private T data;
 
 	public ATMReponse() {
 	}
 
-	public ATMReponse(int code, String message, AccountResponse accountResponse) {
+	public ATMReponse(int code, String message, T data) {
 		this.code = code;
 		this.message = message;
-		this.accountResponse = accountResponse;
+		this.data = data;
 	}
-
-	public ATMReponse(AccountResponse accountResponse) {
-		this.accountResponse = accountResponse;
-	}
-
+	
 	public int getCode() {
 		return code;
 	}
@@ -35,12 +31,11 @@ public class ATMReponse {
 		this.message = message;
 	}
 
-	public AccountResponse getAccountResponse() {
-		return accountResponse;
+	public T getData() {
+		return data;
 	}
 
-	public void setAccountResponse(AccountResponse accountResponse) {
-		this.accountResponse = accountResponse;
+	public void setData(T data) {
+		this.data = data;
 	}
-
 }
