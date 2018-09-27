@@ -11,12 +11,12 @@ public interface AccountProcessor {
 	AccountResponse login(AccountRequest request) throws ATMException;
 	
 	AccountResponse create(AccountRequest request) throws ATMException;
-	
+
 	List<AccountResponse> findAll() throws ATMException;
 	
-	AccountResponse get(int id) throws ATMException;
-	
 	AccountResponse changePassword(ChangePassRequest changePassRequest) throws ATMException;
+	
+	AccountResponse get(int id) throws ATMException;
 	
 	List<AccountResponse> search(String username, int pageNo, int pageSize) throws ATMException;
 }

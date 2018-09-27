@@ -4,10 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.homedirect.constant.ErrorCode;
 import com.homedirect.exception.ATMException;
+import com.querydsl.core.types.Predicate;
 
 public abstract class AbstractService<T> {
 
@@ -20,6 +23,10 @@ public abstract class AbstractService<T> {
 
 	public List<T> findAll() {
 		return jpaRepository.findAll();
+	}
+	
+	public Page<T> findAll(Predicate predicate, Pageable pageable) {
+		return findAll(predicate, pageable);
 	}
 
 	public T findById(int id) throws ATMException {
