@@ -63,11 +63,12 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 				Transaction.Constant.CONTENT_WITHDRAW, TransactionType.WITHDRAW);
 	}
 
+	///missField -> Notfound
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public Transaction transfer(TransferRequest request) throws ATMException {
 		if (!validatorInputATM.isValidateInputTransfer(request.getFromId(), request.getToAccountNumber())) {
-			throw new ATMException(MessageException.missField());
+			throw new ATMException(MessageException.notFound());
 		}
 		Account fromAccount = accountService.findById(request.getFromId()).get();
 		Account toAccount = accountService.findByAccountNumber(request.getToAccountNumber());
