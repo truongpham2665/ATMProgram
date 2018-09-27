@@ -6,6 +6,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.homedirect.constant.ErrorCode;
+import com.homedirect.exception.ATMException;
+
 public abstract class AbstractService<T> {
 
 	@Autowired
@@ -19,7 +22,12 @@ public abstract class AbstractService<T> {
 		return jpaRepository.findAll();
 	}
 
-	public Optional<T> findById(int id) {
-		return jpaRepository.findById(id);
+	public T findById(int id) throws ATMException {
+		Optional<T> optional = jpaRepository.findById(id);
+		if(!optional.isPresent()) {
+			throw new ATMException(ErrorCode.UNKNOWN, ErrorCode.NOT_FOUND_MES);
+		}
+		
+		return optional.get();
 	}
 }

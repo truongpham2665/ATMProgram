@@ -9,9 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.homedirect.constant.ErrorCode;
 import com.homedirect.entity.Account;
 import com.homedirect.exception.ATMException;
-import com.homedirect.exception.MessageException;
 import com.homedirect.repository.AccountRepository;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
@@ -30,11 +30,16 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	private @Autowired ATMStorageValidator validatorStorageATM;
 	private @Autowired ATMInputValidator validatorInputATM;
 
+	@Autowired
+	private AccountServiceImpl(AccountRepository accountRepository) {
+		this.accountRepository = accountRepository;
+	}
+
 	// mã hóa password = toMD5();
 	@Override
 	public Account creatAcc(AccountRequest request) throws ATMException {
 		if (!validatorInputATM.isValidCreateAccount(request.getUsername(), request.getPassword())) {
-			return null;
+			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES);
 		}
 		Account account = accountTransformer.toAccount(request);
 		account.setPassword(PasswordEncryption.toMD5(account.getPassword()));
@@ -47,11 +52,11 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	public Account login(AccountRequest request) throws ATMException {
 		Account account = accountRepository.find(request.getUsername());
 		if (account == null) {
-			throw new ATMException(MessageException.loginFalse());
+			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES);
 		}
-		
+
 		if (!BCrypt.checkpw(request.getPassword(), account.getPassword())) {
-			throw new ATMException(MessageException.passwordIsValid());
+			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_DATA_MES);
 		}
 		return account;
 	}
@@ -62,7 +67,7 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		Account account = accountRepository.findById(changePassRequest.getId()).get();
 		if (!validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
 				changePassRequest.getNewPassword(), account)) {
-			throw new ATMException(MessageException.changePassFalse());
+			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_DATA_MES);
 		}
 
 		account.setPassword(PasswordEncryption.toMD5(changePassRequest.getNewPassword()));
@@ -77,22 +82,12 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	}
 
 	@Override
-	public Account getOneAccount(int id) {
-		return accountRepository.findById(id).get();
-	}
-
-	@Override
 	public Account findByAccountNumber(String accountNumber) {
 		return accountRepository.findByAccountNumber(accountNumber);
 	}
 
-	@Autowired
-	private AccountServiceImpl(AccountRepository accountRepository) {
-		this.accountRepository = accountRepository;
-	}
-
 	@Override
-	public List<Account> findAllAccount() {
+	public List<Account> findAll() {
 		return accountRepository.findAll();
 	}
 }

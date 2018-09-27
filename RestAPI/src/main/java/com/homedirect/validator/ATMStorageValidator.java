@@ -4,9 +4,9 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.homedirect.constant.ErrorCode;
 import com.homedirect.entity.Account;
 import com.homedirect.exception.ATMException;
-import com.homedirect.exception.MessageException;
 import com.homedirect.repository.AccountRepository;
 
 @Component
@@ -38,13 +38,13 @@ public class ATMStorageValidator {
 	// thêm điều kiện checkpw();
 	public boolean validateChangePassword(String oldPassword, String newPassword, Account account) throws ATMException {
 		if (oldPassword == null || newPassword == null) {
-			throw new ATMException(MessageException.missField());
+			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
 		}
 		if (!BCrypt.checkpw(oldPassword, account.getPassword())) {
-			throw new ATMException(MessageException.passwordIsValid());
+			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
 		}
 		if (!ATMInputValidator.isValidPassword(newPassword)) {
-			throw new ATMException(MessageException.passwordIsValid());
+			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
 		}
 		return true;
 	}

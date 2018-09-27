@@ -1,15 +1,15 @@
 package com.homedirect.response;
 
-public class ATMReponse<T> {
+public class ATMResponse<T> {
 
 	private int code;
 	private String message;
 	private T data;
 
-	public ATMReponse() {
+	public ATMResponse() {
 	}
 
-	public ATMReponse(int code, String message, T data) {
+	public ATMResponse(int code, String message, T data) {
 		this.code = code;
 		this.message = message;
 		this.data = data;

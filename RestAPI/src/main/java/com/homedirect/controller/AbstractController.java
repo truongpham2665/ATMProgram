@@ -1,27 +1,36 @@
 package com.homedirect.controller;
 
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import static com.homedirect.constant.ErrorMyCode.*;
+import com.homedirect.constant.ErrorCode;
+import com.homedirect.exception.ATMException;
+import com.homedirect.response.ATMResponse;
 
-import com.homedirect.exception.MessageException;
-import com.homedirect.response.ATMReponse;
-
-public abstract class AbstractController<T> {
-
-	protected ATMReponse<T> success(T data) {
-		return new ATMReponse<T>(SUCCESS, MessageException.success(), data);
-	}
+// sửa lại hàm ATMResponse
+public abstract class AbstractController<P> {
+	protected @Autowired P processor;
 	
-	protected ATMReponse<List<T>> success(List<T> data) {
-		return new ATMReponse<List<T>>(SUCCESS, MessageException.success(), data);
-	}
-	
-	protected ATMReponse<T> errorFalse(String message) {
-		return new ATMReponse<T>(FALSE, message, null);
-	}
-
-	protected ATMReponse<T> notFound(String message) {
-		return new ATMReponse<T>(NOT_FOUND, message, null);
+	protected <O> ATMResponse<O> toResponse(O data) {
+		ATMResponse<O> response = new ATMResponse<O>();
+		if(data instanceof ATMException) {
+			ATMException e = (ATMException) data;
+			response.setCode(e.getCode());
+			response.setMessage(e.getMessage());
+			return response;
+		}
+		
+		if(data instanceof Exception) {
+			Exception e = (Exception) data;
+			response.setCode(ErrorCode.UNKNOWN);
+//			response.setMessage(ErrorCode.UNKNOWN_MES);
+			response.setMessage(e.getMessage());
+			return response;
+		}
+		
+		response.setCode(ErrorCode.SUCCESS);
+		response.setMessage(ErrorCode.SUCCESS_MES);
+		response.setData(data);
+		
+		return response;
 	}
 }

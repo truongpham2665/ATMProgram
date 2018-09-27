@@ -3,16 +3,15 @@ package com.homedirect.validator;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.Date;
-import java.util.Optional;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.homedirect.constant.ErrorCode;
 import com.homedirect.entity.Account;
 import com.homedirect.entity.Transaction;
 import com.homedirect.exception.ATMException;
-import com.homedirect.exception.MessageException;
 import com.homedirect.service.AccountService;
 
 @Component
@@ -24,8 +23,8 @@ public class ATMInputValidator {
 	private @Autowired ATMStorageValidator validatorStorageATM;
 	private @Autowired AccountService accountService;
 
-	public static boolean validateUsername(String userName) {
-		return isValidUsername(userName);
+	public static boolean validateUsername(String username) {
+		return isValidUsername(username);
 	}
 
 	public static boolean validatePassword(String password) {
@@ -67,16 +66,16 @@ public class ATMInputValidator {
 	
 	public boolean isValidCreateAccount(String username, String password) throws ATMException {
 		if (!validateUsername(username)) {
-			throw new ATMException(MessageException.usernameIsValid());
+			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES);
 		}
 		if (!validatePassword(password)) {
-			throw new ATMException(MessageException.passwordIsValid());
+			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES);
 		}
 		if (username == null || password == null) {
-			throw new ATMException(MessageException.missField());
+			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES);
 		}
 		if (!validatorStorageATM.checkUserName(username)) {
-			throw new ATMException(MessageException.accountIsExist());
+			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES);
 		}
 		return true;
 	}
@@ -107,10 +106,7 @@ public class ATMInputValidator {
 	}
 
 	public boolean isValidateInputTransfer(int fromId, String toAccountNumber) throws ATMException {
-		Optional<Account> fromAccount = accountService.findById(fromId);
-		if (fromAccount == null) {
-			return false;
-		}
+//		Account fromAccount = accountService.findById(fromId); bỏ check fromAccount null
 		Account toAccount = accountService.findByAccountNumber(toAccountNumber);
 		if (toAccount == null) {
 			return false;

@@ -8,15 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.homedirect.constant.ErrorCode;
 import com.homedirect.entity.Account;
 import com.homedirect.entity.QTransaction;
 import com.homedirect.entity.Transaction;
 import com.homedirect.entity.Transaction.TransactionType;
 import com.homedirect.exception.ATMException;
-import com.homedirect.exception.MessageException;
 import com.homedirect.repository.TransactionRepository;
 import com.homedirect.request.DepositRequest;
 import com.homedirect.request.TransferRequest;
@@ -37,10 +38,10 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 
 	@Override
 	public Transaction deposit(DepositRequest depositRequest) throws ATMException {
-		Account account = accountService.findById(depositRequest.getId()).get();
+		Account account = accountService.findById(depositRequest.getId());
 		Double amount = depositRequest.getAmount();
 		if (ATMInputValidator.validatorDeposit(depositRequest.getAmount())) {
-			throw new ATMException(MessageException.depositFalse());
+			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
 		}
 
 		account.setAmount(account.getAmount() + amount);
@@ -51,12 +52,12 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 	@Override
 	public Transaction withdraw(WithdrawRequest withdrawRequest) throws ATMException {
 		Double amount = withdrawRequest.getAmount();
-		Account account = accountService.findById(withdrawRequest.getId()).get();
+		Account account = accountService.findById(withdrawRequest.getId());
 		if (ATMInputValidator.validatorWithdraw(amount, account.getAmount())) {
-			throw new ATMException(MessageException.withdrawFalse());
+			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
 		}
 		if (!BCrypt.checkpw(withdrawRequest.getPassword(), account.getPassword())) {
-			throw new ATMException(MessageException.passwordIsValid());
+			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
 		}
 		account.setAmount(account.getAmount() - (amount + Transaction.Constant.FEE_TRANSFER));
 		return saveTransaction(account.getAccountNumber(), null, amount, Transaction.Constant.STATUS_SUCCESS,
@@ -68,17 +69,17 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 	@Transactional(rollbackFor = Exception.class)
 	public Transaction transfer(TransferRequest request) throws ATMException {
 		if (!validatorInputATM.isValidateInputTransfer(request.getFromId(), request.getToAccountNumber())) {
-			throw new ATMException(MessageException.notFound());
+			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES);
 		}
-		Account fromAccount = accountService.findById(request.getFromId()).get();
+		Account fromAccount = accountService.findById(request.getFromId());
 		Account toAccount = accountService.findByAccountNumber(request.getToAccountNumber());
 		if (!checkTransfer(toAccount.getId(), request.getFromId())
 				|| ATMInputValidator.validatorWithdraw(request.getAmount(), fromAccount.getAmount())) {
-			throw new ATMException(MessageException.transferFalse());
+			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
 		}
 
 		if (!BCrypt.checkpw(request.getPassword(), fromAccount.getPassword())) {
-			throw new ATMException(MessageException.passwordIsValid());
+			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
 		}
 
 		fromAccount.setAmount(fromAccount.getAmount() - request.getAmount() - Transaction.Constant.FEE_TRANSFER);

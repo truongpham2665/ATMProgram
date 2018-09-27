@@ -1,6 +1,5 @@
 package com.homedirect.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,80 +9,69 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.homedirect.entity.Account;
-import com.homedirect.exception.MessageException;
+import com.homedirect.processor.AccountProcessor;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
-import com.homedirect.response.ATMReponse;
-import com.homedirect.response.AccountResponse;
-import com.homedirect.service.AccountService;
-import com.homedirect.transformer.AccountTransformer;
+import com.homedirect.response.ATMResponse;
 
 //them AbstractMyException + MessageException + ErrorMyCode 
 
 @RestController
 @RequestMapping("/accounts")
-public class AccountController extends AbstractController<AccountResponse> {
-
-	private @Autowired AccountService accountService;
-	private @Autowired AccountTransformer transformer;
+public class AccountController extends AbstractController<AccountProcessor> {
 
 	@PostMapping(value = "/login")
-	public ATMReponse<?> login(@RequestBody AccountRequest request) {
+	public ATMResponse<?> login(@RequestBody AccountRequest request) {
 		try {
-			Account account = accountService.login(request);
-			return success(transformer.toResponse(account));
+			return toResponse(processor.login(request));
 		} catch (Exception e) {
-			return errorFalse(e.getMessage());
+			return toResponse(e);
 		}
 	}
 
 	@PostMapping
-	public ATMReponse<?> create(@RequestBody AccountRequest request) {
+	public ATMResponse<?> create(@RequestBody AccountRequest request) {
 		try {
-			Account account = accountService.creatAcc(request);
-			return success(transformer.toResponse(account));
+			return toResponse(processor.create(request));
 		} catch (Exception e) {
-			return errorFalse(e.getMessage());
+			return toResponse(e);
 		}
 	}
 
 	@GetMapping
-	public ATMReponse<?> showAllAccount() {
+	public ATMResponse<?> findAll() {
 		try {
-			return success(transformer.toResponseList(accountService.findAllAccount()));
+			return toResponse(processor.findAll());
 		} catch (Exception e) {
-			return notFound(e.getMessage());
+			return toResponse(e);
 		}
 	}
 
 	@GetMapping(value = "/{id}")
-	public ATMReponse<?> showAccount(@PathVariable int id) {
+	public ATMResponse<?> get(@PathVariable int id) {
 		try {
-			Account account = accountService.getOneAccount(id);
-			return success(transformer.toResponse(account));
+			return toResponse(processor.get(id));
 		} catch (Exception e) {
-			return notFound(MessageException.notFound());
+			return toResponse(e);
 		}
 	}
 
 	@PutMapping(value = "/change-password")
-	public ATMReponse<?> changeAccount(@RequestBody ChangePassRequest changePassRequest) {
+	public ATMResponse<?> changePassword(@RequestBody ChangePassRequest changePassRequest) {
 		try {
-			Account account = accountService.changePassword(changePassRequest);
-			return success(transformer.toResponse(account));
+			return toResponse(processor.changePassword(changePassRequest));
 		} catch (Exception e) {
-			return errorFalse(e.getMessage());
+			return toResponse(e);
 		}
 	}
 
 	@GetMapping(value = "/search")
-	public ATMReponse<?> search(@RequestParam String username, @RequestParam(defaultValue = "0") int pageNo,
+	public ATMResponse<?> search(@RequestParam String username, @RequestParam(defaultValue = "0") int pageNo,
 			@RequestParam(defaultValue = "10") int pageSize) {
 		try {
-			return success(transformer.toResponseList(accountService.searchAccounts(username, pageNo, pageSize)));
+			return toResponse(processor.search(username, pageNo, pageSize));
 		} catch (Exception e) {
-			return errorFalse(e.getMessage());
+			return toResponse(e);
 		}
 	}
 }
