@@ -63,7 +63,7 @@ public class ATMInputValidator {
 	public static boolean isValidPassword(String password) {
 		return password.matches(PASSWORD_PATTERN);
 	}
-	
+
 	public boolean isValidCreateAccount(String username, String password) throws ATMException {
 		if (!validateUsername(username)) {
 			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES);
@@ -109,6 +109,21 @@ public class ATMInputValidator {
 //		Account fromAccount = accountService.findById(fromId); bỏ check fromAccount null
 		Account toAccount = accountService.findByAccountNumber(toAccountNumber);
 		if (toAccount == null) {
+			return false;
+		}
+		return true;
+	}
+
+	public boolean checkTransfer(Integer toId, Integer fromId) {
+		if (toId == fromId) {
+			return false;
+		}
+
+		if (validatorStorageATM.checkId(toId)) {
+			return false;
+		}
+
+		if (toId == null || fromId == null) {
 			return false;
 		}
 		return true;
