@@ -1,16 +1,18 @@
 package com.homedirect.service.impl;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.List;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.homedirect.entity.Account;
+import com.homedirect.entity.QTransaction;
 import com.homedirect.entity.Transaction;
 import com.homedirect.entity.Transaction.TransactionType;
 import com.homedirect.exception.ATMException;
@@ -19,12 +21,11 @@ import com.homedirect.repository.TransactionRepository;
 import com.homedirect.request.DepositRequest;
 import com.homedirect.request.TransferRequest;
 import com.homedirect.request.WithdrawRequest;
-import com.homedirect.response.TransactionResponse;
 import com.homedirect.service.AbstractService;
 import com.homedirect.service.TransactionService;
-import com.homedirect.transformer.TransactionTransformer;
 import com.homedirect.validator.ATMInputValidator;
 import com.homedirect.validator.ATMStorageValidator;
+import com.querydsl.core.BooleanBuilder;
 
 @Service
 public class TransactionServiceImpl extends AbstractService<Transaction> implements TransactionService {
@@ -32,8 +33,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 	private @Autowired AccountServiceImpl accountService;
 	private @Autowired ATMStorageValidator validatorStorageATM;
 	private @Autowired ATMInputValidator validatorInputATM;
-	private @Autowired TransactionRepository transactionRepository;
-	private @Autowired TransactionTransformer transactionTransformer;
+	private @Autowired TransactionRepository repository;
 
 	@Override
 	public Transaction deposit(DepositRequest depositRequest) throws ATMException {
@@ -116,54 +116,29 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 		return true;
 	}
 
+	// Đổi kiểu trả về list sang Page.
 	@Override
-	public List<TransactionResponse> search(Integer accountId, String fromDate, String toDate, Byte type,
-			int pageNo, int pageSize) throws ATMException {
-		Account account = accountService.findById(accountId).get();
-		if (account == null) {
-			throw new ATMException(MessageException.haveNotTransaction());
+	public Page<Transaction> search(String accountNumber, String fromDate, String toDate,
+									Byte type, int pageNo, int pageSize) throws ParseException {
+		
+		QTransaction transaction = QTransaction.transaction;
+		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+		Pageable pageable = PageRequest.of(pageNo, pageSize);
+		BooleanBuilder where = new BooleanBuilder();
+		
+		if (fromDate != null) {
+			where.and(transaction.time.after(format.parse(toDate)));
 		}
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		try {
-			Pageable pageable = PageRequest.of(pageNo, pageSize);
-			if (fromDate == null && toDate == null && type == null) {
-				List<Transaction> histories = transactionRepository.findByFromAccountContaining(account.getAccountNumber(),
-						pageable);
-				return transactionTransformer.toResponse(histories);
-			}
-			if (fromDate == null && toDate == null) {
-				List<Transaction> histories = transactionRepository
-						.findByFromAccountAndTypeLike(account.getAccountNumber(), type, pageable);
-				return transactionTransformer.toResponse(histories);
-			}
-			if (type == null && toDate == null) {
-				List<Transaction> histories = transactionRepository.findByFromAccountAndTimeLike(
-						account.getAccountNumber(), format.parse(fromDate), pageable);
-				return transactionTransformer.toResponse(histories);
-			}
-			if (type == null && fromDate == null) {
-				List<Transaction> histories = transactionRepository
-						.findByFromAccountAndTimeLike(account.getAccountNumber(), format.parse(toDate), pageable);
-				return transactionTransformer.toResponse(histories);
-			}
-			if (fromDate == null) {
-				List<Transaction> histories = transactionRepository
-						.findByFromAccountAndTypeAndTime(account.getAccountNumber(), type, format.parse(toDate));
-				return transactionTransformer.toResponse(histories);
-			}
-			if (toDate == null) {
-				List<Transaction> histories = transactionRepository
-						.findByFromAccountAndTypeAndTime(account.getAccountNumber(), type, format.parse(fromDate));
-				return transactionTransformer.toResponse(histories);
-			}
-			if (type == null) {
-				List<Transaction> histories = transactionRepository.findByFromAccountAndTimeBetween(
-						account.getAccountNumber(), format.parse(fromDate), format.parse(toDate), pageable);
-				return transactionTransformer.toResponse(histories);
-			}
-		} catch (Exception e) {
-			throw new ATMException(MessageException.haveNotTransaction());
+		if (toDate !=null) {
+			where.and(transaction.time.before(format.parse(fromDate)));
 		}
-		throw new ATMException(MessageException.haveNotTransaction());
+		if (type != null) {
+			where.and(transaction.type.eq(type));
+		}
+		if (accountNumber != null) {
+			where.and(transaction.fromAccount.eq(accountNumber));
+		}
+		
+		return repository.findAll(where, pageable);
 	}
 }

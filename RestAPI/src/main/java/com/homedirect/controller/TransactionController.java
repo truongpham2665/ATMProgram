@@ -3,9 +3,8 @@ package com.homedirect.controller;
 import static com.homedirect.constant.ErrorMyCode.FALSE;
 import static com.homedirect.constant.ErrorMyCode.SUCCESS;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.homedirect.exception.ATMException;
+import com.homedirect.entity.Transaction;
 import com.homedirect.exception.MessageException;
 import com.homedirect.request.DepositRequest;
 import com.homedirect.request.TransferRequest;
@@ -58,20 +57,20 @@ public class TransactionController extends AbstractController<TransactionRespons
 	}
 
 	@GetMapping(value = "/search")
-	public ATMReponse<?> search(@RequestParam(value = "accountId") Integer accountId,
-			@RequestParam(value = "fromDate", required = false) String fromDate,
-			@RequestParam(value = "toDate", required = false) String toDate,
-			@RequestParam(value = "type", required = false) Byte type,
-			@RequestParam(defaultValue = "0") int pageNo,
-			@RequestParam(defaultValue = "10") int pageSize) throws ATMException {
+	public ATMReponse<?> search(@RequestParam("accountNumber") String accountNumber,
+								@RequestParam(value = "toDate", required = false) String toDate,
+								@RequestParam(value = "fromDate", required = false) String fromDate,
+								@RequestParam(value = "type", required = false) Byte type,
+								@RequestParam(defaultValue = "0") int pageNo,
+								@RequestParam(defaultValue = "10") int pageSize) {
 		try {
-			return showHistorySuccess(service.search(accountId, fromDate, toDate, type, pageNo, pageSize));
+			return showHistorySuccess(service.search(accountNumber, toDate, fromDate, type, pageNo, pageSize));
 		} catch (Exception e) {
 			return showHistoryFailure(MessageException.notFound());
 		}
 	}
-
-	private ATMReponse<?> showHistorySuccess(List<TransactionResponse> data) {
+	
+	private ATMReponse<?> showHistorySuccess(Page<Transaction> data) {
 		return new ATMReponse<>(SUCCESS, MessageException.success(), data);
 	}
 
