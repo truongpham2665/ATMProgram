@@ -1,6 +1,8 @@
 package com.homedirect.service.impl;
 
+import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Random;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,40 +19,39 @@ import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
 import com.homedirect.service.AbstractService;
 import com.homedirect.service.AccountService;
-import com.homedirect.transformer.AccountTransformer;
 import com.homedirect.transformer.PasswordEncryption;
-import com.homedirect.validator.ATMInputValidator;
-import com.homedirect.validator.ATMStorageValidator;
 
 @Service
 public class AccountServiceImpl extends AbstractService<Account> implements AccountService {
 
-	private @Autowired AccountRepository accountRepository;
-	private @Autowired AccountTransformer accountTransformer;
-	private @Autowired ATMStorageValidator validatorStorageATM;
-	private @Autowired ATMInputValidator validatorInputATM;
+	private @Autowired AccountRepository repository;
 
 	@Autowired
 	private AccountServiceImpl(AccountRepository accountRepository) {
-		this.accountRepository = accountRepository;
+		this.repository = accountRepository;
 	}
 
-	// mã hóa password = toMD5();
+	// mã hóa password = toMD5();chuyển valid sang AccountProcessorImpl.
 	@Override
 	public Account creatAcc(AccountRequest request) throws ATMException {
-		if (!validatorInputATM.isValidCreateAccount(request.getUsername(), request.getPassword())) {
-			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES);
-		}
-		Account account = accountTransformer.toAccount(request);
-		account.setPassword(PasswordEncryption.toMD5(account.getPassword()));
-		accountRepository.save(account);
-		return account;
+//		if (!validatorInputATM.isValidCreateAccount(request.getUsername(), request.getPassword())) {
+//			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES);
+//		}
+		Account newAccount = new Account();
+		newAccount.setId(request.getId());
+		newAccount.setAccountNumber(generateAccountNumber());
+		newAccount.setUsername(request.getUsername());
+		newAccount.setPassword(request.getPassword());
+		newAccount.setAmount(Account.Constant.DEFAULT_AMOUNT);
+		newAccount.setPassword(PasswordEncryption.toMD5(newAccount.getPassword()));
+		repository.save(newAccount);
+		return newAccount;
 	}
 
 	// login = password mã hóa bằng checkpw().
 	@Override
 	public Account login(AccountRequest request) throws ATMException {
-		Account account = accountRepository.find(request.getUsername());
+		Account account = repository.find(request.getUsername());
 		if (account == null) {
 			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES);
 		}
@@ -61,33 +62,43 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		return account;
 	}
 
-	// mã hóa password sau khi đổi .
+	// mã hóa password sau khi đổi . chuyển valid sang AccountProcessorImpl.
 	@Override
 	public Account changePassword(ChangePassRequest changePassRequest) throws ATMException {
-		Account account = accountRepository.findById(changePassRequest.getId()).get();
-		if (!validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
-				changePassRequest.getNewPassword(), account)) {
-			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_DATA_MES);
-		}
+		Account account = repository.findById(changePassRequest.getId()).get();
+//		if (!validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
+//				changePassRequest.getNewPassword(), account)) {
+//			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_DATA_MES);
+//		}
 
 		account.setPassword(PasswordEncryption.toMD5(changePassRequest.getNewPassword()));
-		accountRepository.save(account);
+		repository.save(account);
 		return account;
+	}
+	
+	public String generateAccountNumber() {
+		String pattern = "22";
+		Random rd = new Random();
+		int max = 9999;
+		int accountNumber = rd.nextInt(max);
+		DecimalFormat format = new DecimalFormat("0000");
+		String outAccountNumber = pattern + format.format(accountNumber);
+		return outAccountNumber;
 	}
 
 	@Override
 	public List<Account> searchAccounts(String username, int pageNo, int pageSize) {
 		Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("username"));
-		return accountRepository.findByUsernameContaining(username, pageable);
+		return repository.findByUsernameContaining(username, pageable);
 	}
 
 	@Override
 	public Account findByAccountNumber(String accountNumber) {
-		return accountRepository.findByAccountNumber(accountNumber);
+		return repository.findByAccountNumber(accountNumber);
 	}
 
 	@Override
 	public List<Account> findAll() {
-		return accountRepository.findAll();
+		return repository.findAll();
 	}
 }

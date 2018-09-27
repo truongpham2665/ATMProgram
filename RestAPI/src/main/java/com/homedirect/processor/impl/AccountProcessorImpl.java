@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.homedirect.constant.ErrorCode;
 import com.homedirect.entity.Account;
 import com.homedirect.exception.ATMException;
 import com.homedirect.processor.AccountProcessor;
@@ -14,23 +15,31 @@ import com.homedirect.request.ChangePassRequest;
 import com.homedirect.response.AccountResponse;
 import com.homedirect.service.AccountService;
 import com.homedirect.transformer.AccountTransformer;
+import com.homedirect.validator.ATMInputValidator;
+import com.homedirect.validator.ATMStorageValidator;
 
 @Service
 public class AccountProcessorImpl implements AccountProcessor {
 	private @Autowired AccountService accountService;
 	private @Autowired AccountTransformer transformer;
-	
+	private @Autowired ATMInputValidator validatorInputATM;
+	private @Autowired ATMStorageValidator validatorStorageATM;
+
 	@Override
 	public AccountResponse login(@RequestBody AccountRequest request) throws ATMException {
 		Account account = accountService.login(request);
 		return transformer.toResponse(account);
 	}
-	
+
 	public AccountResponse create(@RequestBody AccountRequest request) throws ATMException {
+		if (!validatorInputATM.isValidCreateAccount(request.getUsername(), request.getPassword())) {
+			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES);
+		}
+
 		Account account = accountService.creatAcc(request);
 		return transformer.toResponse(account);
 	}
-	
+
 	public List<AccountResponse> findAll() {
 		List<Account> accounts = accountService.findAll();
 		return transformer.toResponseList(accounts);
@@ -45,6 +54,11 @@ public class AccountProcessorImpl implements AccountProcessor {
 	@Override
 	public AccountResponse changePassword(ChangePassRequest changePassRequest) throws ATMException {
 		Account account = accountService.changePassword(changePassRequest);
+		if (!validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
+				changePassRequest.getNewPassword(), account)) {
+			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_DATA_MES);
+		}
+
 		return transformer.toResponse(account);
 	}
 

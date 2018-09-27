@@ -9,17 +9,17 @@ import org.springframework.stereotype.Component;
 import com.homedirect.entity.Account;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.response.AccountResponse;
-import com.homedirect.validator.ATMInputValidator;
+import com.homedirect.service.AccountService;
 
 @Component
 public class AccountTransformer {
 
-	private @Autowired ATMInputValidator validatorInputATM;
+	private @Autowired AccountService service;
 
 	public Account toAccount(AccountRequest request) {
 		Account newAccount = new Account();
 		newAccount.setId(request.getId());
-		newAccount.setAccountNumber(validatorInputATM.generateAccountNumber());
+		newAccount.setAccountNumber(service.generateAccountNumber());
 		newAccount.setUsername(request.getUsername());
 		newAccount.setPassword(request.getPassword());
 		newAccount.setAmount(Account.Constant.DEFAULT_AMOUNT);

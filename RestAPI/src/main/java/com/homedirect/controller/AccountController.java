@@ -14,8 +14,6 @@ import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
 import com.homedirect.response.ATMResponse;
 
-//them AbstractMyException + MessageException + ErrorMyCode 
-
 @RestController
 @RequestMapping("/accounts")
 public class AccountController extends AbstractController<AccountProcessor> {
@@ -25,6 +23,7 @@ public class AccountController extends AbstractController<AccountProcessor> {
 		try {
 			return toResponse(processor.login(request));
 		} catch (Exception e) {
+			System.out.println(e);
 			return toResponse(e);
 		}
 	}
@@ -66,7 +65,7 @@ public class AccountController extends AbstractController<AccountProcessor> {
 	}
 
 	@GetMapping(value = "/search")
-	public ATMResponse<?> search(@RequestParam String username, @RequestParam(defaultValue = "0") int pageNo,
+	public ATMResponse<?> search(@RequestParam(value = "username", required = false) String username, @RequestParam(defaultValue = "0") int pageNo,
 			@RequestParam(defaultValue = "10") int pageSize) {
 		try {
 			return toResponse(processor.search(username, pageNo, pageSize));

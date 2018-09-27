@@ -3,7 +3,6 @@ package com.homedirect.validator;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.Date;
-import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -92,18 +91,19 @@ public class ATMInputValidator {
 		return output;
 	}
 
-	public String generateAccountNumber() {
-		String pattern = "22";
-		Random rd = new Random();
-		int max = 9999;
-		int accountNumber = rd.nextInt(max);
-		DecimalFormat format = new DecimalFormat("0000");
-		String outAccountNumber = pattern + format.format(accountNumber);
-		while (!validatorStorageATM.checkAccountNumbers(outAccountNumber)) {
-			generateAccountNumber();
-		}
-		return outAccountNumber;
-	}
+	// chuyển thành getAccountNumber chuyển sang class AccountServiceImpl
+//	public String generateAccountNumber() {
+//		String pattern = "22";
+//		Random rd = new Random();
+//		int max = 9999;
+//		int accountNumber = rd.nextInt(max);
+//		DecimalFormat format = new DecimalFormat("0000");
+//		String outAccountNumber = pattern + format.format(accountNumber);
+//		while (!validatorStorageATM.checkAccountNumbers(outAccountNumber)) {
+//			generateAccountNumber();
+//		}
+//		return outAccountNumber;
+//	}
 
 	public boolean isValidateInputTransfer(int fromId, String toAccountNumber) throws ATMException {
 //		Account fromAccount = accountService.findById(fromId); bỏ check fromAccount null
