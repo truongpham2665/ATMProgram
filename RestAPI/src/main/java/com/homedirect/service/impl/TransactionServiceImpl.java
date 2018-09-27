@@ -55,9 +55,6 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 		if (ATMInputValidator.validatorWithdraw(amount, account.getAmount())) {
 			throw new ATMException(MessageException.withdrawFalse());
 		}
-//		if (!account.getPassword().equals(withdrawRequest.getPassword())) {
-//			return null;
-//		}
 		if (!BCrypt.checkpw(withdrawRequest.getPassword(), account.getPassword())) {
 			throw new ATMException(MessageException.passwordIsValid());
 		}
@@ -66,11 +63,12 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 				Transaction.Constant.CONTENT_WITHDRAW, TransactionType.WITHDRAW);
 	}
 
+	///missField -> Notfound
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public Transaction transfer(TransferRequest request) throws ATMException {
 		if (!validatorInputATM.isValidateInputTransfer(request.getFromId(), request.getToAccountNumber())) {
-			return null;
+			throw new ATMException(MessageException.notFound());
 		}
 		Account fromAccount = accountService.findById(request.getFromId()).get();
 		Account toAccount = accountService.findByAccountNumber(request.getToAccountNumber());
@@ -78,7 +76,8 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 				|| ATMInputValidator.validatorWithdraw(request.getAmount(), fromAccount.getAmount())) {
 			throw new ATMException(MessageException.transferFalse());
 		}
-		if (!fromAccount.getPassword().equals(request.getPassword())) {
+
+		if (!BCrypt.checkpw(request.getPassword(), fromAccount.getPassword())) {
 			throw new ATMException(MessageException.passwordIsValid());
 		}
 
@@ -89,7 +88,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 		accountService.save(toAccount);
 
 		return saveTransaction(fromAccount.getAccountNumber(), request.getToAccountNumber(), request.getAmount(),
-				Transaction.Constant.STATUS_SUCCESS, Transaction.Constant.CONTENT_TRANSFER, TransactionType.TRANSFER);
+				Transaction.Constant.STATUS_SUCCESS, request.getContent(), TransactionType.TRANSFER);
 	}
 
 	@Override
