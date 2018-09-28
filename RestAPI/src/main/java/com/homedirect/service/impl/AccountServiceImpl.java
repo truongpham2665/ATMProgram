@@ -6,6 +6,7 @@ import java.util.Random;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.homedirect.constant.ErrorCode;
 import com.homedirect.entity.Account;
+import com.homedirect.entity.QAccount;
 import com.homedirect.exception.ATMException;
 import com.homedirect.repository.AccountRepository;
 import com.homedirect.request.AccountRequest;
@@ -20,10 +22,11 @@ import com.homedirect.request.ChangePassRequest;
 import com.homedirect.service.AbstractService;
 import com.homedirect.service.AccountService;
 import com.homedirect.transformer.PasswordEncryption;
+import com.querydsl.core.BooleanBuilder;
 
 @Service
 public class AccountServiceImpl extends AbstractService<Account> implements AccountService {
-
+	
 	private @Autowired AccountRepository repository;
 
 	@Autowired
@@ -77,13 +80,19 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		String outAccountNumber = pattern + format.format(accountNumber);
 		return outAccountNumber;
 	}
-
+	
+	// đổi kiểu trả về từ list -> Page
 	@Override
-	public List<Account> searchAccounts(String username, int pageNo, int pageSize) {
+	public Page<Account> search(String username, int pageNo, int pageSize) {
+		QAccount account = QAccount.account;
+		BooleanBuilder where = new BooleanBuilder();
 		Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("username"));
-		return repository.findByUsernameContaining(username, pageable);
+		if (username != null) {
+			where.and(account.username.containsIgnoreCase(username));
+		}
+		return repository.findAll(where, pageable);
 	}
-
+	
 	@Override
 	public Account findByAccountNumber(String accountNumber) {
 		return repository.findByAccountNumber(accountNumber);

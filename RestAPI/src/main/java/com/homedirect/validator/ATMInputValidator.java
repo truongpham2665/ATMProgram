@@ -18,7 +18,6 @@ public class ATMInputValidator {
 
 	private static final String USERNAME_PATTERN = "^[a-zA-Z0-9._-]{3,15}$";
 	private static final String PASSWORD_PATTERN = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}";
-	private DecimalFormat decimalFormat;
 	private @Autowired ATMStorageValidator validatorStorageATM;
 	private @Autowired AccountService accountService;
 
@@ -117,7 +116,7 @@ public class ATMInputValidator {
 	}
 
 	public String numberFormat(String pattern, double value) {
-		decimalFormat = new DecimalFormat(pattern);
+		DecimalFormat decimalFormat = new DecimalFormat(pattern);
 		String output = decimalFormat.format(value);
 		return output;
 	}

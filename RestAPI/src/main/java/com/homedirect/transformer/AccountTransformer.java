@@ -38,4 +38,20 @@ public class AccountTransformer {
 	public List<AccountResponse> toResponseList(List<Account> accounts) {
 		return accounts.stream().map(this::toResponse).collect(Collectors.toList());
 	}
+//	
+//	public Page<Account> toResponsePage(Page<Account> account) {
+//		Page<Account> pageResponse = null;
+//		pageResponse.forEach(action -> {
+//			pageResponse.getContent().add(toResponses(account));
+//		});
+//		page.forEach(account -> {
+//			AccountResponse accountResponse = new AccountResponse();
+//			accountResponse.setId(account.getId());
+//			accountResponse.setAccountNumber(account.getAccountNumber());
+//			accountResponse.setAmount(account.getAmount());
+//			accountResponse.setUsername(account.getUsername());
+//			pageResponse.getContent().add(accountResponse);
+//		});
+//		return pageResponse;
+//	}
 }
