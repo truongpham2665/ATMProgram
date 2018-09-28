@@ -3,7 +3,6 @@ package com.homedirect.repository;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
@@ -17,9 +16,9 @@ public interface AccountRepository extends JpaRepository<Account, Integer>, Quer
 
 	Optional<Account> findById(Integer id);
 	
-	List<Account> findByUsernameContaining(String username, Pageable pageable);
-	
 	Account findByUsername(String name);
+	
+	List<Account> findByUsernameContaining(String username);
 
 	Account findByAccountNumber(String accountNumber);	
 

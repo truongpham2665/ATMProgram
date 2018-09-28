@@ -30,3 +30,35 @@
 2018-09-28 14:07:54 ERROR AccountController:25 - Du lieu khong hop le
 2018-09-28 14:08:57 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Khong tim thay du lieu
 2018-09-28 14:08:57 ERROR AccountController:25 - Khong tim thay du lieu
+2018-09-28 14:35:44 DEBUG AccountController:35 - org.springframework.dao.InvalidDataAccessApiUsageException: Value must not be null!; nested exception is java.lang.IllegalArgumentException: Value must not be null!
+2018-09-28 14:35:44 ERROR AccountController:36 - Value must not be null!; nested exception is java.lang.IllegalArgumentException: Value must not be null!
+2018-09-28 14:40:18 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Khong tim thay du lieu
+2018-09-28 14:40:18 ERROR AccountController:25 - Khong tim thay du lieu
+2018-09-28 16:24:37 DEBUG AccountController:35 - org.springframework.dao.InvalidDataAccessApiUsageException: Value must not be null!; nested exception is java.lang.IllegalArgumentException: Value must not be null!
+2018-09-28 16:24:37 ERROR AccountController:36 - Value must not be null!; nested exception is java.lang.IllegalArgumentException: Value must not be null!
+2018-09-28 16:42:07 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Du lieu nhap khong hop le
+2018-09-28 16:42:07 ERROR AccountController:25 - Du lieu nhap khong hop le
+2018-09-28 16:43:03 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Du lieu nhap khong hop le
+2018-09-28 16:43:03 ERROR AccountController:25 - Du lieu nhap khong hop le
+2018-09-28 16:53:08 DEBUG AccountController:35 - org.springframework.dao.IncorrectResultSizeDataAccessException: query did not return a unique result: 2; nested exception is javax.persistence.NonUniqueResultException: query did not return a unique result: 2
+2018-09-28 16:53:08 ERROR AccountController:36 - query did not return a unique result: 2; nested exception is javax.persistence.NonUniqueResultException: query did not return a unique result: 2
+2018-09-28 16:54:03 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Du lieu nhap khong hop le
+2018-09-28 16:54:03 ERROR AccountController:25 - Du lieu nhap khong hop le
+2018-09-28 16:54:10 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Du lieu nhap khong hop le
+2018-09-28 16:54:10 ERROR AccountController:25 - Du lieu nhap khong hop le
+2018-09-28 16:55:17 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Du lieu nhap khong hop le
+2018-09-28 16:55:17 ERROR AccountController:25 - Du lieu nhap khong hop le
+2018-09-28 16:55:39 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Du lieu nhap khong hop le
+2018-09-28 16:55:39 ERROR AccountController:25 - Du lieu nhap khong hop le
+2018-09-28 16:56:29 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Du lieu nhap khong hop le
+2018-09-28 16:56:29 ERROR AccountController:25 - Du lieu nhap khong hop le
+2018-09-28 16:56:44 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Du lieu nhap khong hop le
+2018-09-28 16:56:44 ERROR AccountController:25 - Du lieu nhap khong hop le
+2018-09-28 17:00:30 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Du lieu nhap khong hop le
+2018-09-28 17:00:30 ERROR AccountController:25 - Du lieu nhap khong hop le
+2018-09-28 17:05:48 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Du lieu nhap khong hop le
+2018-09-28 17:05:48 ERROR AccountController:25 - Du lieu nhap khong hop le
+2018-09-28 17:06:02 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Du lieu nhap khong hop le
+2018-09-28 17:06:02 ERROR AccountController:25 - Du lieu nhap khong hop le
+2018-09-28 17:14:02 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Du lieu nhap khong hop le
+2018-09-28 17:14:02 ERROR AccountController:25 - Du lieu nhap khong hop le
