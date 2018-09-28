@@ -33,11 +33,9 @@ public class ATMInputValidator {
 	public static boolean validatorDeposit(Double amount) throws ATMException {
 		if (amount == null) {
 			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
-//			return false;
 		}
 		if (amount <= 0 || amount % 10000 != 0) {
-			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES, amount);
-//			return false;
+			throw new ATMException(ErrorCode.INVALID_AMOUNT_DEPOSIT, ErrorCode.INVALID_DEPOSIT_MES, amount);
 		}
 		return true;
 	}
@@ -47,10 +45,10 @@ public class ATMInputValidator {
 			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
 		}
 		if (amount <= 0 || amount % 10000 != 0 || amount > Transaction.Constant.MAX_AMOUNT_WITHDRAW) {
-			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES, amount);
+			throw new ATMException(ErrorCode.INVALID_AMOUNT_WITHDRAW, ErrorCode.INVALID_WITHDRAW_MES, amount);
 		}
 		if (oldAmount - amount - Transaction.Constant.FEE_TRANSFER < Transaction.Constant.DEFAULT_BALANCE) {
-			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES, amount);
+			throw new ATMException(ErrorCode.INVALID_AMOUNT_WITHDRAW, ErrorCode.INVALID_WITHDRAW_MES, amount);
 		}
 		return true;
 	}
@@ -65,16 +63,16 @@ public class ATMInputValidator {
 
 	public boolean isValidCreateAccount(String username, String password) throws ATMException {
 		if (!validateUsername(username)) {
-			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES, username);
+			throw new ATMException(ErrorCode.INVALID_USERNAME, ErrorCode.INVALID_USERNAME_MES, username);
 		}
 		if (!validatePassword(password)) {
-			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES, password);
+			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES, password);
 		}
 		if (username == null || password == null) {
 			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
 		}
 		if (!validatorStorageATM.checkUserName(username)) {
-			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_DATA_MES, username);
+			throw new ATMException(ErrorCode.USERNAME_EXIST, ErrorCode.USERNAME_EXIST_MES, username);
 		}
 		return true;
 	}
@@ -102,7 +100,7 @@ public class ATMInputValidator {
 
 	public boolean checkTransfer(Integer toId, Integer fromId) throws ATMException {
 		if (toId == fromId) {
-			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_DATA_MES, toId);
+			throw new ATMException(ErrorCode.INVALID_AMOUNT_DEPOSIT, ErrorCode.DUPLICATE_INPUT_MES, toId);
 		}
 
 		if (validatorStorageATM.checkId(toId)) {

@@ -45,7 +45,7 @@ public class TransactionProcessorImpl implements TransactionProcessor {
 		Account account = accountService.findById(withdrawRequest.getId());
 		ATMInputValidator.validatorWithdraw(amount, account.getAmount());
 		if (!BCrypt.checkpw(withdrawRequest.getPassword(), account.getPassword())) {
-			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_DATA_MES, withdrawRequest.getPassword());
+			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES, withdrawRequest.getPassword());
 		}
 
 		Transaction transaction = service.withdraw(account, amount);
@@ -59,7 +59,7 @@ public class TransactionProcessorImpl implements TransactionProcessor {
 		validatorInputATM.checkTransfer(toAccount.getId(), request.getFromId());
 
 		if (!BCrypt.checkpw(request.getPassword(), fromAccount.getPassword())) {
-			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_DATA_MES, request.getPassword());
+			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES, request.getPassword());
 		}
 
 		Transaction transaction = service.transfer(fromAccount, toAccount, request.getAmount(), request.getContent());

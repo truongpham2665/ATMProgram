@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.homedirect.constant.ErrorCode;
 import com.homedirect.entity.Account;
 import com.homedirect.exception.ATMException;
 import com.homedirect.processor.AccountProcessor;
@@ -33,10 +32,7 @@ public class AccountProcessorImpl implements AccountProcessor {
 	}
 
 	public AccountResponse create(@RequestBody AccountRequest request) throws ATMException {
-		if (!validatorInputATM.isValidCreateAccount(request.getUsername(), request.getPassword())) {
-			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
-		}
-
+		validatorInputATM.isValidCreateAccount(request.getUsername(), request.getPassword());
 		Account account = accountService.creatAcc(request);
 		return transformer.toResponse(account);
 	}
@@ -55,11 +51,8 @@ public class AccountProcessorImpl implements AccountProcessor {
 	@Override
 	public AccountResponse changePassword(ChangePassRequest changePassRequest) throws ATMException {
 		Account account = accountService.changePassword(changePassRequest);
-		if (!validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
-				changePassRequest.getNewPassword(), account)) {
-			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_DATA_MES);
-		}
-
+		validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
+				changePassRequest.getNewPassword(), account);
 		return transformer.toResponse(account);
 	}
 

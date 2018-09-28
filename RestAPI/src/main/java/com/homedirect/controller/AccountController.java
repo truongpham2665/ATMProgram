@@ -18,13 +18,13 @@ import com.homedirect.response.ATMResponse;
 @RestController
 @RequestMapping("/accounts")
 public class AccountController extends AbstractController<AccountProcessor> {
-	
+
 	@PostMapping(value = "/login")
 	public ATMResponse<?> login(@RequestBody AccountRequest request) {
 		try {
 			return toResponse(processor.login(request));
 		} catch (Exception e) {
-			
+
 			return toResponse(e);
 		}
 	}
@@ -66,12 +66,18 @@ public class AccountController extends AbstractController<AccountProcessor> {
 	}
 
 	@GetMapping(value = "/search")
-	public ATMResponse<?> search(@RequestParam(value = "username", required = false) String username, @RequestParam(defaultValue = "0") int pageNo,
-			@RequestParam(defaultValue = "10") int pageSize) {
+	public ATMResponse<?> search(@RequestParam(value = "username", required = false) String username,
+			@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "10") int pageSize) {
 		try {
 			return toResponse(processor.search(username, pageNo, pageSize));
 		} catch (Exception e) {
 			return toResponse(e);
 		}
 	}
+
+//	@RequestMapping(value = "/downloadExcel", method = RequestMethod.GET)
+//	public ModelAndView downloadExcel() {
+//		List<AccountResponse> listBooks = new ArrayList<AccountResponse>();
+//		return new ModelAndView("excelView", "listBooks", listBooks);
+//	}
 }

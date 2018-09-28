@@ -53,11 +53,11 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	public Account login(AccountRequest request) throws ATMException {
 		Account account = repository.find(request.getUsername());
 		if (account == null) {
-			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES, request.getUsername());
+			throw new ATMException(ErrorCode.NOT_FOUND_USERNAME, ErrorCode.NOT_FOUND_USERNAME_MES, request.getUsername());
 		}
 
 		if (!BCrypt.checkpw(request.getPassword(), account.getPassword())) {
-			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_DATA_MES, request.getPassword());
+			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES, request.getPassword());
 		}
 		return account;
 	}
