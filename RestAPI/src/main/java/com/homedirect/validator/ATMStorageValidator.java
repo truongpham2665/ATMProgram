@@ -38,13 +38,13 @@ public class ATMStorageValidator {
 	// thêm điều kiện checkpw();
 	public boolean validateChangePassword(String oldPassword, String newPassword, Account account) throws ATMException {
 		if (oldPassword == null || newPassword == null) {
-			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
+			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
 		}
 		if (!BCrypt.checkpw(oldPassword, account.getPassword())) {
-			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
+			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES, oldPassword);
 		}
 		if (!ATMInputValidator.isValidPassword(newPassword)) {
-			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
+			throw new ATMException(ErrorCode.INVALID_INPUT_PASSWORD, ErrorCode.INVALID_INPUT_PASWORD_MES, newPassword);
 		}
 		return true;
 	}

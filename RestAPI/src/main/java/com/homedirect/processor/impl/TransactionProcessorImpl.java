@@ -21,6 +21,7 @@ import com.homedirect.service.TransactionService;
 import com.homedirect.transformer.TransactionTransformer;
 import com.homedirect.validator.ATMInputValidator;
 
+//de throw validate(deposit, withdraw, tranfer) trong validateInputATM
 @Service
 public class TransactionProcessorImpl implements TransactionProcessor {
 
@@ -33,10 +34,7 @@ public class TransactionProcessorImpl implements TransactionProcessor {
 	public TransactionResponse deposit(DepositRequest depositRequest) throws ATMException {
 		Account account = accountService.findById(depositRequest.getId());
 		Double amount = depositRequest.getAmount();
-		if (ATMInputValidator.validatorDeposit(amount)) {
-			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
-		}
-
+		ATMInputValidator.validatorDeposit(amount);
 		Transaction transaction = service.deposit(account, amount);
 		return transformer.toResponse(transaction);
 	}
@@ -45,11 +43,9 @@ public class TransactionProcessorImpl implements TransactionProcessor {
 	public TransactionResponse withdrawal(WithdrawRequest withdrawRequest) throws ATMException {
 		Double amount = withdrawRequest.getAmount();
 		Account account = accountService.findById(withdrawRequest.getId());
-		if (ATMInputValidator.validatorWithdraw(amount, account.getAmount())) {
-			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
-		}
+		ATMInputValidator.validatorWithdraw(amount, account.getAmount());
 		if (!BCrypt.checkpw(withdrawRequest.getPassword(), account.getPassword())) {
-			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
+			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES, withdrawRequest.getPassword());
 		}
 
 		Transaction transaction = service.withdraw(account, amount);
@@ -58,18 +54,12 @@ public class TransactionProcessorImpl implements TransactionProcessor {
 
 	@Override
 	public TransactionResponse transfer(TransferRequest request) throws ATMException {
-		if (!validatorInputATM.isValidateInputTransfer(request.getFromId(), request.getToAccountNumber())) {
-			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES);
-		}
 		Account fromAccount = accountService.findById(request.getFromId());
-		Account toAccount = accountService.findByAccountNumber(request.getToAccountNumber());
-		if (!validatorInputATM.checkTransfer(toAccount.getId(), request.getFromId())
-				|| ATMInputValidator.validatorWithdraw(request.getAmount(), fromAccount.getAmount())) {
-			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
-		}
+		Account toAccount = validatorInputATM.isValidateInputTransfer(request.getToAccountNumber());
+		validatorInputATM.checkTransfer(toAccount.getId(), request.getFromId());
 
 		if (!BCrypt.checkpw(request.getPassword(), fromAccount.getPassword())) {
-			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
+			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES, request.getPassword());
 		}
 
 		Transaction transaction = service.transfer(fromAccount, toAccount, request.getAmount(), request.getContent());
@@ -77,8 +67,8 @@ public class TransactionProcessorImpl implements TransactionProcessor {
 	}
 
 	@Override
-	public Page<Transaction> search(int accoutId, String toDate, String fromDate, Byte type, int pageNo,
-			int pageSize) throws ParseException, ATMException {
+	public Page<Transaction> search(int accoutId, String toDate, String fromDate, Byte type, int pageNo, int pageSize)
+			throws ParseException, ATMException {
 		return service.search(accoutId, fromDate, toDate, type, pageNo, pageSize);
 	}
 }

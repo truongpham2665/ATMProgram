@@ -30,6 +30,7 @@
 2018-09-28 14:07:54 ERROR AccountController:25 - Du lieu khong hop le
 2018-09-28 14:08:57 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Khong tim thay du lieu
 2018-09-28 14:08:57 ERROR AccountController:25 - Khong tim thay du lieu
+<<<<<<< HEAD
 2018-09-28 14:35:44 DEBUG AccountController:35 - org.springframework.dao.InvalidDataAccessApiUsageException: Value must not be null!; nested exception is java.lang.IllegalArgumentException: Value must not be null!
 2018-09-28 14:35:44 ERROR AccountController:36 - Value must not be null!; nested exception is java.lang.IllegalArgumentException: Value must not be null!
 2018-09-28 14:40:18 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Khong tim thay du lieu
@@ -62,3 +63,33 @@
 2018-09-28 17:06:02 ERROR AccountController:25 - Du lieu nhap khong hop le
 2018-09-28 17:14:02 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Du lieu nhap khong hop le
 2018-09-28 17:14:02 ERROR AccountController:25 - Du lieu nhap khong hop le
+=======
+2018-09-28 14:31:50 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Dữ liệu nhập không hợp lệ: 50000.0
+2018-09-28 14:31:50 ERROR AccountController:25 - Dữ liệu nhập không hợp lệ: 50000.0
+2018-09-28 14:32:43 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Dữ liệu nhập không hợp lệ: 50000.0
+2018-09-28 14:32:43 ERROR AccountController:25 - Dữ liệu nhập không hợp lệ: 50000.0
+2018-09-28 14:49:44 DEBUG AccountController:35 - org.springframework.transaction.CannotCreateTransactionException: Could not open JPA EntityManager for transaction; nested exception is org.hibernate.exception.JDBCConnectionException: Unable to acquire JDBC Connection
+2018-09-28 14:49:44 ERROR AccountController:36 - Could not open JPA EntityManager for transaction; nested exception is org.hibernate.exception.JDBCConnectionException: Unable to acquire JDBC Connection
+2018-09-28 15:37:23 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Không tìm thấy dữ liệu: 104
+2018-09-28 15:37:23 ERROR AccountController:25 - Không tìm thấy dữ liệu: 104
+2018-09-28 16:05:27 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Username không hợp lệ: ahihihihi
+2018-09-28 16:05:27 ERROR AccountController:25 - Username không hợp lệ: ahihihihi
+2018-09-28 16:09:46 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Username đã tồn tại: ahihihihi
+2018-09-28 16:09:46 ERROR AccountController:25 - Username đã tồn tại: ahihihihi
+2018-09-28 16:10:08 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Không tìm thấy dữ liệu có id: 106
+2018-09-28 16:10:08 ERROR AccountController:25 - Không tìm thấy dữ liệu có id: 106
+2018-09-28 16:10:19 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Không tìm thấy dữ liệu có id: 104
+2018-09-28 16:10:19 ERROR AccountController:25 - Không tìm thấy dữ liệu có id: 104
+2018-09-28 16:10:29 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Không tìm thấy dữ liệu có id: 106
+2018-09-28 16:10:29 ERROR AccountController:25 - Không tìm thấy dữ liệu có id: 106
+2018-09-28 16:37:45 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Không tìm thấy dữ liệu có id: 104
+2018-09-28 16:37:45 ERROR AccountController:25 - Không tìm thấy dữ liệu có id: 104
+2018-09-28 16:37:49 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Username đã tồn tại: ahihihihi123
+2018-09-28 16:37:49 ERROR AccountController:25 - Username đã tồn tại: ahihihihi123
+2018-09-28 16:38:06 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Password không chính xác: 1234@Tunguye
+2018-09-28 16:38:06 ERROR AccountController:25 - Password không chính xác: 1234@Tunguye
+2018-09-28 16:38:13 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Password không chính xác: 1234@Tunguye
+2018-09-28 16:38:13 ERROR AccountController:25 - Password không chính xác: 1234@Tunguye
+2018-09-28 16:38:18 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Không tìm thấy dữ liệu có id: ahihihihi12345
+2018-09-28 16:38:18 ERROR AccountController:25 - Không tìm thấy dữ liệu có id: ahihihihi12345
+>>>>>>> e5a0ec732aade688f2909f888ba5bdeb9049fbd8
