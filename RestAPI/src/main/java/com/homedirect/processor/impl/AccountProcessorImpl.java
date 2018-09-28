@@ -3,11 +3,11 @@ package com.homedirect.processor.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.homedirect.entity.Account;
+import com.homedirect.entity.Page;
 import com.homedirect.exception.ATMException;
 import com.homedirect.processor.AccountProcessor;
 import com.homedirect.request.AccountRequest;
@@ -56,8 +56,9 @@ public class AccountProcessorImpl implements AccountProcessor {
 		return transformer.toResponse(account);
 	}
 
+//	đổi từ kiểu trả về Page<Account> thành Page<AccountResponse>
 	@Override
-	public Page<Account> search(String username, int pageNo, int pageSize) throws ATMException {
-		return accountService.search(username, pageNo, pageSize);
+	public Page<AccountResponse> search(String username, int pageNo, int pageSize) throws ATMException {
+		return transformer.toResponse(accountService.search(username, pageNo, pageSize));
 	}
 }
