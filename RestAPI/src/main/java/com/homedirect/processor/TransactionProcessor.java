@@ -19,7 +19,7 @@ public interface TransactionProcessor {
 
 	TransactionResponse transfer(TransferRequest transferRequest) throws ATMException;
 
-	Page<Transaction> search(String accountNumber, String toDate, String fromDate, Byte type, int pageNo, int pageSize)
+	Page<Transaction> search(int accountId, String toDate, String fromDate, Byte type, int pageNo, int pageSize)
 			throws ATMException, ParseException;
 
 }

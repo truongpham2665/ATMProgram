@@ -7,11 +7,10 @@ import org.springframework.data.domain.Page;
 import com.homedirect.entity.Account;
 import com.homedirect.entity.Transaction;
 import com.homedirect.exception.ATMException;
-import com.homedirect.request.DepositRequest;
 
 public interface TransactionService {
 
-	Transaction deposit(DepositRequest depositRequest) throws ATMException;
+	Transaction deposit(Account account, Double amount) throws ATMException;
 
 	Transaction withdraw(Account account, Double amount) throws ATMException;
 
@@ -20,6 +19,6 @@ public interface TransactionService {
 	Transaction saveTransaction(String fromAccountNumber, String toAccountNumber, Double transferAmount, String status,
 			String content, Byte type);
 
-	Page<Transaction> search(String accountNumber, String fromDate, String toDate, Byte type, int pageNo, int pageSize)
-			throws ParseException;
+	Page<Transaction> search(int id, String fromDate, String toDate, Byte type, int pageNo, int pageSize)
+			throws ParseException, ATMException;
 }

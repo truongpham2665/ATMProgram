@@ -8,6 +8,7 @@ import com.homedirect.request.ChangePassRequest;
 import com.homedirect.response.AccountResponse;
 
 public interface AccountProcessor {
+	
 	AccountResponse login(AccountRequest request) throws ATMException;
 	
 	AccountResponse create(AccountRequest request) throws ATMException;
