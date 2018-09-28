@@ -3,6 +3,7 @@ package com.homedirect.processor.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -63,8 +64,7 @@ public class AccountProcessorImpl implements AccountProcessor {
 	}
 
 	@Override
-	public List<AccountResponse> search(String username, int pageNo, int pageSize) throws ATMException {
-		List<Account> accounts = accountService.searchAccounts(username, pageNo, pageSize);
-		return transformer.toResponseList(accounts);
+	public Page<Account> search(String username, int pageNo, int pageSize) throws ATMException {
+		return accountService.search(username, pageNo, pageSize);
 	}
 }

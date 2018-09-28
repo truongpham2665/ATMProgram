@@ -91,6 +91,5 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 			where.and(transaction.fromAccount.eq(accountNumber));
 		}
 		return findAll(where, pageable);
-//		return repository.findAll(where, pageable);
 	}
 }

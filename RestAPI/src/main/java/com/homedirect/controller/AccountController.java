@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.homedirect.exception.ATMException;
 import com.homedirect.processor.AccountProcessor;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
@@ -17,13 +18,13 @@ import com.homedirect.response.ATMResponse;
 @RestController
 @RequestMapping("/accounts")
 public class AccountController extends AbstractController<AccountProcessor> {
-
+	
 	@PostMapping(value = "/login")
 	public ATMResponse<?> login(@RequestBody AccountRequest request) {
 		try {
 			return toResponse(processor.login(request));
 		} catch (Exception e) {
-			System.out.println(e);
+			
 			return toResponse(e);
 		}
 	}
@@ -38,7 +39,7 @@ public class AccountController extends AbstractController<AccountProcessor> {
 	}
 
 	@GetMapping
-	public ATMResponse<?> findAll() {
+	public ATMResponse<?> findAll() throws ATMException {
 		try {
 			return toResponse(processor.findAll());
 		} catch (Exception e) {
