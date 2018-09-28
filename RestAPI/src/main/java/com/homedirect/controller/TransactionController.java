@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.homedirect.entity.Transaction;
 import com.homedirect.processor.TransactionProcessor;
 import com.homedirect.request.DepositRequest;
 import com.homedirect.request.TransferRequest;
@@ -46,13 +47,12 @@ public class TransactionController extends AbstractController<TransactionProcess
 
 	@GetMapping(value = "/search")
 	public ATMResponse<?> search(@RequestParam("accountId") int id,
-								@RequestParam(value = "toDate", required = false) String toDate,
-								@RequestParam(value = "fromDate", required = false) String fromDate,
-								@RequestParam(value = "type", required = false) Byte type,
-								@RequestParam(defaultValue = "0") int pageNo,
-								@RequestParam(defaultValue = "10") int pageSize) {
+			@RequestParam(value = "toDate", required = false) String toDate,
+			@RequestParam(value = "fromDate", required = false) String fromDate,
+			@RequestParam(value = "type", required = false) Byte type, 
+			@RequestParam(defaultValue = "0") int pageNo) {
 		try {
-			return toResponse(processor.search(id, toDate, fromDate, type, pageNo, pageSize));
+			return toResponse(processor.search(id, toDate, fromDate, type, pageNo, Transaction.Constant.PAGESIZE));
 		} catch (Exception e) {
 			return toResponse(e);
 		}

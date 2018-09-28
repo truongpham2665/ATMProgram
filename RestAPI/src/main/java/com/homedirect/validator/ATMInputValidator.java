@@ -30,29 +30,30 @@ public class ATMInputValidator {
 		return isValidPassword(password);
 	}
 
-	public static boolean validatorDeposit(Double amount) {
+	//doi return true -> return false và ngược lại
+	public static boolean validatorDeposit(Double amount) throws ATMException {
 		if (amount == null) {
-			return true;
+			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
+//			return false;
 		}
 		if (amount <= 0 || amount % 10000 != 0) {
-			return true;
+			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES, amount);
+//			return false;
 		}
-		return false;
+		return true;
 	}
 
-	public static boolean validatorWithdraw(Double amount, Double oldAmount) {
+	public static boolean validatorWithdraw(Double amount, Double oldAmount) throws ATMException {
 		if (amount == null) {
-			return true;
+			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
 		}
 		if (amount <= 0 || amount % 10000 != 0 || amount > Transaction.Constant.MAX_AMOUNT_WITHDRAW) {
-			System.out.println("Số tiền phải lớn hơn 0, nhỏ hơn 10,000,000 và là bội số của 10,000");
-			return true;
+			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES, amount);
 		}
 		if (oldAmount - amount - Transaction.Constant.FEE_TRANSFER < Transaction.Constant.DEFAULT_BALANCE) {
-			System.out.println("Số dư tài khoản hiện không đủ");
-			return true;
+			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES, amount);
 		}
-		return false;
+		return true;
 	}
 
 	public static boolean isValidUsername(String username) {
@@ -65,16 +66,16 @@ public class ATMInputValidator {
 
 	public boolean isValidCreateAccount(String username, String password) throws ATMException {
 		if (!validateUsername(username)) {
-			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES);
+			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES, username);
 		}
 		if (!validatePassword(password)) {
-			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES);
+			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES, password);
 		}
 		if (username == null || password == null) {
-			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES);
+			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
 		}
 		if (!validatorStorageATM.checkUserName(username)) {
-			throw new ATMException(ErrorCode.INVALID_INPUT, ErrorCode.INVALID_INPUT_MES);
+			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_DATA_MES, username);
 		}
 		return true;
 	}
@@ -91,40 +92,26 @@ public class ATMInputValidator {
 		return output;
 	}
 
-	// chuyển thành getAccountNumber chuyển sang class AccountServiceImpl
-//	public String generateAccountNumber() {
-//		String pattern = "22";
-//		Random rd = new Random();
-//		int max = 9999;
-//		int accountNumber = rd.nextInt(max);
-//		DecimalFormat format = new DecimalFormat("0000");
-//		String outAccountNumber = pattern + format.format(accountNumber);
-//		while (!validatorStorageATM.checkAccountNumbers(outAccountNumber)) {
-//			generateAccountNumber();
-//		}
-//		return outAccountNumber;
-//	}
-
-	public boolean isValidateInputTransfer(int fromId, String toAccountNumber) throws ATMException {
-//		Account fromAccount = accountService.findById(fromId); bỏ check fromAccount null
+	public Account isValidateInputTransfer(String toAccountNumber) throws ATMException {
 		Account toAccount = accountService.findByAccountNumber(toAccountNumber);
 		if (toAccount == null) {
-			return false;
+			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES, toAccount);
+//			return false;
 		}
-		return true;
+		return toAccount;
 	}
 
-	public boolean checkTransfer(Integer toId, Integer fromId) {
+	public boolean checkTransfer(Integer toId, Integer fromId) throws ATMException {
 		if (toId == fromId) {
-			return false;
+			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_DATA_MES, toId);
 		}
 
 		if (validatorStorageATM.checkId(toId)) {
-			return false;
+			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES, toId);
 		}
 
 		if (toId == null || fromId == null) {
-			return false;
+			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
 		}
 		return true;
 	}

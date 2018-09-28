@@ -15,6 +15,12 @@ public class Account {
 	private String username;
 	private String password;
 	private Double amount;
+	
+	public static class Constant {
+		public final static int USERNAME_LENG = 5;
+		public final static int PASSWORD_LENG = 6;
+		public final static double DEFAULT_AMOUNT = 50000;
+	}
 
 	public Integer getId() { return Id; }
 	public void setId(Integer id) { Id = id; }
@@ -30,10 +36,4 @@ public class Account {
 
 	public Double getAmount() { return amount; }
 	public void setAmount(Double amount) { this.amount = amount; }
-	
-	public static class Constant {
-		public final static int USERNAME_LENG = 5;
-		public final static int PASSWORD_LENG = 6;
-		public final static double DEFAULT_AMOUNT = 50000;
-	}
 }

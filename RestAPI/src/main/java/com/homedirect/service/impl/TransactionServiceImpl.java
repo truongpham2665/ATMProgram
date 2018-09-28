@@ -23,6 +23,7 @@ import com.querydsl.core.BooleanBuilder;
 
 //chuyen validate transaction qua TransactionProcessorImpl
 // chuyen checkTransfer qua ATMInputValidator
+// them giá trị bị lỗi sau mesage của mỗi exception
 @Service
 public class TransactionServiceImpl extends AbstractService<Transaction> implements TransactionService {
 

@@ -33,7 +33,7 @@ public class AccountProcessorImpl implements AccountProcessor {
 
 	public AccountResponse create(@RequestBody AccountRequest request) throws ATMException {
 		if (!validatorInputATM.isValidCreateAccount(request.getUsername(), request.getPassword())) {
-			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES);
+			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
 		}
 
 		Account account = accountService.creatAcc(request);

@@ -34,9 +34,6 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	// mã hóa password = toMD5();chuyển valid sang AccountProcessorImpl.
 	@Override
 	public Account creatAcc(AccountRequest request) throws ATMException {
-//		if (!validatorInputATM.isValidCreateAccount(request.getUsername(), request.getPassword())) {
-//			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES);
-//		}
 		Account newAccount = new Account();
 		newAccount.setId(request.getId());
 		newAccount.setAccountNumber(generateAccountNumber());
@@ -53,11 +50,11 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	public Account login(AccountRequest request) throws ATMException {
 		Account account = repository.find(request.getUsername());
 		if (account == null) {
-			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES);
+			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES, request.getUsername());
 		}
 
 		if (!BCrypt.checkpw(request.getPassword(), account.getPassword())) {
-			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_DATA_MES);
+			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_DATA_MES, request.getPassword());
 		}
 		return account;
 	}
@@ -66,16 +63,11 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	@Override
 	public Account changePassword(ChangePassRequest changePassRequest) throws ATMException {
 		Account account = repository.findById(changePassRequest.getId()).get();
-//		if (!validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
-//				changePassRequest.getNewPassword(), account)) {
-//			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_DATA_MES);
-//		}
-
 		account.setPassword(PasswordEncryption.toMD5(changePassRequest.getNewPassword()));
 		repository.save(account);
 		return account;
 	}
-	
+
 	public String generateAccountNumber() {
 		String pattern = "22";
 		Random rd = new Random();

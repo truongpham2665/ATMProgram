@@ -22,7 +22,6 @@ public abstract class AbstractController<P> {
 		if (data instanceof Exception) {
 			Exception e = (Exception) data;
 			response.setCode(ErrorCode.UNKNOWN);
-//			response.setMessage(ErrorCode.UNKNOWN_MES);
 			response.setMessage(e.getMessage());
 			return response;
 		}

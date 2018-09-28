@@ -25,7 +25,7 @@ public abstract class AbstractService<T> {
 	public T findById(int id) throws ATMException {
 		Optional<T> optional = jpaRepository.findById(id);
 		if (!optional.isPresent()) {
-			throw new ATMException(ErrorCode.UNKNOWN, ErrorCode.NOT_FOUND_MES);
+			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES, id);
 		}
 
 		return optional.get();
