@@ -45,14 +45,14 @@ public class TransactionController extends AbstractController<TransactionProcess
 	}
 
 	@GetMapping(value = "/search")
-	public ATMResponse<?> search(@RequestParam("accountNumber") String accountNumber,
+	public ATMResponse<?> search(@RequestParam("accountId") int id,
 								@RequestParam(value = "toDate", required = false) String toDate,
 								@RequestParam(value = "fromDate", required = false) String fromDate,
 								@RequestParam(value = "type", required = false) Byte type,
 								@RequestParam(defaultValue = "0") int pageNo,
 								@RequestParam(defaultValue = "10") int pageSize) {
 		try {
-			return toResponse(processor.search(accountNumber, toDate, fromDate, type, pageNo, pageSize));
+			return toResponse(processor.search(id, toDate, fromDate, type, pageNo, pageSize));
 		} catch (Exception e) {
 			return toResponse(e);
 		}

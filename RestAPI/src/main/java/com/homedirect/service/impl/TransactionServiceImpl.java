@@ -15,7 +15,7 @@ import com.homedirect.entity.QTransaction;
 import com.homedirect.entity.Transaction;
 import com.homedirect.entity.Transaction.TransactionType;
 import com.homedirect.exception.ATMException;
-import com.homedirect.request.DepositRequest;
+import com.homedirect.repository.TransactionRepository;
 import com.homedirect.service.AbstractService;
 import com.homedirect.service.TransactionService;
 import com.homedirect.validator.ATMInputValidator;
@@ -27,11 +27,10 @@ import com.querydsl.core.BooleanBuilder;
 public class TransactionServiceImpl extends AbstractService<Transaction> implements TransactionService {
 
 	private @Autowired AccountServiceImpl accountService;
+	private @Autowired TransactionRepository repository;
 
 	@Override
-	public Transaction deposit(DepositRequest depositRequest) throws ATMException {
-		Account account = accountService.findById(depositRequest.getId());
-		Double amount = depositRequest.getAmount();
+	public Transaction deposit(Account account, Double amount) throws ATMException {
 		account.setAmount(account.getAmount() + amount);
 		return saveTransaction(account.getAccountNumber(), null, amount, Transaction.Constant.STATUS_SUCCESS,
 				Transaction.Constant.CONTENT_DEPOSIT, TransactionType.DEPOSIT);
@@ -70,19 +69,20 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 
 	// Đổi kiểu trả về list sang Page.
 	@Override
-	public Page<Transaction> search(String accountNumber, String fromDate, String toDate, Byte type, int pageNo,
-			int pageSize) throws ParseException {
-
+	public Page<Transaction> search(int accountId, String fromDate, String toDate, Byte type, int pageNo, int pageSize)
+			throws ParseException, ATMException {
+		Account account = accountService.findById(accountId);
+		String accountNumber = account.getAccountNumber();
 		QTransaction transaction = QTransaction.transaction;
 		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
 		Pageable pageable = PageRequest.of(pageNo, pageSize);
 		BooleanBuilder where = new BooleanBuilder();
 
 		if (fromDate != null) {
-			where.and(transaction.time.after(format.parse(toDate)));
+			where.and(transaction.time.after(format.parse(fromDate)));
 		}
 		if (toDate != null) {
-			where.and(transaction.time.before(format.parse(fromDate)));
+			where.and(transaction.time.before(format.parse(toDate)));
 		}
 		if (type != null) {
 			where.and(transaction.type.eq(type));
@@ -90,6 +90,6 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 		if (accountNumber != null) {
 			where.and(transaction.fromAccount.eq(accountNumber));
 		}
-		return findAll(where, pageable);
+		return repository.findAll(where, pageable);
 	}
 }

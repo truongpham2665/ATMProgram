@@ -31,11 +31,13 @@ public class TransactionProcessorImpl implements TransactionProcessor {
 
 	@Override
 	public TransactionResponse deposit(DepositRequest depositRequest) throws ATMException {
-		if (ATMInputValidator.validatorDeposit(depositRequest.getAmount())) {
+		Account account = accountService.findById(depositRequest.getId());
+		Double amount = depositRequest.getAmount();
+		if (ATMInputValidator.validatorDeposit(amount)) {
 			throw new ATMException(ErrorCode.INVALID_DATA, ErrorCode.INVALID_INPUT_MES);
 		}
 
-		Transaction transaction = service.deposit(depositRequest);
+		Transaction transaction = service.deposit(account, amount);
 		return transformer.toResponse(transaction);
 	}
 
@@ -75,8 +77,8 @@ public class TransactionProcessorImpl implements TransactionProcessor {
 	}
 
 	@Override
-	public Page<Transaction> search(String accountNumber, String toDate, String fromDate, Byte type, int pageNo,
-			int pageSize) throws ParseException {
-		return service.search(accountNumber, fromDate, toDate, type, pageNo, pageSize);
+	public Page<Transaction> search(int accoutId, String toDate, String fromDate, Byte type, int pageNo,
+			int pageSize) throws ParseException, ATMException {
+		return service.search(accoutId, fromDate, toDate, type, pageNo, pageSize);
 	}
 }
