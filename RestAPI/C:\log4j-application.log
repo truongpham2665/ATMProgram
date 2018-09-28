@@ -93,3 +93,5 @@
 2018-09-28 16:38:18 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Không tìm thấy dữ liệu có id: ahihihihi12345
 2018-09-28 16:38:18 ERROR AccountController:25 - Không tìm thấy dữ liệu có id: ahihihihi12345
 >>>>>>> e5a0ec732aade688f2909f888ba5bdeb9049fbd8
+2018-09-28 17:31:18 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Username đã tồn tại: pick123456774
+2018-09-28 17:31:18 ERROR AccountController:25 - Username đã tồn tại: pick123456774

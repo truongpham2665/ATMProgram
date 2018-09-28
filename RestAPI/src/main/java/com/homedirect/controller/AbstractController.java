@@ -41,7 +41,6 @@ public abstract class AbstractController<P> {
 		response.setCode(ErrorCode.SUCCESS);
 		response.setMessage(ErrorCode.SUCCESS_MES);
 		response.setData(data);
-
 		return response;
 	}
 }
