@@ -41,10 +41,10 @@ public class ATMStorageValidator {
 			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
 		}
 		if (!BCrypt.checkpw(oldPassword, account.getPassword())) {
-			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES, oldPassword);
+			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES);
 		}
 		if (!ATMInputValidator.isValidPassword(newPassword)) {
-			throw new ATMException(ErrorCode.INVALID_INPUT_PASSWORD, ErrorCode.INVALID_INPUT_PASWORD_MES, newPassword);
+			throw new ATMException(ErrorCode.INVALID_INPUT_PASSWORD, ErrorCode.INVALID_INPUT_PASWORD_MES);
 		}
 		return true;
 	}

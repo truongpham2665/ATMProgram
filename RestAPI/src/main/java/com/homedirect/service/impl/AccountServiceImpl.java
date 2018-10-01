@@ -62,7 +62,7 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		}
 
 		if (!BCrypt.checkpw(request.getPassword(), account.getPassword())) {
-			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES, request.getPassword());
+			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES);
 		}
 		return account;
 	}

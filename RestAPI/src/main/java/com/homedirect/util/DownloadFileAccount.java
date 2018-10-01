@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.homedirect.constant.ErrorCode;
 import com.homedirect.controller.AbstractController;
 import com.homedirect.exception.ATMException;
 import com.homedirect.processor.impl.AccountProcessorImpl;
@@ -21,6 +22,6 @@ public class DownloadFileAccount extends AbstractController<AccountProcessorImpl
 		WriteFile writeFile = new WriteFile();
 		List<AccountResponse> accountResponses = processor.findAll();
 		writeFile.writeListAccountResponsetoExcel(accountResponses);
-		return "success";
+		return ErrorCode.SUCCESS_MES;
 	}
 }
