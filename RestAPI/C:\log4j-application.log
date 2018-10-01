@@ -231,3 +231,11 @@ java.lang.IllegalArgumentException: Value must not be null!
 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
 	at java.lang.Thread.run(Thread.java:748)
 2018-10-01 14:51:28 ERROR AccountController:58 - Không tìm thấy dữ liệu có id: 6
+2018-10-01 15:40:30 ERROR AccountController:58 - Password không chính xác: Congnhan@123
+2018-10-01 15:41:04 ERROR AccountController:58 - Password không chính xác: null
+2018-10-01 15:41:48 ERROR AccountController:58 - Password không chính xác: Congnhan@123
+2018-10-01 15:41:59 ERROR AccountController:58 - Password không chính xác: $2a$10$N6sAEYXcsvh1jhB066v1xOFJEQrhzbFfQdZzdHaepL.WFotseDXOe$2a$10$N6sAEYXcsvh1jhB066v1xOFJEQrhzbFfQdZzdHaepL.WFotseDXOe
+2018-10-01 15:51:51 ERROR AccountController:58 - Không tìm thấy dữ liệu có id: 0
+2018-10-01 15:52:02 ERROR AccountController:58 - Không tìm thấy dữ liệu có id: 141
+2018-10-01 15:52:18 ERROR AccountController:58 - Password không hợp lệ: cuocsongtuoidep
+2018-10-01 15:52:25 ERROR AccountController:58 - Password không hợp lệ: cuocsongtuoidep@123

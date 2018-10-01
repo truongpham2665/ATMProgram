@@ -18,12 +18,13 @@ import com.homedirect.request.ChangePassRequest;
 import com.homedirect.service.AbstractService;
 import com.homedirect.service.AccountService;
 import com.homedirect.transformer.PasswordEncryption;
+import com.homedirect.validator.ATMStorageValidator;
 
 @Service
 public class AccountServiceImpl extends AbstractService<Account> implements AccountService {
 
 	private @Autowired AccountRepository repository;
-	
+	private @Autowired ATMStorageValidator validatorStorageATM;
 
 	@Autowired
 	private AccountServiceImpl(AccountRepository accountRepository) {
@@ -56,7 +57,8 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	public Account login(AccountRequest request) throws ATMException {
 		Account account = repository.find(request.getUsername());
 		if (account == null) {
-			throw new ATMException(ErrorCode.NOT_FOUND_USERNAME, ErrorCode.NOT_FOUND_USERNAME_MES, request.getUsername());
+			throw new ATMException(ErrorCode.NOT_FOUND_USERNAME, ErrorCode.NOT_FOUND_USERNAME_MES,
+					request.getUsername());
 		}
 
 		if (!BCrypt.checkpw(request.getPassword(), account.getPassword())) {
@@ -68,7 +70,10 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	// mã hóa password sau khi đổi . chuyển valid sang AccountProcessorImpl.
 	@Override
 	public Account changePassword(ChangePassRequest changePassRequest) throws ATMException {
-		Account account = repository.findById(changePassRequest.getId()).get();
+		Account account = findById(changePassRequest.getId());
+//		Account account = repository.findById(changePassRequest.getId()).get();
+		validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
+				changePassRequest.getNewPassword(), account);
 		account.setPassword(PasswordEncryption.toMD5(changePassRequest.getNewPassword()));
 		repository.save(account);
 		return account;

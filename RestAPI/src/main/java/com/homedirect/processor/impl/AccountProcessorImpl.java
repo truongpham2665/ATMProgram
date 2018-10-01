@@ -16,14 +16,12 @@ import com.homedirect.response.AccountResponse;
 import com.homedirect.service.AccountService;
 import com.homedirect.transformer.AccountTransformer;
 import com.homedirect.validator.ATMInputValidator;
-import com.homedirect.validator.ATMStorageValidator;
 
 @Service
 public class AccountProcessorImpl implements AccountProcessor {
 	private @Autowired AccountService accountService;
 	private @Autowired AccountTransformer transformer;
 	private @Autowired ATMInputValidator validatorInputATM;
-	private @Autowired ATMStorageValidator validatorStorageATM;
 
 	@Override
 	public AccountResponse login(AccountRequest request) throws ATMException {
@@ -51,8 +49,6 @@ public class AccountProcessorImpl implements AccountProcessor {
 	@Override
 	public AccountResponse changePassword(ChangePassRequest changePassRequest) throws ATMException {
 		Account account = accountService.changePassword(changePassRequest);
-		validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
-				changePassRequest.getNewPassword(), account);
 		return transformer.toResponse(account);
 	}
 
