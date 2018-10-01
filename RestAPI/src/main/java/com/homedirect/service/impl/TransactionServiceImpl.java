@@ -81,7 +81,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 		try {
 			Account account = accountService.findById(accountId);
 			QTransaction transaction = QTransaction.transaction;
-			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 			pageable = PageRequest.of(pageNo, pageSize);
 			where = new BooleanBuilder();
 			if (fromDate != null) {
