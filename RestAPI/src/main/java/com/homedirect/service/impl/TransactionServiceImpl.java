@@ -2,6 +2,7 @@ package com.homedirect.service.impl;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -66,6 +67,11 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 		Transaction transaction = new Transaction(fromAccountNumber, toAccountNumber, transferAmount,
 				ATMInputValidator.getDate(), status, content, type);
 		return save(transaction);
+	}
+
+	@Override
+	public List<Transaction> findTransactionByAccountNumber(String accountNumber) {
+		return repository.findTransactionByAccountNumber(accountNumber);
 	}
 
 	// Đổi kiểu trả về list sang Page.

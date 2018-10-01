@@ -58,3 +58,17 @@
 2018-09-28 16:38:13 ERROR AccountController:25 - Password không chính xác: 1234@Tunguye
 2018-09-28 16:38:18 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Không tìm thấy dữ liệu có id: ahihihihi12345
 2018-09-28 16:38:18 ERROR AccountController:25 - Không tìm thấy dữ liệu có id: ahihihihi12345
+2018-09-28 17:24:06 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Không tìm thấy dữ liệu có username: ahihihihi12345
+2018-09-28 17:24:06 ERROR AccountController:25 - Không tìm thấy dữ liệu có username: ahihihihi12345
+2018-09-28 17:24:43 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Không tìm thấy dữ liệu có username: ahihihihi12345
+2018-09-28 17:24:43 ERROR AccountController:25 - Không tìm thấy dữ liệu có username: ahihihihi12345
+2018-10-01 10:50:21 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Số tiền phải lớn hơn 0 
+ Nhỏ hơn 10000000 
+ Là bội số của 10000: 10000.0
+2018-10-01 10:50:21 ERROR AccountController:25 - Số tiền phải lớn hơn 0 
+ Nhỏ hơn 10000000 
+ Là bội số của 10000: 10000.0
+2018-10-01 14:12:09 DEBUG AccountController:24 - com.homedirect.exception.ATMException: Không tìm thấy dữ liệu có id: 100
+2018-10-01 14:12:09 ERROR AccountController:25 - Không tìm thấy dữ liệu có id: 100
+2018-10-01 14:12:12 DEBUG AccountController:35 - org.springframework.dao.InvalidDataAccessResourceUsageException: could not extract ResultSet; SQL [n/a]; nested exception is org.hibernate.exception.SQLGrammarException: could not extract ResultSet
+2018-10-01 14:12:12 ERROR AccountController:36 - could not extract ResultSet; SQL [n/a]; nested exception is org.hibernate.exception.SQLGrammarException: could not extract ResultSet

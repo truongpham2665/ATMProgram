@@ -1,6 +1,7 @@
 package com.homedirect.processor.impl;
 
 import java.text.ParseException;
+import java.util.List;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.homedirect.constant.ErrorCode;
 import com.homedirect.entity.Account;
+import com.homedirect.entity.QTransaction;
 import com.homedirect.entity.Transaction;
 import com.homedirect.exception.ATMException;
 import com.homedirect.processor.TransactionProcessor;
@@ -20,6 +22,7 @@ import com.homedirect.service.AccountService;
 import com.homedirect.service.TransactionService;
 import com.homedirect.transformer.TransactionTransformer;
 import com.homedirect.validator.ATMInputValidator;
+import com.querydsl.core.BooleanBuilder;
 
 //de throw validate(deposit, withdraw, tranfer) trong validateInputATM
 @Service
@@ -70,5 +73,17 @@ public class TransactionProcessorImpl implements TransactionProcessor {
 	public Page<Transaction> search(int accoutId, String toDate, String fromDate, Byte type, int pageNo, int pageSize)
 			throws ParseException, ATMException {
 		return service.search(accoutId, fromDate, toDate, type, pageNo, pageSize);
+	}
+	
+	public List<Transaction> findTransactionByAccountId(int accountId) throws ATMException {
+		Account account = accountService.findById(accountId);
+		String accountNumber = account.getAccountNumber();
+		QTransaction transaction = QTransaction.transaction;
+		BooleanBuilder where = new BooleanBuilder();
+
+		if (accountNumber != null) {
+			where.and(transaction.fromAccount.eq(accountNumber));
+		}
+		return service.findTransactionByAccountNumber(accountNumber);
 	}
 }
