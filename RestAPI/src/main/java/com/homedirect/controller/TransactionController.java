@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.homedirect.entity.Transaction;
 import com.homedirect.processor.TransactionProcessor;
 import com.homedirect.request.DepositRequest;
+import com.homedirect.request.SearchTransactionRequest;
 import com.homedirect.request.TransferRequest;
 import com.homedirect.request.WithdrawRequest;
 import com.homedirect.response.ATMResponse;
@@ -20,29 +21,17 @@ public class TransactionController extends AbstractController<TransactionProcess
 
 	@PutMapping(value = "/deposit")
 	public ATMResponse<?> transactionDeposit(@RequestBody DepositRequest depositRequest) {
-		try {
-			return toResponse(processor.deposit(depositRequest));
-		} catch (Exception e) {
-			return toResponse(e);
-		}
+		return apply(depositRequest, processor::deposit);
 	}
 
 	@PutMapping(value = "/withdrawal")
 	public ATMResponse<?> withdrawal(@RequestBody WithdrawRequest withdrawRequest) {
-		try {
-			return toResponse(processor.withdrawal(withdrawRequest));
-		} catch (Exception e) {
-			return toResponse(e);
-		}
+		return apply(withdrawRequest, processor::withdrawal);
 	}
 
 	@PutMapping(value = "/transfer")
 	public ATMResponse<?> TransactionTransfer(@RequestBody TransferRequest transferRequest) {
-		try {
-			return toResponse(processor.transfer(transferRequest));
-		} catch (Exception e) {
-			return toResponse(e);
-		}
+		return apply(transferRequest, processor::transfer);
 	}
 
 	@GetMapping(value = "/search")
@@ -50,11 +39,7 @@ public class TransactionController extends AbstractController<TransactionProcess
 			@RequestParam(value = "toDate", required = false) String toDate,
 			@RequestParam(value = "fromDate", required = false) String fromDate,
 			@RequestParam(value = "type", required = false) Byte type, 
-			@RequestParam(defaultValue = "0") int pageNo) {
-		try {
-			return toResponse(processor.search(id, toDate, fromDate, type, pageNo, Transaction.Constant.PAGESIZE));
-		} catch (Exception e) {
-			return toResponse(e);
-		}
+			@RequestParam(defaultValue = "1") int pageNo) {
+		return apply(new SearchTransactionRequest(id, fromDate, toDate, type, pageNo, Transaction.Constant.PAGESIZE), processor::search);
 	}
 }

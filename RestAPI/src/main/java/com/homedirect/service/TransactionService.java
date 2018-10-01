@@ -1,7 +1,5 @@
 package com.homedirect.service;
 
-import java.text.ParseException;
-
 import org.springframework.data.domain.Page;
 
 import com.homedirect.entity.Account;
@@ -20,5 +18,5 @@ public interface TransactionService {
 			String content, Byte type);
 
 	Page<Transaction> search(int id, String fromDate, String toDate, Byte type, int pageNo, int pageSize)
-			throws ParseException, ATMException;
+			throws ATMException;
 }
