@@ -1,6 +1,5 @@
 package com.homedirect.processor.impl;
 
-import java.text.ParseException;
 import java.util.List;
 
 import org.mindrot.jbcrypt.BCrypt;
@@ -15,6 +14,7 @@ import com.homedirect.entity.Transaction;
 import com.homedirect.exception.ATMException;
 import com.homedirect.processor.TransactionProcessor;
 import com.homedirect.request.DepositRequest;
+import com.homedirect.request.SearchTransactionRequest;
 import com.homedirect.request.TransferRequest;
 import com.homedirect.request.WithdrawRequest;
 import com.homedirect.response.TransactionResponse;
@@ -71,9 +71,9 @@ public class TransactionProcessorImpl implements TransactionProcessor {
 	}
 
 	@Override
-	public Page<Transaction> search(int accoutId, String toDate, String fromDate, Byte type, int pageNo, int pageSize)
-			throws ParseException, ATMException {
-		return service.search(accoutId, fromDate, toDate, type, pageNo, pageSize);
+	public Page<Transaction> search(SearchTransactionRequest request) throws ATMException {
+		return service.search(request.getAccountId(), request.getFromDate(), request.getToDate(),
+				request.getType(), request.getPageNo(), request.getPageSize());
 	}
 	
 	public List<Transaction> findTransactionByAccountId(int accountId) throws ATMException {

@@ -75,26 +75,30 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 
 	// Đổi kiểu trả về list sang Page.
 	@Override
-	public Page<Transaction> search(int accountId, String fromDate, String toDate, Byte type, int pageNo, int pageSize)
-			throws ParseException, ATMException {
-		Account account = accountService.findById(accountId);
-		String accountNumber = account.getAccountNumber();
-		QTransaction transaction = QTransaction.transaction;
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-		Pageable pageable = PageRequest.of(pageNo, pageSize);
-		BooleanBuilder where = new BooleanBuilder();
+	public Page<Transaction> search(int accountId, String fromDate, String toDate, Byte type, int pageNo, int pageSize) throws ATMException {
+		Pageable pageable = null;
+		BooleanBuilder where = null;
+		try {
+			Account account = accountService.findById(accountId);
+			QTransaction transaction = QTransaction.transaction;
+			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+			pageable = PageRequest.of(pageNo, pageSize);
+			where = new BooleanBuilder();
+			if (fromDate != null) {
+				where.and(transaction.time.after(format.parse(fromDate)));
+			}
+			if (toDate != null) {
+				where.and(transaction.time.before(format.parse(toDate)));
+			}
+			if (type != null) {
+				where.and(transaction.type.eq(type));
+			}
+			if (account.getAccountNumber() != null) {
+				where.and(transaction.fromAccount.eq(account.getAccountNumber()));
+			}
 
-		if (fromDate != null) {
-			where.and(transaction.time.after(format.parse(fromDate)));
-		}
-		if (toDate != null) {
-			where.and(transaction.time.before(format.parse(toDate)));
-		}
-		if (type != null) {
-			where.and(transaction.type.eq(type));
-		}
-		if (accountNumber != null) {
-			where.and(transaction.fromAccount.eq(accountNumber));
+		} catch (ParseException e) {
+			e.getMessage();
 		}
 		return repository.findAll(where, pageable);
 	}

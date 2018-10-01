@@ -1,6 +1,6 @@
 package com.homedirect.exception;
 
-public class ATMException extends Exception {
+public class ATMException extends RuntimeException{
 
 	private static final long serialVersionUID = 1L;
 	private int code;
