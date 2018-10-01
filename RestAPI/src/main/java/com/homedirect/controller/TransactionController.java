@@ -75,7 +75,6 @@ public class TransactionController extends AbstractController<TransactionProcess
 		} catch (Exception e) {
 			return toResponse(e);
 		}
-		
 	}
 	
 }
