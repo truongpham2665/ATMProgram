@@ -2,6 +2,7 @@ package com.homedirect.service.impl;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,9 +22,8 @@ import com.homedirect.service.TransactionService;
 import com.homedirect.validator.ATMInputValidator;
 import com.querydsl.core.BooleanBuilder;
 
-//chuyen validate transaction qua TransactionProcessorImpl
-// chuyen checkTransfer qua ATMInputValidator
-// them giá trị bị lỗi sau mesage của mỗi exception
+//them findTransactionByAccountNumber
+
 @Service
 public class TransactionServiceImpl extends AbstractService<Transaction> implements TransactionService {
 
@@ -68,6 +68,11 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 		return save(transaction);
 	}
 
+	@Override
+	public List<Transaction> findTransactionByAccountNumber(String accountNumber) {
+		return repository.findTransactionByAccountNumber(accountNumber);
+	}
+
 	// Đổi kiểu trả về list sang Page.
 	@Override
 	public Page<Transaction> search(int accountId, String fromDate, String toDate, Byte type, int pageNo, int pageSize) throws ATMException {
@@ -79,7 +84,6 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 			SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
 			pageable = PageRequest.of(pageNo, pageSize);
 			where = new BooleanBuilder();
-
 			if (fromDate != null) {
 				where.and(transaction.time.after(format.parse(fromDate)));
 			}
