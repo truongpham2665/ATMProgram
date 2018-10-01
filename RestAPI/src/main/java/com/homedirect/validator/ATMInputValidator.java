@@ -63,10 +63,10 @@ public class ATMInputValidator {
 
 	public boolean isValidCreateAccount(String username, String password) throws ATMException {
 		if (!validateUsername(username)) {
-			throw new ATMException(ErrorCode.INVALID_USERNAME, ErrorCode.INVALID_USERNAME_MES);
+			throw new ATMException(ErrorCode.INVALID_INPUT_USERNAME, ErrorCode.INVALID_INPUT_USERNAME_MES);
 		}
 		if (!validatePassword(password)) {
-			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES);
+			throw new ATMException(ErrorCode.INVALID_INPUT_PASSWORD, ErrorCode.INVALID_INPUT_PASWORD_MES);
 		}
 		if (username == null || password == null) {
 			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);

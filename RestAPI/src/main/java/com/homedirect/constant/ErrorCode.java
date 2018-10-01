@@ -5,10 +5,14 @@ public class ErrorCode {
 	public static final String SUCCESS_MES = "Success";
 
 	public static final int INVALID_INPUT_USERNAME = 2;
-	public static final String INVALID_INPUT_USERNAME_MES = "Username is invalid";
+	public static final String INVALID_INPUT_USERNAME_MES = "Username must be greater 3 and less 15 characters ";
 	
 	public static final int INVALID_INPUT_PASSWORD = 3;
-	public static final String INVALID_INPUT_PASWORD_MES = "Password is invalid";
+	public static final String INVALID_INPUT_PASWORD_MES = "Username must at least 8 characters "
+															+ "\n Must have at least one special character "
+															+ "\n Must have at least a lower case letter"
+															+ "\n Must have at least an upper case letter"
+															+ "\n No whitespace allowed";
 
 	public static final int NOT_FOUND = 4;
 	public static final String NOT_FOUND_MES = "Don't find data have id";
