@@ -24,7 +24,8 @@ import com.homedirect.transformer.TransactionTransformer;
 import com.homedirect.validator.ATMInputValidator;
 import com.querydsl.core.BooleanBuilder;
 
-//de throw validate(deposit, withdraw, tranfer) trong validateInputATM
+//them findTransactionByAccountId
+
 @Service
 public class TransactionProcessorImpl implements TransactionProcessor {
 

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Repository;
 
 import com.homedirect.entity.Transaction;
 
+
+//them findTransactionByAccountNumber
 @Repository
 public interface TransactionRepository
 		extends JpaRepository<Transaction, Integer>, QuerydslPredicateExecutor<Transaction> {
