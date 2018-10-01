@@ -2,9 +2,7 @@ package com.homedirect.processor;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
-
-import com.homedirect.entity.Account;
+import com.homedirect.entity.Page;
 import com.homedirect.exception.ATMException;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
@@ -22,5 +20,5 @@ public interface AccountProcessor {
 	
 	AccountResponse get(int id) throws ATMException;
 	
-	Page<Account> search(String username, int pageNo, int pageSize) throws ATMException;
+	Page<AccountResponse> search(String username, int pageNo, int pageSize) throws ATMException;
 }

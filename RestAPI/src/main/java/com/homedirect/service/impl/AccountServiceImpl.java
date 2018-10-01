@@ -6,15 +6,11 @@ import java.util.Random;
 
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.homedirect.constant.ErrorCode;
 import com.homedirect.entity.Account;
-import com.homedirect.entity.QAccount;
+import com.homedirect.entity.Page;
 import com.homedirect.exception.ATMException;
 import com.homedirect.repository.AccountRepository;
 import com.homedirect.request.AccountRequest;
@@ -22,12 +18,12 @@ import com.homedirect.request.ChangePassRequest;
 import com.homedirect.service.AbstractService;
 import com.homedirect.service.AccountService;
 import com.homedirect.transformer.PasswordEncryption;
-import com.querydsl.core.BooleanBuilder;
 
 @Service
 public class AccountServiceImpl extends AbstractService<Account> implements AccountService {
-	
+
 	private @Autowired AccountRepository repository;
+	
 
 	@Autowired
 	private AccountServiceImpl(AccountRepository accountRepository) {
@@ -36,7 +32,14 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 
 	// mã hóa password = toMD5();chuyển valid sang AccountProcessorImpl.
 	@Override
+//<<<<<<< HEAD
+//	public Account creatAcc(AccountRequest request) {
+//		if (!validatorInputATM.isValidCreateAccount(request.getUsername(), request.getPassword())) {
+//			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES);
+//		}
+//=======
 	public Account creatAcc(AccountRequest request) throws ATMException {
+//>>>>>>> e5a0ec732aade688f2909f888ba5bdeb9049fbd8
 		Account newAccount = new Account();
 		newAccount.setId(request.getId());
 		newAccount.setAccountNumber(generateAccountNumber());
@@ -80,19 +83,26 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		String outAccountNumber = pattern + format.format(accountNumber);
 		return outAccountNumber;
 	}
-	
+
 	// đổi kiểu trả về từ list -> Page
+//	@Override
+//	public Page<Account> search(String username, int pageNo, int pageSize) {
+//		QAccount account = QAccount.account;
+//		BooleanBuilder where = new BooleanBuilder();
+//		Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("username"));
+//		if (username != null) {
+//			where.and(account.username.containsIgnoreCase(username));
+//		}
+//		return repository.findAll(where, pageable);
+//	}
+
+	// tạo class Page "thay famework Page"
 	@Override
 	public Page<Account> search(String username, int pageNo, int pageSize) {
-		QAccount account = QAccount.account;
-		BooleanBuilder where = new BooleanBuilder();
-		Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("username"));
-		if (username != null) {
-			where.and(account.username.containsIgnoreCase(username));
-		}
-		return repository.findAll(where, pageable);
+		List<Account> accounts = repository.findByUsernameContaining(username);
+		return new Page<>(pageNo, pageSize, accounts.size(), accounts);
 	}
-	
+
 	@Override
 	public Account findByAccountNumber(String accountNumber) {
 		return repository.findByAccountNumber(accountNumber);

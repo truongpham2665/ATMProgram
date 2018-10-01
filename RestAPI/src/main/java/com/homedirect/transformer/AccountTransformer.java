@@ -1,5 +1,6 @@
 package com.homedirect.transformer;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.homedirect.entity.Account;
+import com.homedirect.entity.Page;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.response.AccountResponse;
 import com.homedirect.service.AccountService;
@@ -16,7 +18,7 @@ public class AccountTransformer {
 
 	private @Autowired AccountService service;
 
-	public Account toAccount(AccountRequest request) {
+	public Account toAccount(AccountRequest request) throws NoSuchAlgorithmException {
 		Account newAccount = new Account();
 		newAccount.setId(request.getId());
 		newAccount.setAccountNumber(service.generateAccountNumber());
@@ -38,20 +40,10 @@ public class AccountTransformer {
 	public List<AccountResponse> toResponseList(List<Account> accounts) {
 		return accounts.stream().map(this::toResponse).collect(Collectors.toList());
 	}
-//	
-//	public Page<Account> toResponsePage(Page<Account> account) {
-//		Page<Account> pageResponse = null;
-//		pageResponse.forEach(action -> {
-//			pageResponse.getContent().add(toResponses(account));
-//		});
-//		page.forEach(account -> {
-//			AccountResponse accountResponse = new AccountResponse();
-//			accountResponse.setId(account.getId());
-//			accountResponse.setAccountNumber(account.getAccountNumber());
-//			accountResponse.setAmount(account.getAmount());
-//			accountResponse.setUsername(account.getUsername());
-//			pageResponse.getContent().add(accountResponse);
-//		});
-//		return pageResponse;
-//	}
+	
+	//Thêm hàm transformer Page<Account> sang Page<AccountResponse>
+	public Page<AccountResponse> toResponse(Page<Account> page) {
+		if (page == null) return new Page<AccountResponse>();
+		return new Page<>(page.getPageNo(), page.getPageSize(), page.getTotalElements(), toResponseList(page.getContent()));
+	}
 }
