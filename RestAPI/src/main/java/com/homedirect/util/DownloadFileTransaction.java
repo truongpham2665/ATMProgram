@@ -3,6 +3,7 @@ package com.homedirect.util;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -17,6 +18,8 @@ import com.homedirect.response.ATMResponse;
 @RestController
 @RequestMapping("/excel")
 public class DownloadFileTransaction extends AbstractController<TransactionProcessorImpl> {
+	
+	@Scheduled(cron = "0 30 8 ? * MON-FRI")
 	@GetMapping(value = "/transactions")
 	public ATMResponse<?> write(@RequestParam("accountId") int id) throws ATMException, IOException {
 		try {
@@ -28,6 +31,4 @@ public class DownloadFileTransaction extends AbstractController<TransactionProce
 			return toResponse(e);
 		}
 	}
-	
-	
 }
