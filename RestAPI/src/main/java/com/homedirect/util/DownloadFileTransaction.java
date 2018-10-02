@@ -18,8 +18,7 @@ import com.homedirect.response.ATMResponse;
 @RestController
 @RequestMapping("/excel")
 public class DownloadFileTransaction extends AbstractController<TransactionProcessorImpl> {
-	
-//	@Scheduled(cron = "0 30 8 ? * MON-FRI")
+
 	@GetMapping(value = "/transactions")
 	public ATMResponse<?> write(@RequestParam("accountId") int id) throws ATMException, IOException {
 		try {

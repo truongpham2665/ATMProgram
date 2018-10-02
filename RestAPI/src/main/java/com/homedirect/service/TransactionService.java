@@ -24,4 +24,5 @@ public interface TransactionService {
 	
 	List<Transaction> findTransactionByAccountNumber(String accountNumber);
 
+	List<Transaction> findAll();
 }
