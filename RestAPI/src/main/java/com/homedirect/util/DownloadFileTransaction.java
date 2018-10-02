@@ -19,7 +19,19 @@ import com.homedirect.response.ATMResponse;
 @RequestMapping("/excel")
 public class DownloadFileTransaction extends AbstractController<TransactionProcessorImpl> {
 	
-	@Scheduled(cron = "0 30 8 ? * MON-FRI")
+	@Scheduled(cron = "0 23 10 ? * MON-FRI")
+	@GetMapping
+	public ATMResponse<?> writeAll() throws ATMException, IOException {
+		try {
+			WriteFile writeFile = new WriteFile();
+			List<Transaction> transactions = processor.findAll();
+			writeFile.writeListTransactiontoExcel(transactions);
+			return toResponse(transactions);
+		} catch (Exception e) {
+			return toResponse(e);
+		}
+	}
+	
 	@GetMapping(value = "/transactions")
 	public ATMResponse<?> write(@RequestParam("accountId") int id) throws ATMException, IOException {
 		try {

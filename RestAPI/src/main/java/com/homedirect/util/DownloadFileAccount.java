@@ -18,7 +18,7 @@ import com.homedirect.response.AccountResponse;
 @RequestMapping("/excel")
 public class DownloadFileAccount extends AbstractController<AccountProcessorImpl> {
 
-	@Scheduled(cron = "0 30 8 ? * MON-FRI")
+	@Scheduled(cron = "0 23 10 ? * MON-FRI")
 	@GetMapping(value = "/accounts")
 	public String write() throws IOException, ATMException {
 		WriteFile writeFile = new WriteFile();

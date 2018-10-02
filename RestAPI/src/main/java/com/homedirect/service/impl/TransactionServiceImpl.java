@@ -72,7 +72,10 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 	public List<Transaction> findTransactionByAccountNumber(String accountNumber) {
 		return repository.findTransactionByAccountNumber(accountNumber);
 	}
-
+	
+	public List<Transaction> findAll() {
+		return repository.findAll();
+	}
 	// Đổi kiểu trả về list sang Page.
 	@Override
 	public Page<Transaction> search(int accountId, String fromDate, String toDate, Byte type, int pageNo, int pageSize) throws ATMException {
