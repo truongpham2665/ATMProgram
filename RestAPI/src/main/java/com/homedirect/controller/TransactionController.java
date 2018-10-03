@@ -46,7 +46,7 @@ public class TransactionController extends AbstractController<TransactionProcess
 			@RequestParam(value = "toDate", required = false) String toDate,
 			@RequestParam(value = "fromDate", required = false) String fromDate,
 			@RequestParam(value = "type", required = false) Byte type, 
-			@RequestParam(defaultValue = "1") int pageNo) {
+			@RequestParam(defaultValue = "0") int pageNo) {
 		return apply(new SearchTransactionRequest(id, fromDate, toDate, type, pageNo, Transaction.Constant.PAGESIZE), processor::search);
 	}
 

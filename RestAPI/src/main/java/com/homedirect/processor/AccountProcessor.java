@@ -6,6 +6,7 @@ import com.homedirect.entity.Page;
 import com.homedirect.exception.ATMException;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
+import com.homedirect.request.PageRequest;
 import com.homedirect.request.SearchAccountRequest;
 import com.homedirect.response.AccountResponse;
 
@@ -15,7 +16,9 @@ public interface AccountProcessor {
 	
 	AccountResponse create(AccountRequest request) throws ATMException;
 
-	List<AccountResponse> findAll() throws ATMException;
+	Page<AccountResponse> findAll(PageRequest request) throws ATMException;
+	
+	List<AccountResponse> findAlls() throws ATMException;
 	
 	AccountResponse changePassword(ChangePassRequest changePassRequest) throws ATMException;
 	

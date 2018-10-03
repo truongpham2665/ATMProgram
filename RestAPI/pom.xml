@@ -20,6 +20,7 @@
 	</parent>
 
 	<properties>
+		<Spring-batch.version>4.0.0.M1</Spring-batch.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
@@ -124,6 +125,12 @@
 		<!-- <version>1.7.25</version> -->
 		<!-- </dependency> -->
 
+		<!-- https://mvnrepository.com/artifact/org.springframework.batch/spring-batch-core -->
+		<dependency>
+			<groupId>org.springframework.batch</groupId>
+			<artifactId>spring-batch-core</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
@@ -165,6 +172,7 @@
 	</build>
 
 	<repositories>
+
 		<repository>
 			<id>spring-snapshots</id>
 			<name>Spring Snapshots</name>

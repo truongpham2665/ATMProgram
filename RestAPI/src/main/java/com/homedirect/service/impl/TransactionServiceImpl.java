@@ -33,14 +33,14 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 	@Override
 	public Transaction deposit(Account account, Double amount) throws ATMException {
 		account.setAmount(account.getAmount() + amount);
-		return saveTransaction(account.getAccountNumber(), null, amount, Transaction.Constant.STATUS_SUCCESS,
+		return saveTransaction(account.getAccountNumber(), Transaction.Constant.NULL, amount, Transaction.Constant.STATUS_SUCCESS,
 				Transaction.Constant.CONTENT_DEPOSIT, TransactionType.DEPOSIT);
 	}
 
 	@Override
 	public Transaction withdraw(Account account, Double amount) throws ATMException {
 		account.setAmount(account.getAmount() - (amount + Transaction.Constant.FEE_TRANSFER));
-		return saveTransaction(account.getAccountNumber(), null, amount, Transaction.Constant.STATUS_SUCCESS,
+		return saveTransaction(account.getAccountNumber(), Transaction.Constant.NULL, amount, Transaction.Constant.STATUS_SUCCESS,
 				Transaction.Constant.CONTENT_WITHDRAW, TransactionType.WITHDRAW);
 	}
 
@@ -84,19 +84,18 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 			pageable = PageRequest.of(pageNo, pageSize);
 			where = new BooleanBuilder();
-			if (fromDate != null) {
-				where.and(transaction.time.after(format.parse(fromDate)));
-			}
-			if (toDate != null) {
-				where.and(transaction.time.before(format.parse(toDate)));
-			}
-			if (type != null) {
-				where.and(transaction.type.eq(type));
-			}
 			if (account.getAccountNumber() != null) {
 				where.and(transaction.fromAccount.eq(account.getAccountNumber()));
 			}
-
+			if (fromDate != null) {
+				where.and(transaction.time.after(format.parse(fromDate)).and(transaction.fromAccount.likeIgnoreCase(account.getAccountNumber())));
+			}
+			if (toDate != null) {
+				where.and(transaction.time.before(format.parse(toDate)).and(transaction.fromAccount.likeIgnoreCase(account.getAccountNumber())));
+			}
+			if (type != null) {
+				where.and(transaction.type.eq(type).and(transaction.fromAccount.likeIgnoreCase(account.getAccountNumber())));
+			}
 		} catch (ParseException e) {
 			e.getMessage();
 		}

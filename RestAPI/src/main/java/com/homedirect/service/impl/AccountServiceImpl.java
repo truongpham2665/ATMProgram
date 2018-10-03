@@ -23,7 +23,6 @@ import com.homedirect.transformer.PasswordEncryption;
 public class AccountServiceImpl extends AbstractService<Account> implements AccountService {
 
 	private @Autowired AccountRepository repository;
-	
 
 	@Autowired
 	private AccountServiceImpl(AccountRepository accountRepository) {
@@ -56,7 +55,8 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	public Account login(AccountRequest request) throws ATMException {
 		Account account = repository.find(request.getUsername());
 		if (account == null) {
-			throw new ATMException(ErrorCode.NOT_FOUND_USERNAME, ErrorCode.NOT_FOUND_USERNAME_MES, request.getUsername());
+			throw new ATMException(ErrorCode.NOT_FOUND_USERNAME, ErrorCode.NOT_FOUND_USERNAME_MES,
+					request.getUsername());
 		}
 
 		if (!BCrypt.checkpw(request.getPassword(), account.getPassword())) {
@@ -106,6 +106,12 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 	@Override
 	public Account findByAccountNumber(String accountNumber) {
 		return repository.findByAccountNumber(accountNumber);
+	}
+
+	@Override
+	public Page<Account> findAll(int pageNo, int pageSize) {
+		List<Account> accounts = repository.findAll();
+		return new Page<>(pageNo, pageSize, accounts.size(), accounts);
 	}
 
 	@Override

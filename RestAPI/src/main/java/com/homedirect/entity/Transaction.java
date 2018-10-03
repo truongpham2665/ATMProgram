@@ -34,6 +34,7 @@ public class Transaction {
 		public final static int LIMIT_SHOW_HISTORY = 5;
 		public final static Double DEFAULT_BALANCE = 50000d;
 		public final static int MAX_AMOUNT_WITHDRAW = 10000000;
+		public final static String NULL = "";
 		public final static String CONTENT_WITHDRAW = "Rut tien";
 		public final static String CONTENT_DEPOSIT = "Gui tien";
 		public final static int PAGESIZE = 10;
@@ -53,67 +54,35 @@ public class Transaction {
 		this.type = type;
 	}
 
-	public Integer getId() {
-		return Id;
-	}
+	public Integer getId() {return Id;}
 
-	public void setId(Integer id) {
-		Id = id;
-	}
+	public void setId(Integer id) {Id = id;}
 
-	public String getFromAccount() {
-		return fromAccount;
-	}
+	public String getFromAccount() { return fromAccount; }
 
-	public void setFromAccount(String fromAccount) {
-		this.fromAccount = fromAccount;
-	}
+	public void setFromAccount(String fromAccount) { this.fromAccount = fromAccount; }
 
-	public String getToAccount() {
-		return toAccount;
-	}
+	public String getToAccount() { return toAccount; }
 
-	public void setToAccount(String toAccount) {
-		this.toAccount = toAccount;
-	}
+	public void setToAccount(String toAccount) { this.toAccount = toAccount; }
 
-	public Double getTransferAmount() {
-		return transferAmount;
-	}
+	public Double getTransferAmount() { return transferAmount; }
 
-	public void setTransferAmount(Double transferAmount) {
-		this.transferAmount = transferAmount;
-	}
+	public void setTransferAmount(Double transferAmount) { this.transferAmount = transferAmount; }
 
-	public Date getTime() {
-		return time;
-	}
+	public Date getTime() { return time; }
 
-	public void setTime(Date time) {
-		this.time = time;
-	}
+	public void setTime(Date time) { this.time = time; }
 
-	public String getStatus() {
-		return status;
-	}
+	public String getStatus() { return status; }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+	public void setStatus(String status) { this.status = status; }
 
-	public String getContent() {
-		return content;
-	}
+	public String getContent() { return content; }
 
-	public void setContent(String content) {
-		this.content = content;
-	}
+	public void setContent(String content) { this.content = content; }
 
-	public Byte getType() {
-		return type;
-	}
+	public Byte getType() { return type; }
 
-	public void setType(Byte type) {
-		this.type = type;
-	}
+	public void setType(Byte type) { this.type = type; }
 }

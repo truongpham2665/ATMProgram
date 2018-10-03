@@ -20,9 +20,11 @@ public interface AccountService {
 	
 	Account findByAccountNumber(String accountNumber);
 
-	List<Account> findAll();
+	Page<Account> findAll(int pageNo, int pageSize);
 	
 	Account findById(int id) throws ATMException;
+	
+	List<Account> findAll();
 	
 	String generateAccountNumber();
 }

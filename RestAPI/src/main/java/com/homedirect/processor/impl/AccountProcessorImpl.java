@@ -11,6 +11,7 @@ import com.homedirect.exception.ATMException;
 import com.homedirect.processor.AccountProcessor;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
+import com.homedirect.request.PageRequest;
 import com.homedirect.request.SearchAccountRequest;
 import com.homedirect.response.AccountResponse;
 import com.homedirect.service.AccountService;
@@ -37,9 +38,9 @@ public class AccountProcessorImpl implements AccountProcessor {
 		return transformer.toResponse(account);
 	}
 
-	public List<AccountResponse> findAll() {
-		List<Account> accounts = accountService.findAll();
-		return transformer.toResponseList(accounts);
+	public Page<AccountResponse> findAll(PageRequest request) {
+		Page<Account> accounts = accountService.findAll(request.getPageNo(), request.getPageSize());
+		return transformer.toResponse(accounts);
 	}
 
 	@Override
@@ -56,9 +57,15 @@ public class AccountProcessorImpl implements AccountProcessor {
 		return transformer.toResponse(account);
 	}
 
+	public List<AccountResponse> findAlls() {
+		List<Account> accounts = accountService.findAll();
+		return transformer.toResponseList(accounts);
+	}
+
 //	đổi từ kiểu trả về Page<Account> thành Page<AccountResponse>
 	@Override
 	public Page<AccountResponse> search(SearchAccountRequest request) throws ATMException {
-		return transformer.toResponse(accountService.search(request.getUsername(), request.getPageNo(), request.getPageSize()));
+		return transformer
+				.toResponse(accountService.search(request.getUsername(), request.getPageNo(), request.getPageSize()));
 	}
 }

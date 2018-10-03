@@ -16,6 +16,7 @@ import com.homedirect.exception.ATMException;
 import com.homedirect.processor.AccountProcessor;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
+import com.homedirect.request.PageRequest;
 import com.homedirect.request.SearchAccountRequest;
 import com.homedirect.response.ATMResponse;
 import com.homedirect.response.AccountResponse;
@@ -37,8 +38,9 @@ public class AccountController extends AbstractController<AccountProcessor> {
 	}
 
 	@GetMapping
-	public ATMResponse<?> findAll() throws ATMException {
-		return apply(processor::findAll);
+	public ATMResponse<?> findAll(@RequestParam(defaultValue = "0") int pageNo,
+								  @RequestParam(defaultValue = "10") int pageSize) throws ATMException {
+		return apply(new PageRequest(pageNo, pageSize), processor::findAll);
 	}
 
 	@GetMapping(value = "/{id}")
@@ -53,14 +55,14 @@ public class AccountController extends AbstractController<AccountProcessor> {
 
 	@GetMapping(value = "/search")
 	public ATMResponse<?> search(@RequestParam(value = "username", required = false) String username,
-			@RequestParam(defaultValue = "1") int pageNo, @RequestParam(defaultValue = "10") int pageSize) {
+			@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "10") int pageSize) {
 		return apply(new SearchAccountRequest(username, pageNo, pageSize), processor::search);
 	}
 
 	@GetMapping(value = "/downloadExcel")
 	public String write() throws IOException, ATMException {
 		WriteFile writeFile = new WriteFile();
-		List<AccountResponse> accountResponses = processor.findAll();
+		List<AccountResponse> accountResponses = processor.findAlls();
 		writeFile.writeListAccountResponsetoExcel(accountResponses);
 		return "success";
 	}
