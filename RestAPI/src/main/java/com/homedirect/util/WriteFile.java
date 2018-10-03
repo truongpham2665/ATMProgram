@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -17,30 +18,30 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Component;
 
+import com.homedirect.entity.Account;
 import com.homedirect.entity.Transaction;
 import com.homedirect.exception.ATMException;
-import com.homedirect.response.AccountResponse;
 
 @Component
 public class WriteFile {
 
-	public void writeListAccountResponsetoExcel(List<AccountResponse> accountResponses)
-			throws IOException, ATMException {
-		String[] columns = { "Id", "Username", "AccountNumber", "Amount" };
+	public void writeListAccountResponsetoExcel(List<Account> accounts) throws IOException, ATMException {
+		String[] columns = { "Id", "Username", "AccountNumber", "Amount", "Password" };
 		String FILE_NAME = "Accounts";
 		String outputFilename = createFileName(FILE_NAME);
 
 		Workbook workbook = new XSSFWorkbook();
 		Sheet sheet = workbook.createSheet("Accounts");
-		createTable(workbook, sheet, columns);
+		createCell(workbook, sheet, columns);
 
 		int rowNum = 1;
-		for (AccountResponse accountResponse : accountResponses) {
+		for (Account account : accounts) {
 			Row row = sheet.createRow(rowNum++);
-			row.createCell(0).setCellValue(accountResponse.getId());
-			row.createCell(1).setCellValue(accountResponse.getUsername());
-			row.createCell(2).setCellValue(accountResponse.getAccountNumber());
-			row.createCell(3).setCellValue(accountResponse.getAmount());
+			row.createCell(0).setCellValue(account.getId());
+			row.createCell(1).setCellValue(account.getUsername());
+			row.createCell(2).setCellValue(account.getAccountNumber());
+			row.createCell(3).setCellValue(account.getAmount());
+			row.createCell(4).setCellValue(account.getPassword());
 		}
 
 		reSizeAllColumn(columns, sheet);
@@ -53,16 +54,12 @@ public class WriteFile {
 		String FILE_NAME = "Transactions";
 		String outputFilename = createFileName(FILE_NAME);
 
-		// B1: Create a Workbook
 		Workbook workbook = new XSSFWorkbook();
 
-		// B2: Create a Sheet
-		Sheet sheet = workbook.createSheet("Accounts");
+		Sheet sheet = workbook.createSheet("Transactions");
 
-		// B3: Create a table
-		createTable(workbook, sheet, columns);
+		createCell(workbook, sheet, columns);
 
-		// B4: Create Other rows and cells with data
 		int rowNum = 1;
 		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
 
@@ -82,28 +79,23 @@ public class WriteFile {
 		reSizeAllColumn(columns, sheet);
 		writeFile(outputFilename, workbook);
 	}
-	// create table
+
 	public String createFileName(String FILE_NAME) {
 		Date dateTime = new Date();
 		String outputFilename = FILE_NAME + "_" + dateTime + ".xlsx";
 		return outputFilename;
 	}
 
-	public void createTable(Workbook workbook, Sheet sheet, String[] columns) {
-		// Create a Font for styling header cells
+	public void createCell(Workbook workbook, Sheet sheet, String[] columns) {
 		Font headerFont = workbook.createFont();
 		headerFont.setBold(true);
 		headerFont.setFontHeightInPoints((short) 14);
 		headerFont.setColor(IndexedColors.RED.getIndex());
-
-		// Create a CellStyle with the font
 		CellStyle headerCellStyle = workbook.createCellStyle();
+		headerCellStyle.setAlignment(HorizontalAlignment.CENTER);
 		headerCellStyle.setFont(headerFont);
 
-		// Create a Row
 		Row headerRow = sheet.createRow(0);
-
-		// Creating cells
 		for (int i = 0; i < columns.length; i++) {
 			Cell cell = headerRow.createCell(i);
 			cell.setCellValue(columns[i]);
@@ -113,6 +105,7 @@ public class WriteFile {
 
 	public void reSizeAllColumn(String[] columns, Sheet sheet) {
 		for (int i = 0; i < columns.length; i++) {
+
 			sheet.autoSizeColumn(i);
 		}
 	}

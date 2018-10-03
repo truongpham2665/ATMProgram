@@ -1,8 +1,5 @@
 package com.homedirect.controller;
 
-import java.io.IOException;
-import java.util.List;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,8 +16,6 @@ import com.homedirect.request.ChangePassRequest;
 import com.homedirect.request.PageRequest;
 import com.homedirect.request.SearchAccountRequest;
 import com.homedirect.response.ATMResponse;
-import com.homedirect.response.AccountResponse;
-import com.homedirect.util.WriteFile;
 
 @RestController
 @RequestMapping("/accounts")
@@ -57,13 +52,5 @@ public class AccountController extends AbstractController<AccountProcessor> {
 	public ATMResponse<?> search(@RequestParam(value = "username", required = false) String username,
 			@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "10") int pageSize) {
 		return apply(new SearchAccountRequest(username, pageNo, pageSize), processor::search);
-	}
-
-	@GetMapping(value = "/downloadExcel")
-	public String write() throws IOException, ATMException {
-		WriteFile writeFile = new WriteFile();
-		List<AccountResponse> accountResponses = processor.findAlls();
-		writeFile.writeListAccountResponsetoExcel(accountResponses);
-		return "success";
 	}
 }

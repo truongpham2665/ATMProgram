@@ -44,6 +44,6 @@ public class AccountTransformer {
 	//Thêm hàm transformer Page<Account> sang Page<AccountResponse>
 	public Page<AccountResponse> toResponse(Page<Account> page) {
 		if (page == null) return new Page<AccountResponse>();
-		return new Page<>(page.getPageNo(), page.getPageSize(), page.getTotalElements(), toResponseList(page.getContent()));
+		return new Page<>(page.getPageNo(), page.getPageSize(), page.getTotalElements(), page.getTotalPage() ,toResponseList(page.getContent()));
 	}
 }

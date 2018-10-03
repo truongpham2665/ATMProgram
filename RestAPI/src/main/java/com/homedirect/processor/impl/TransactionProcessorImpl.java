@@ -2,13 +2,12 @@ package com.homedirect.processor.impl;
 
 import java.util.List;
 
-import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+//import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import com.homedirect.constant.ErrorCode;
 import com.homedirect.entity.Account;
+import com.homedirect.entity.Page;
 import com.homedirect.entity.QTransaction;
 import com.homedirect.entity.Transaction;
 import com.homedirect.exception.ATMException;
@@ -30,8 +29,8 @@ import com.querydsl.core.BooleanBuilder;
 public class TransactionProcessorImpl implements TransactionProcessor {
 
 	private @Autowired TransactionService service;
-	private @Autowired TransactionTransformer transformer;
 	private @Autowired AccountService accountService;
+	private @Autowired TransactionTransformer transformer;
 	private @Autowired ATMInputValidator validatorInputATM;
 
 	@Override
@@ -48,9 +47,8 @@ public class TransactionProcessorImpl implements TransactionProcessor {
 		Double amount = withdrawRequest.getAmount();
 		Account account = accountService.findById(withdrawRequest.getId());
 		ATMInputValidator.validatorWithdraw(amount, account.getAmount());
-		if (!BCrypt.checkpw(withdrawRequest.getPassword(), account.getPassword())) {
-			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES, withdrawRequest.getPassword());
-		}
+
+		ATMInputValidator.checkPasswordByAccount(withdrawRequest.getPassword(), account);
 
 		Transaction transaction = service.withdraw(account, amount);
 		return transformer.toResponse(transaction);
@@ -62,20 +60,22 @@ public class TransactionProcessorImpl implements TransactionProcessor {
 		Account toAccount = validatorInputATM.isValidateInputTransfer(request.getToAccountNumber());
 		validatorInputATM.checkTransfer(toAccount.getId(), request.getFromId());
 
-		if (!BCrypt.checkpw(request.getPassword(), fromAccount.getPassword())) {
-			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES, request.getPassword());
-		}
+		ATMInputValidator.checkPasswordByAccount(request.getPassword(), fromAccount);
+
+		accountService.save(fromAccount);
+		accountService.save(toAccount);
 
 		Transaction transaction = service.transfer(fromAccount, toAccount, request.getAmount(), request.getContent());
 		return transformer.toResponse(transaction);
 	}
 
 	@Override
-	public Page<Transaction> search(SearchTransactionRequest request) throws ATMException {
-		return service.search(request.getAccountId(), request.getFromDate(), request.getToDate(),
-				request.getType(), request.getPageNo(), request.getPageSize());
+	public Page<TransactionResponse> search(SearchTransactionRequest request) throws ATMException {
+		return transformer.toTransactionResponse(service.search(request.getAccountId(), request.getFromDate(), request.getToDate(), request.getType(),
+				request.getPageNo(), request.getPageSize()));
+		
 	}
-	
+
 	public List<Transaction> findTransactionByAccountId(int accountId) throws ATMException {
 		Account account = accountService.findById(accountId);
 		String accountNumber = account.getAccountNumber();
@@ -87,8 +87,23 @@ public class TransactionProcessorImpl implements TransactionProcessor {
 		}
 		return service.findTransactionByAccountNumber(accountNumber);
 	}
-	
+
 	public List<Transaction> findAll() {
 		return service.findAll();
 	}
+	
+//	public String sendOTP() {
+//		String message = "Your OTP: " + generateOTP();
+//		return message;
+//	}
+//	
+//	public String generateOTP() {
+//			Random rd = new Random();
+//			int max = 999999999;
+//			int code = rd.nextInt(max);
+//			DecimalFormat format = new DecimalFormat("000000000");
+//			String otp = format.format(code);
+//			return otp;
+//	}
+	
 }

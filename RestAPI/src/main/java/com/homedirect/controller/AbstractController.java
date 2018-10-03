@@ -16,8 +16,8 @@ import com.homedirect.support.ExecutorSupplier;
 public abstract class AbstractController<P> {
 
 	final static Logger logger = Logger.getLogger(AccountController.class);
+	
 	protected @Autowired P processor;
-
 	protected <O> ATMResponse<O> toResponse(O data) {             //(***)
 		ATMResponse<O> response = new ATMResponse<O>();
 		if (data instanceof ATMException) {

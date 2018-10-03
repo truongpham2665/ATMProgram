@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
+import com.homedirect.entity.Page;
 import com.homedirect.entity.Transaction;
 import com.homedirect.response.TransactionResponse;
 
@@ -27,5 +28,11 @@ public class TransactionTransformer {
 
 	public List<TransactionResponse> toResponse(List<Transaction> transactionHistories) {
 		return transactionHistories.stream().map(this::toResponse).collect(Collectors.toList());
+	}
+	
+	public Page<TransactionResponse> toTransactionResponse(Page<Transaction> page) {
+		if (page == null) return new Page<TransactionResponse>();
+		return new Page<>(page.getPageNo(), page.getPageSize(), page.getTotalElements(), 
+				page.getTotalPage(),toResponse( page.getContent()));
 	}
 }

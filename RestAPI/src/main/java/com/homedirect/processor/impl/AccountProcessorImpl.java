@@ -17,28 +17,35 @@ import com.homedirect.response.AccountResponse;
 import com.homedirect.service.AccountService;
 import com.homedirect.transformer.AccountTransformer;
 import com.homedirect.validator.ATMInputValidator;
+import com.homedirect.validator.ATMStorageValidator;
 
 @Service
 public class AccountProcessorImpl implements AccountProcessor {
 	private @Autowired AccountService accountService;
 	private @Autowired AccountTransformer transformer;
 	private @Autowired ATMInputValidator validatorInputATM;
+	private @Autowired ATMStorageValidator validatorStorageATM;
 
 	@Override
 	public AccountResponse login(AccountRequest request) throws ATMException {
-		Account account = accountService.login(request);
+		Account account = accountService.login(request.getUsername(), request.getPassword());
 		return transformer.toResponse(account);
 	}
 
 	public AccountResponse create(AccountRequest request) throws ATMException {
 		validatorInputATM.isValidCreateAccount(request.getUsername(), request.getPassword());
 		Account account = accountService.creatAcc(request);
+		accountService.save(account);
 		return transformer.toResponse(account);
 	}
 
 	public Page<AccountResponse> findAll(PageRequest request) {
 		Page<Account> accounts = accountService.findAll(request.getPageNo(), request.getPageSize());
 		return transformer.toResponse(accounts);
+	}
+
+	public List<Account> findAll() {
+		return accountService.findAll();
 	}
 
 	@Override
@@ -49,16 +56,14 @@ public class AccountProcessorImpl implements AccountProcessor {
 
 	@Override
 	public AccountResponse changePassword(ChangePassRequest changePassRequest) throws ATMException {
-		Account account = accountService.changePassword(changePassRequest);
+		Account account = accountService.findById(changePassRequest.getId());
+		validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
+				changePassRequest.getNewPassword(), account);
+		Account saveAccont = accountService.changePassword(account, changePassRequest.getNewPassword());
+		accountService.save(saveAccont);
 		return transformer.toResponse(account);
 	}
 
-	public List<AccountResponse> findAlls() {
-		List<Account> accounts = accountService.findAll();
-		return transformer.toResponseList(accounts);
-	}
-
-//	đổi từ kiểu trả về Page<Account> thành Page<AccountResponse>
 	@Override
 	public Page<AccountResponse> search(SearchAccountRequest request) throws ATMException {
 		return transformer

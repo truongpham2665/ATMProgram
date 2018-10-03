@@ -1,6 +1,5 @@
 package com.homedirect.validator;
 
-import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,14 +34,20 @@ public class ATMStorageValidator {
 		return false;
 	}
 
-	// thêm điều kiện checkpw();
+	public Account validateLogin(String username, String password) throws ATMException {
+		Account account = accountRepository.find(username);
+		if (account == null) {
+			throw new ATMException(ErrorCode.NOT_FOUND_USERNAME, ErrorCode.NOT_FOUND_USERNAME_MES, username);
+		}
+		ATMInputValidator.checkPasswordByAccount(password, account);
+		return account;
+	}
+
 	public boolean validateChangePassword(String oldPassword, String newPassword, Account account) throws ATMException {
 		if (oldPassword == null || newPassword == null) {
 			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
 		}
-		if (!BCrypt.checkpw(oldPassword, account.getPassword())) {
-			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES);
-		}
+		ATMInputValidator.checkPasswordByAccount(oldPassword, account);
 		if (!ATMInputValidator.isValidPassword(newPassword)) {
 			throw new ATMException(ErrorCode.INVALID_INPUT_PASSWORD, ErrorCode.INVALID_INPUT_PASWORD_MES);
 		}
