@@ -87,4 +87,8 @@ public class TransactionProcessorImpl implements TransactionProcessor {
 		}
 		return service.findTransactionByAccountNumber(accountNumber);
 	}
+	
+	public List<Transaction> findAll() {
+		return service.findAll();
+	}
 }

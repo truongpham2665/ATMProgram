@@ -35,7 +35,7 @@ public class ATMInputValidator {
 			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
 		}
 		if (amount <= 0 || amount % 10000 != 0) {
-			throw new ATMException(ErrorCode.INVALID_AMOUNT_DEPOSIT, ErrorCode.INVALID_DEPOSIT_MES, amount);
+			throw new ATMException(ErrorCode.INVALID_AMOUNT_DEPOSIT, ErrorCode.INVALID_DEPOSIT_MES);
 		}
 		return true;
 	}
@@ -45,10 +45,10 @@ public class ATMInputValidator {
 			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
 		}
 		if (amount <= 0 || amount % 10000 != 0 || amount > Transaction.Constant.MAX_AMOUNT_WITHDRAW) {
-			throw new ATMException(ErrorCode.INVALID_AMOUNT_WITHDRAW, ErrorCode.INVALID_WITHDRAW_MES, amount);
+			throw new ATMException(ErrorCode.INVALID_AMOUNT_WITHDRAW, ErrorCode.INVALID_WITHDRAW_MES);
 		}
 		if (oldAmount - amount - Transaction.Constant.FEE_TRANSFER < Transaction.Constant.DEFAULT_BALANCE) {
-			throw new ATMException(ErrorCode.INVALID_AMOUNT_WITHDRAW, ErrorCode.INVALID_WITHDRAW_MES, amount);
+			throw new ATMException(ErrorCode.INVALID_AMOUNT_WITHDRAW, ErrorCode.INVALID_WITHDRAW_MES);
 		}
 		return true;
 	}
@@ -63,10 +63,10 @@ public class ATMInputValidator {
 
 	public boolean isValidCreateAccount(String username, String password) throws ATMException {
 		if (!validateUsername(username)) {
-			throw new ATMException(ErrorCode.INVALID_USERNAME, ErrorCode.INVALID_USERNAME_MES, username);
+			throw new ATMException(ErrorCode.INVALID_INPUT_USERNAME, ErrorCode.INVALID_INPUT_USERNAME_MES);
 		}
 		if (!validatePassword(password)) {
-			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES, password);
+			throw new ATMException(ErrorCode.INVALID_INPUT_PASSWORD, ErrorCode.INVALID_INPUT_PASWORD_MES);
 		}
 		if (username == null || password == null) {
 			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
