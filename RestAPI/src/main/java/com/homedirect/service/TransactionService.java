@@ -23,6 +23,8 @@ public interface TransactionService {
 			throws ATMException;
 	
 	List<Transaction> findTransactionByAccountNumber(String accountNumber);
+	
+	void exportCsv() throws Exception;
 
 	List<Transaction> findAll();
 }

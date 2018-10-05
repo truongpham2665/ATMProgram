@@ -61,19 +61,22 @@ public class TransactionProcessorImpl implements TransactionProcessor {
 		Account fromAccount = accountService.findById(request.getFromId());
 		Account toAccount = validatorInputATM.isValidateInputTransfer(request.getToAccountNumber());
 		validatorInputATM.checkTransfer(toAccount.getId(), request.getFromId());
-
+		
 		if (!BCrypt.checkpw(request.getPassword(), fromAccount.getPassword())) {
 			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES, request.getPassword());
 		}
 
+		accountService.save(fromAccount);
+		accountService.save(toAccount);
 		Transaction transaction = service.transfer(fromAccount, toAccount, request.getAmount(), request.getContent());
 		return transformer.toResponse(transaction);
 	}
 
 	@Override
-	public Page<Transaction> search(SearchTransactionRequest request) throws ATMException {
-		return service.search(request.getAccountId(), request.getFromDate(), request.getToDate(),
+	public Page<TransactionResponse> search(SearchTransactionRequest request) throws ATMException {
+		Page<Transaction> transaction =  service.search(request.getAccountId(), request.getFromDate(), request.getToDate(),
 				request.getType(), request.getPageNo(), request.getPageSize());
+		return transformer.toResponse(transaction);
 	}
 	
 	public List<Transaction> findTransactionByAccountId(int accountId) throws ATMException {
@@ -90,5 +93,10 @@ public class TransactionProcessorImpl implements TransactionProcessor {
 	
 	public List<Transaction> findAll() {
 		return service.findAll();
+	}
+
+	@Override
+	public void exportCsv() throws Exception {
+		service.exportCsv();
 	}
 }

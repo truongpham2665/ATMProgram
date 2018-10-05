@@ -23,9 +23,6 @@ public class ErrorCode {
 	public static final int USERNAME_EXIST = 6;
 	public static final String USERNAME_EXIST_MES = "Username already exists";
 
-//	public static final int EXECUTE_FAIL = 7;
-//	public static final String EXECUTE_FAIL_MES = "Lỗi trong quá trình xử lý";
-
 	public static final int INVALID_USERNAME = 8;
 	public static final String INVALID_USERNAME_MES = "Wrong Username";
 	
@@ -46,5 +43,4 @@ public class ErrorCode {
 	
 	public static final int UNKNOWN = 99;
 	public static final String UNKNOWN_MES = "Error";
-
 }

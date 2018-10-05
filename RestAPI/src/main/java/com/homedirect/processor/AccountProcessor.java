@@ -2,7 +2,8 @@ package com.homedirect.processor;
 
 import java.util.List;
 
-import com.homedirect.entity.Page;
+import org.springframework.data.domain.Page;
+
 import com.homedirect.exception.ATMException;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
@@ -23,6 +24,8 @@ public interface AccountProcessor {
 	AccountResponse changePassword(ChangePassRequest changePassRequest) throws ATMException;
 	
 	AccountResponse get(int id) throws ATMException;
+	
+	void exportCsv() throws Exception;
 	
 	Page<AccountResponse> search(SearchAccountRequest request) throws ATMException;
 }

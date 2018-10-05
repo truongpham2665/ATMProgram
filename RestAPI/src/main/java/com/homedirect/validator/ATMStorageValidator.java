@@ -8,6 +8,8 @@ import com.homedirect.constant.ErrorCode;
 import com.homedirect.entity.Account;
 import com.homedirect.exception.ATMException;
 import com.homedirect.repository.AccountRepository;
+import com.homedirect.request.AccountRequest;
+import com.homedirect.request.ChangePassRequest;
 
 @Component
 public class ATMStorageValidator {
@@ -35,16 +37,24 @@ public class ATMStorageValidator {
 		return false;
 	}
 
-	// thêm điều kiện checkpw();
-	public boolean validateChangePassword(String oldPassword, String newPassword, Account account) throws ATMException {
-		if (oldPassword == null || newPassword == null) {
+	public boolean validateChangePassword(ChangePassRequest request) throws ATMException {
+		if (request.getOldPassword() == null || request.getNewPassword() == null) {
 			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
 		}
-		if (!BCrypt.checkpw(oldPassword, account.getPassword())) {
-			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES);
-		}
-		if (!ATMInputValidator.isValidPassword(newPassword)) {
+		if (!ATMInputValidator.isValidPassword(request.getNewPassword())) {
 			throw new ATMException(ErrorCode.INVALID_INPUT_PASSWORD, ErrorCode.INVALID_INPUT_PASWORD_MES);
+		}
+		return true;
+	}
+	
+	public boolean validateLogin(AccountRequest request, Account account) {
+		if (account == null) {
+			throw new ATMException(ErrorCode.NOT_FOUND_USERNAME, ErrorCode.NOT_FOUND_USERNAME_MES,
+					request.getUsername());
+		}
+
+		if (!BCrypt.checkpw(request.getPassword(), account.getPassword())) {
+			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES);
 		}
 		return true;
 	}

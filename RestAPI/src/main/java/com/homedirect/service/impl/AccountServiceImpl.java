@@ -1,16 +1,23 @@
 package com.homedirect.service.impl;
 
+import java.io.FileWriter;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import com.homedirect.constant.ErrorCode;
 import com.homedirect.entity.Account;
-import com.homedirect.entity.Page;
+import com.homedirect.entity.QAccount;
 import com.homedirect.exception.ATMException;
 import com.homedirect.repository.AccountRepository;
 import com.homedirect.request.AccountRequest;
@@ -18,64 +25,45 @@ import com.homedirect.request.ChangePassRequest;
 import com.homedirect.service.AbstractService;
 import com.homedirect.service.AccountService;
 import com.homedirect.transformer.PasswordEncryption;
-import com.homedirect.validator.ATMStorageValidator;
+import com.homedirect.util.CsvUtil;
+import com.querydsl.core.BooleanBuilder;
 
 @Service
 public class AccountServiceImpl extends AbstractService<Account> implements AccountService {
 
 	private @Autowired AccountRepository repository;
-	private @Autowired ATMStorageValidator validatorStorageATM;
 
 	@Autowired
 	private AccountServiceImpl(AccountRepository accountRepository) {
 		this.repository = accountRepository;
 	}
 
-	// mã hóa password = toMD5();chuyển valid sang AccountProcessorImpl.
 	@Override
-//<<<<<<< HEAD
-//	public Account creatAcc(AccountRequest request) {
-//		if (!validatorInputATM.isValidCreateAccount(request.getUsername(), request.getPassword())) {
-//			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES);
-//		}
-//=======
 	public Account creatAcc(AccountRequest request) throws ATMException {
-//>>>>>>> e5a0ec732aade688f2909f888ba5bdeb9049fbd8
 		Account newAccount = new Account();
 		newAccount.setId(request.getId());
 		newAccount.setAccountNumber(generateAccountNumber());
 		newAccount.setUsername(request.getUsername());
 		newAccount.setPassword(request.getPassword());
 		newAccount.setAmount(Account.Constant.DEFAULT_AMOUNT);
-		newAccount.setPassword(PasswordEncryption.toMD5(newAccount.getPassword()));
-		repository.save(newAccount);
+		newAccount.setPassword(PasswordEncryption.encryp(newAccount.getPassword()));
+		save(newAccount);
 		return newAccount;
 	}
 
-	// login = password mã hóa bằng checkpw().
 	@Override
 	public Account login(AccountRequest request) throws ATMException {
 		Account account = repository.find(request.getUsername());
-		if (account == null) {
-			throw new ATMException(ErrorCode.NOT_FOUND_USERNAME, ErrorCode.NOT_FOUND_USERNAME_MES,
-					request.getUsername());
-		}
-
-		if (!BCrypt.checkpw(request.getPassword(), account.getPassword())) {
-			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES);
-		}
 		return account;
 	}
 
-	// mã hóa password sau khi đổi . chuyển valid sang AccountProcessorImpl.
 	@Override
 	public Account changePassword(ChangePassRequest changePassRequest) throws ATMException {
 		Account account = findById(changePassRequest.getId());
-//		Account account = repository.findById(changePassRequest.getId()).get();
-		validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
-				changePassRequest.getNewPassword(), account);
-		account.setPassword(PasswordEncryption.toMD5(changePassRequest.getNewPassword()));
-		repository.save(account);
+		if (!BCrypt.checkpw(changePassRequest.getOldPassword(), account.getPassword())) {
+			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES);
+		}
+		account.setPassword(PasswordEncryption.encryp(changePassRequest.getNewPassword()));
 		return account;
 	}
 
@@ -89,23 +77,15 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		return outAccountNumber;
 	}
 
-	// đổi kiểu trả về từ list -> Page
-//	@Override
-//	public Page<Account> search(String username, int pageNo, int pageSize) {
-//		QAccount account = QAccount.account;
-//		BooleanBuilder where = new BooleanBuilder();
-//		Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("username"));
-//		if (username != null) {
-//			where.and(account.username.containsIgnoreCase(username));
-//		}
-//		return repository.findAll(where, pageable);
-//	}
-
-	// tạo class Page "thay famework Page"
 	@Override
 	public Page<Account> search(String username, int pageNo, int pageSize) {
-		List<Account> accounts = repository.findByUsernameContaining(username);
-		return new Page<>(pageNo, pageSize, accounts.size(), accounts);
+		QAccount account = QAccount.account;
+		Pageable pageable = PageRequest.of(pageNo, pageSize);
+		BooleanBuilder where = new BooleanBuilder();
+		if (username != null) {
+			where.and(account.username.containsIgnoreCase(username));
+		}
+		return repository.findAll(where, pageable);
 	}
 
 	@Override
@@ -115,12 +95,32 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 
 	@Override
 	public Page<Account> findAll(int pageNo, int pageSize) {
-		List<Account> accounts = repository.findAll();
-		return new Page<>(pageNo, pageSize, accounts.size(), accounts);
+		Pageable pageable = PageRequest.of(pageNo, pageSize);
+		BooleanBuilder where = new BooleanBuilder();
+		return repository.findAll(where, pageable);
 	}
 
 	@Override
-	public List<Account> findAll() {
-		return repository.findAll();
+	public List<Account> findAlls() {
+		return findAll();
+	}
+	
+	@Override
+	@Scheduled(cron = "0 47 13 ? * MON-FRI")
+	public void exportCsv() throws Exception {
+		String fileCsv = System.getProperty("user.dir")+ "/src/main/resources/Account.csv";
+		List<Account> accountResponses = repository.findAll();
+		FileWriter writeFile = new FileWriter(fileCsv);
+		CsvUtil.writerLine(writeFile, Arrays.asList("id", "accountNumber", "username", "amount"));
+		for (Account account : accountResponses) {
+			List<String> list = new ArrayList<>();
+			list.add(String.valueOf(account.getId()));
+			list.add(account.getAccountNumber());
+			list.add(account.getUsername());
+			list.add(String.valueOf(account.getAmount()));
+			CsvUtil.writerLine(writeFile, list);
+		}
+		writeFile.flush();
+		writeFile.close();
 	}
 }

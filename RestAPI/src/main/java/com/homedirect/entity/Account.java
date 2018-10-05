@@ -50,7 +50,7 @@ public class Account {
 	
 	@Override
 	public String toString() {
-		return "Account [Id=" + id + ", accountNumber=" + accountNumber + ", username=" + username + ", password="
-				+ password + ", amount=" + amount + "]";
+		return "Account [Id = " + id + ", accountNumber = " + accountNumber + ", username = " + username + ", password = "
+				+ password + ", amount = " + amount + "]";
 	}
 }

@@ -1,5 +1,6 @@
 package com.homedirect.controller;
 
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,7 +19,7 @@ public abstract class AbstractController<P> {
 	final static Logger logger = Logger.getLogger(AccountController.class);
 	protected @Autowired P processor;
 
-	protected <O> ATMResponse<O> toResponse(O data) {             //(***)
+	protected <O> ATMResponse<O> toResponse(O data) {             
 		ATMResponse<O> response = new ATMResponse<O>();
 		if (data instanceof ATMException) {
 			ATMException e = (ATMException) data;
@@ -48,8 +49,6 @@ public abstract class AbstractController<P> {
 		return response;
 	}
 	
-	// Viết các phương thức abstract + try/catch thay cho phương thức  (***)
-	// sử dụng các  "@funtionalInterface" ExecutorFunction...
 	protected <T, R> ATMResponse<R> apply(T t, ExecutorFunction<T, R> executor) {
 		try {
 			R data = executor.execute(t);

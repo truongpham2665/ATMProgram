@@ -29,7 +29,6 @@ public class ATMInputValidator {
 		return isValidPassword(password);
 	}
 
-	//doi return true -> return false và ngược lại
 	public static boolean validatorDeposit(Double amount) throws ATMException {
 		if (amount == null) {
 			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
@@ -93,7 +92,6 @@ public class ATMInputValidator {
 		Account toAccount = accountService.findByAccountNumber(toAccountNumber);
 		if (toAccount == null) {
 			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES, toAccount);
-//			return false;
 		}
 		return toAccount;
 	}

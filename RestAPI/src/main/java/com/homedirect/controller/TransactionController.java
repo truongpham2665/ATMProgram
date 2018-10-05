@@ -44,4 +44,10 @@ public class TransactionController extends AbstractController<TransactionProcess
 			@RequestParam(defaultValue = "0") int pageNo) {
 		return apply(new SearchTransactionRequest(id, fromDate, toDate, type, pageNo, Transaction.Constant.PAGESIZE), processor::search);
 	}
+	
+	@GetMapping(value = "/dowload")
+	public String dowloadCsv() throws Exception {
+		processor.exportCsv();
+		return "Dowload complete";
+	}
 }

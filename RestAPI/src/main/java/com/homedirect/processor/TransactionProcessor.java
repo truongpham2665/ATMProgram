@@ -20,7 +20,9 @@ public interface TransactionProcessor {
 
 	TransactionResponse transfer(TransferRequest transferRequest) throws ATMException;
 
-	Page<Transaction> search(SearchTransactionRequest request) throws ATMException;
+	Page<TransactionResponse> search(SearchTransactionRequest request) throws ATMException;
 
 	List<Transaction> findTransactionByAccountId(int accountId) throws ATMException;
+	
+	void exportCsv() throws Exception;
 }
