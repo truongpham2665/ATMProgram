@@ -9,6 +9,7 @@ import com.homedirect.constant.ErrorCode;
 import com.homedirect.entity.Account;
 import com.homedirect.exception.ATMException;
 import com.homedirect.repository.AccountRepository;
+import com.homedirect.request.AccountRequest;
 
 @Component
 public class ATMStorageValidator {
@@ -28,7 +29,7 @@ public class ATMStorageValidator {
 		}
 		return false;
 	}
-	
+
 	public Account validateId(int id) {
 		Optional<Account> optional = repository.findById(id);
 		if (!optional.isPresent()) {
@@ -52,7 +53,7 @@ public class ATMStorageValidator {
 		}
 		return true;
 	}
-	
+
 	public Account validateUsername(String username) {
 		Account account = repository.find(username);
 		if (account == null) {
@@ -81,6 +82,15 @@ public class ATMStorageValidator {
 		if (newPassword.equals(oldPassword)) {
 			throw new ATMException(ErrorCode.DUPLICATE_PASSWORD, ErrorCode.DUPLICATE_PASSWORD_MES);
 		}
+		return true;
+	}
+
+	public boolean validateLogin(AccountRequest request, Account account) {
+		if (account == null) {
+			throw new ATMException(ErrorCode.NOT_FOUND_USERNAME, ErrorCode.NOT_FOUND_USERNAME_MES,
+					request.getUsername());
+		}
+		ATMInputValidator.checkPasswordByAccount(request.getPassword(), account);
 		return true;
 	}
 

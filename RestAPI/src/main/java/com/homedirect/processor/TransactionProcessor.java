@@ -22,4 +22,6 @@ public interface TransactionProcessor {
 	Page<TransactionResponse> search(SearchTransactionRequest request) throws ATMException;
 
 	List<Transaction> findTransactionByAccountId(int accountId) throws ATMException;
+	
+	void exportCsv() throws Exception;
 }

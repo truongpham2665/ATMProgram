@@ -29,21 +29,8 @@ public class TransactionTransformer {
 	public List<TransactionResponse> toResponse(List<Transaction> transactionHistories) {
 		return transactionHistories.stream().map(this::toResponse).collect(Collectors.toList());
 	}
-//	
-//	public Page<TransactionResponse> toTransactionResponse(Page<Transaction> page) {
-//		if (page == null) return new Page<TransactionResponse>();
-//		return new Page<>(page.getPageNo(), page.getPageSize(), page.getTotalElements(), 
-//				page.getTotalPage(),toResponse( page.getContent()));
-//	}
 	
-//	public Page<TransactionResponse> toPageTransactionRespone(Page<Transaction> page) {
-//		if (page == null) {
-//			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES);
-//		}
-//		return new Page<TransactionResponse>(page.getSize(), page.getTotalElements(), page.getTotalPages(), page.getContent());
-//	}
-	
-	public Page<TransactionResponse> toTransactionResponse(Page<Transaction> page) {
+	public Page<TransactionResponse> toResponse(Page<Transaction> page) {
 		return page.map(transaction -> toResponse(transaction));
 	}
 }

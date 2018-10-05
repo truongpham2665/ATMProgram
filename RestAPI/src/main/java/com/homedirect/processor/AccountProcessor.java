@@ -1,7 +1,6 @@
 package com.homedirect.processor;
 
 import org.springframework.data.domain.Page;
-
 import com.homedirect.exception.ATMException;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
@@ -15,14 +14,15 @@ public interface AccountProcessor {
 
 	AccountResponse create(AccountRequest request) throws ATMException;
 
-
 	AccountResponse changePassword(ChangePassRequest changePassRequest) throws ATMException;
 
 	AccountResponse get(int id) throws ATMException;
 
+	void exportCsv() throws Exception;
+
 	Page<AccountResponse> search(SearchAccountRequest request) throws ATMException;
-	
+
 	AccountResponse updateAccount(UpdateAccountRequest request);
-	
+
 	void deleteById(int id);
 }
