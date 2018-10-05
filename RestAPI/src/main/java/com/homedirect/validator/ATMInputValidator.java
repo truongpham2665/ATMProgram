@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.Date;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -120,5 +121,12 @@ public class ATMInputValidator {
 	public String setAmount(double amount) {
 		String pattern = "###,###,###";
 		return numberFormat(pattern, amount);
+	}
+	
+	public static boolean checkPasswordByAccount(String password, Account account) {
+		if (!BCrypt.checkpw(password, account.getPassword())) {
+			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES);
+		}
+		return true;
 	}
 }

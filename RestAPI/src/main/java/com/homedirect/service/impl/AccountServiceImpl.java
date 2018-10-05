@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import com.homedirect.constant.ErrorCode;
 import com.homedirect.entity.Account;
+import com.homedirect.entity.Account.Constant;
 import com.homedirect.entity.QAccount;
 import com.homedirect.exception.ATMException;
 import com.homedirect.repository.AccountRepository;
@@ -44,8 +46,7 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		newAccount.setId(request.getId());
 		newAccount.setAccountNumber(generateAccountNumber());
 		newAccount.setUsername(request.getUsername());
-		newAccount.setPassword(request.getPassword());
-		newAccount.setAmount(Account.Constant.DEFAULT_AMOUNT);
+		newAccount.setAmount(Constant.DEFAULT_AMOUNT);
 		newAccount.setPassword(PasswordEncryption.encryp(newAccount.getPassword()));
 		save(newAccount);
 		return newAccount;
@@ -122,5 +123,15 @@ public class AccountServiceImpl extends AbstractService<Account> implements Acco
 		}
 		writeFile.flush();
 		writeFile.close();
+	}
+
+	@Override
+	public Account findById(int id) throws ATMException {
+		Optional<Account> optional = repository.findById(id);
+		if (!optional.isPresent()) {
+			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES, id);
+		}
+
+		return optional.get();
 	}
 }

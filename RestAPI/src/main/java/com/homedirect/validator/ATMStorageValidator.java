@@ -1,7 +1,7 @@
 package com.homedirect.validator;
 
-import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import com.homedirect.constant.ErrorCode;
@@ -37,25 +37,39 @@ public class ATMStorageValidator {
 		return false;
 	}
 
-	public boolean validateChangePassword(ChangePassRequest request) throws ATMException {
-		if (request.getOldPassword() == null || request.getNewPassword() == null) {
+//<<<<<<< HEAD
+//	public boolean validateChangePassword(ChangePassRequest request) throws ATMException {
+//		if (request.getOldPassword() == null || request.getNewPassword() == null) {
+//			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
+//		}
+//		if (!ATMInputValidator.isValidPassword(request.getNewPassword())) {
+//=======
+//	public Account validateLogin(String username, String password) throws ATMException {
+//		Account account = accountRepository.find(username);
+//		if (account == null) {
+//			throw new ATMException(ErrorCode.NOT_FOUND_USERNAME, ErrorCode.NOT_FOUND_USERNAME_MES, username);
+//		}
+//		ATMInputValidator.checkPasswordByAccount(password, account);
+//		return account;
+//	}
+
+	public boolean validateChangePassword(String oldPassword, String newPassword, Account account) throws ATMException {
+		if (oldPassword == null || newPassword == null) {
 			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
 		}
-		if (!ATMInputValidator.isValidPassword(request.getNewPassword())) {
+		ATMInputValidator.checkPasswordByAccount(oldPassword, account);
+		if (!ATMInputValidator.isValidPassword(newPassword)) {
 			throw new ATMException(ErrorCode.INVALID_INPUT_PASSWORD, ErrorCode.INVALID_INPUT_PASWORD_MES);
 		}
 		return true;
 	}
-	
+
 	public boolean validateLogin(AccountRequest request, Account account) {
 		if (account == null) {
 			throw new ATMException(ErrorCode.NOT_FOUND_USERNAME, ErrorCode.NOT_FOUND_USERNAME_MES,
 					request.getUsername());
 		}
-
-		if (!BCrypt.checkpw(request.getPassword(), account.getPassword())) {
-			throw new ATMException(ErrorCode.INVALID_PASSWORD, ErrorCode.INVALID_PASWORD_MES);
-		}
+		ATMInputValidator.checkPasswordByAccount(request.getPassword(), account);
 		return true;
 	}
 

@@ -29,19 +29,23 @@ public class AccountProcessorImpl implements AccountProcessor {
 	@Override
 	public AccountResponse login(AccountRequest request) throws ATMException {
 		Account account = service.login(request);
-		storageValidtor.validateLogin(request, account);
 		return transformer.toResponse(account);
 	}
 
 	public AccountResponse create(AccountRequest request) throws ATMException {
 		atmInputValidtor.isValidCreateAccount(request.getUsername(), request.getPassword());
 		Account account = service.creatAcc(request);
+		service.save(account);
 		return transformer.toResponse(account);
 	}
 
 	public Page<AccountResponse> findAll(PageRequest request) {
 		Page<Account> accounts = service.findAll(request.getPageNo(), request.getPageSize());
 		return transformer.toResponse(accounts);
+	}
+
+	public List<Account> findAll() {
+		return service.findAlls();
 	}
 
 	@Override
@@ -52,22 +56,19 @@ public class AccountProcessorImpl implements AccountProcessor {
 
 	@Override
 	public AccountResponse changePassword(ChangePassRequest changePassRequest) throws ATMException {
-		storageValidtor.validateChangePassword(changePassRequest);
-		Account account = service.changePassword(changePassRequest);
-		service.save(account);
+		Account account = service.findById(changePassRequest.getId());
+		storageValidtor.validateChangePassword(changePassRequest.getOldPassword(), changePassRequest.getNewPassword(), account);
+		Account saveAccont = service.changePassword(changePassRequest);
+		service.save(saveAccont);
 		return transformer.toResponse(account);
-	}
-
-	public List<AccountResponse> findAlls() {
-		List<Account> accounts = service.findAlls();
-		return transformer.toResponseList(accounts);
 	}
 
 	@Override
 	public Page<AccountResponse> search(SearchAccountRequest request) throws ATMException {
-		return transformer.toResponse(service.search(request.getUsername(), request.getPageNo(), request.getPageSize()));
+		return transformer
+				.toResponse(service.search(request.getUsername(), request.getPageNo(), request.getPageSize()));
 	}
-	
+
 	@Override
 	public void exportCsv() throws Exception {
 		service.exportCsv();

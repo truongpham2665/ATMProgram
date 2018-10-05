@@ -53,18 +53,10 @@ public class AccountController extends AbstractController<AccountProcessor> {
 			@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "10") int pageSize) {
 		return apply(new SearchAccountRequest(username, pageNo, pageSize), processor::search);
 	}
-	
+
 	@GetMapping(value = "/dowload")
 	public String dowloadCsv() throws Exception {
 		processor.exportCsv();
 		return "dowload complete!";
 	}
-
-//	@GetMapping(value = "/downloadExcel")
-//	public String write() throws IOException, ATMException {
-//		WriteFile writeFile = new WriteFile();
-//		List<AccountResponse> accountResponses = processor.findAlls();
-//		writeFile.writeListAccountResponsetoExcel(accountResponses);
-//		return "success";
-//	}
 }

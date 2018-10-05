@@ -22,6 +22,7 @@ import com.homedirect.entity.Transaction.TransactionType;
 import com.homedirect.exception.ATMException;
 import com.homedirect.repository.TransactionRepository;
 import com.homedirect.service.AbstractService;
+import com.homedirect.service.AccountService;
 import com.homedirect.service.TransactionService;
 import com.homedirect.util.CsvUtil;
 import com.homedirect.validator.ATMInputValidator;
@@ -30,8 +31,8 @@ import com.querydsl.core.BooleanBuilder;
 @Service
 public class TransactionServiceImpl extends AbstractService<Transaction> implements TransactionService {
 
-	private @Autowired AccountServiceImpl accountService;
 	private @Autowired TransactionRepository repository;
+	private @Autowired AccountService accountService;
 
 	@Override
 	public Transaction deposit(Account account, Double amount) throws ATMException {
@@ -75,7 +76,7 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 		return repository.findAll();
 	}
 
-	// Đổi kiểu trả về list sang Page.
+	// bo pageable và trả về kiểu Page(entity)
 	@Override
 	public Page<Transaction> search(int accountId, String fromDate, String toDate, Byte type, int pageNo, int pageSize)
 			throws ATMException {
@@ -85,7 +86,6 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 			Account account = accountService.findById(accountId);
 			QTransaction transaction = QTransaction.transaction;
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-			pageable = PageRequest.of(pageNo, pageSize);
 			where = new BooleanBuilder();
 			if (account.getAccountNumber() != null) {
 				where.and(transaction.fromAccount.eq(account.getAccountNumber()));
@@ -112,7 +112,8 @@ public class TransactionServiceImpl extends AbstractService<Transaction> impleme
 		String fileCsv = System.getProperty("user.dir") + "/src/main/resources/Transaction.csv";
 		List<Transaction> transactions = findAll();
 		FileWriter writeFile = new FileWriter(fileCsv);
-		CsvUtil.writerLine(writeFile, Arrays.asList("Id", "FromAccount", "ToAccount", "Type", "Content", "Status", "TransferAmount", "DateTime"));
+		CsvUtil.writerLine(writeFile, Arrays.asList("Id", "FromAccount", "ToAccount", "Type", "Content", "Status",
+				"TransferAmount", "DateTime"));
 		for (Transaction transaction : transactions) {
 			List<String> list = new ArrayList<>();
 			list.add(String.valueOf(transaction.getId()));
