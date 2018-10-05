@@ -3,16 +3,16 @@ package com.homedirect.processor.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.homedirect.entity.Account;
-import com.homedirect.entity.Page;
 import com.homedirect.exception.ATMException;
 import com.homedirect.processor.AccountProcessor;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
-import com.homedirect.request.PageRequest;
 import com.homedirect.request.SearchAccountRequest;
+import com.homedirect.request.UpdateAccountRequest;
 import com.homedirect.response.AccountResponse;
 import com.homedirect.service.AccountService;
 import com.homedirect.transformer.AccountTransformer;
@@ -21,52 +21,63 @@ import com.homedirect.validator.ATMStorageValidator;
 
 @Service
 public class AccountProcessorImpl implements AccountProcessor {
-	private @Autowired AccountService accountService;
+
+	private @Autowired AccountService service;
 	private @Autowired AccountTransformer transformer;
 	private @Autowired ATMInputValidator validatorInputATM;
 	private @Autowired ATMStorageValidator validatorStorageATM;
 
 	@Override
 	public AccountResponse login(AccountRequest request) throws ATMException {
-		Account account = accountService.login(request.getUsername(), request.getPassword());
+		Account account = service.login(request.getUsername(), request.getPassword());
 		return transformer.toResponse(account);
 	}
 
 	public AccountResponse create(AccountRequest request) throws ATMException {
 		validatorInputATM.isValidCreateAccount(request.getUsername(), request.getPassword());
-		Account account = accountService.creatAcc(request);
-		accountService.save(account);
+		Account account = service.creatAcc(request);
+		service.save(account);
 		return transformer.toResponse(account);
 	}
 
-	public Page<AccountResponse> findAll(PageRequest request) {
-		Page<Account> accounts = accountService.findAll(request.getPageNo(), request.getPageSize());
-		return transformer.toResponse(accounts);
-	}
-
 	public List<Account> findAll() {
-		return accountService.findAll();
+		return service.findAll();
 	}
 
 	@Override
 	public AccountResponse get(int id) throws ATMException {
-		Account account = accountService.findById(id);
+		Account account = service.findById(id);
 		return transformer.toResponse(account);
 	}
 
 	@Override
 	public AccountResponse changePassword(ChangePassRequest changePassRequest) throws ATMException {
-		Account account = accountService.findById(changePassRequest.getId());
+		Account account = service.findById(changePassRequest.getId());
 		validatorStorageATM.validateChangePassword(changePassRequest.getOldPassword(),
 				changePassRequest.getNewPassword(), account);
-		Account saveAccont = accountService.changePassword(account, changePassRequest.getNewPassword());
-		accountService.save(saveAccont);
+		Account saveAccont = service.changePassword(account, changePassRequest.getNewPassword());
+		service.save(saveAccont);
 		return transformer.toResponse(account);
 	}
 
 	@Override
 	public Page<AccountResponse> search(SearchAccountRequest request) throws ATMException {
-		return transformer
-				.toResponse(accountService.search(request.getUsername(), request.getPageNo(), request.getPageSize()));
+		Account account = validatorStorageATM.validateUsername(request.getUsername());
+		return service.search(account.getUsername(), request.getPageNo(), request.getPageSize());
+	}
+
+	@Override
+	public AccountResponse updateAccount(UpdateAccountRequest request) {
+		Account account = service.findById(request.getId());
+		validatorStorageATM.checkUserNameExist(request.getUsername());
+		Account updateAccount = service.updateAccount(account, request.getUsername());
+		service.save(updateAccount);
+		return transformer.toResponse(account);
+	}
+
+	@Override
+	public void deleteById(int id) {
+		Account account = service.findById(id);
+		service.deleteAccount(account);
 	}
 }

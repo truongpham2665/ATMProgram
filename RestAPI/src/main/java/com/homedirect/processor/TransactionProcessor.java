@@ -2,10 +2,7 @@ package com.homedirect.processor;
 
 import java.util.List;
 
-import com.homedirect.entity.Page;
-
-//import org.springframework.data.domain.Page;
-
+import org.springframework.data.domain.Page;
 import com.homedirect.entity.Transaction;
 import com.homedirect.exception.ATMException;
 import com.homedirect.request.DepositRequest;
@@ -22,8 +19,6 @@ public interface TransactionProcessor {
 
 	TransactionResponse transfer(TransferRequest transferRequest) throws ATMException;
 
-//	Page<Transaction> search(SearchTransactionRequest request) throws ATMException;
-	
 	Page<TransactionResponse> search(SearchTransactionRequest request) throws ATMException;
 
 	List<Transaction> findTransactionByAccountId(int accountId) throws ATMException;

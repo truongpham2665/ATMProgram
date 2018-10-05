@@ -1,5 +1,6 @@
 package com.homedirect.controller;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,12 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.homedirect.exception.ATMException;
+import com.homedirect.constant.ErrorCode;
 import com.homedirect.processor.AccountProcessor;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.request.ChangePassRequest;
-import com.homedirect.request.PageRequest;
 import com.homedirect.request.SearchAccountRequest;
+import com.homedirect.request.UpdateAccountRequest;
 import com.homedirect.response.ATMResponse;
 
 @RestController
@@ -32,11 +33,11 @@ public class AccountController extends AbstractController<AccountProcessor> {
 		return apply(request, processor::create);
 	}
 
-	@GetMapping
-	public ATMResponse<?> findAll(@RequestParam(defaultValue = "0") int pageNo,
-								  @RequestParam(defaultValue = "10") int pageSize) throws ATMException {
-		return apply(new PageRequest(pageNo, pageSize), processor::findAll);
-	}
+//	@GetMapping
+//	public ATMResponse<?> findAll(@RequestParam(defaultValue = "0") int pageNo,
+//								  @RequestParam(defaultValue = "10") int pageSize) throws ATMException {
+//		return apply(new PageRequest(pageNo, pageSize), processor::findAll);
+//	}
 
 	@GetMapping(value = "/{id}")
 	public ATMResponse<?> get(@PathVariable int id) {
@@ -52,5 +53,16 @@ public class AccountController extends AbstractController<AccountProcessor> {
 	public ATMResponse<?> search(@RequestParam(value = "username", required = false) String username,
 			@RequestParam(defaultValue = "0") int pageNo, @RequestParam(defaultValue = "10") int pageSize) {
 		return apply(new SearchAccountRequest(username, pageNo, pageSize), processor::search);
+	}
+	
+	@PutMapping(value = "/update")
+	public ATMResponse<?> updateAccount(@RequestBody UpdateAccountRequest request) {
+		return apply(request, processor::updateAccount);
+	}
+	
+	@DeleteMapping(value = "/{id}")
+	public String deleteAccount(@PathVariable int id) {
+		processor.deleteById(id);
+		return ErrorCode.SUCCESS_MES;
 	}
 }

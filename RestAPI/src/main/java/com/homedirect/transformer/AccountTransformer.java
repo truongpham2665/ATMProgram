@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import com.homedirect.entity.Account;
-import com.homedirect.entity.Page;
 import com.homedirect.request.AccountRequest;
 import com.homedirect.response.AccountResponse;
 import com.homedirect.service.AccountService;
@@ -42,8 +42,12 @@ public class AccountTransformer {
 	}
 	
 	//Thêm hàm transformer Page<Account> sang Page<AccountResponse>
+//	public Page<AccountResponse> toResponse(Page<Account> page) {
+//		if (page == null) return new Page<AccountResponse>();
+//		return new Page<>(page.getPageNo(), page.getPageSize(), page.getTotalElements(), page.getTotalPage() ,toResponseList(page.getContent()));
+//	}
 	public Page<AccountResponse> toResponse(Page<Account> page) {
-		if (page == null) return new Page<AccountResponse>();
-		return new Page<>(page.getPageNo(), page.getPageSize(), page.getTotalElements(), page.getTotalPage() ,toResponseList(page.getContent()));
+		return page.map(account -> toResponse(account)); 
 	}
+	
 }

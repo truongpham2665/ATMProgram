@@ -3,10 +3,7 @@ package com.homedirect.request;
 import lombok.Getter;
 
 @Getter
-public class AccountRequest {
+public class UpdateAccountRequest {
 	private Integer id;
-	private String accountNumber;
 	private String username;
-	private String password;
-	private Double amount;
 }

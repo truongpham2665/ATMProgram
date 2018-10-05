@@ -7,7 +7,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Entity
+@Data
+@NoArgsConstructor
 public class Transaction {
 
 	@Id
@@ -39,10 +44,7 @@ public class Transaction {
 		public final static String CONTENT_DEPOSIT = "Gui tien";
 		public final static int PAGESIZE = 10;
 	}
-
-	public Transaction() {
-	}
-
+	
 	public Transaction(String fromAccount, String toAccount, Double transferAmount, Date time, String status,
 			String content, Byte type) {
 		this.fromAccount = fromAccount;
@@ -53,36 +55,41 @@ public class Transaction {
 		this.content = content;
 		this.type = type;
 	}
+//
+//	public Transaction() {
+//	}
+//
 
-	public Integer getId() {return Id;}
-
-	public void setId(Integer id) {Id = id;}
-
-	public String getFromAccount() { return fromAccount; }
-
-	public void setFromAccount(String fromAccount) { this.fromAccount = fromAccount; }
-
-	public String getToAccount() { return toAccount; }
-
-	public void setToAccount(String toAccount) { this.toAccount = toAccount; }
-
-	public Double getTransferAmount() { return transferAmount; }
-
-	public void setTransferAmount(Double transferAmount) { this.transferAmount = transferAmount; }
-
-	public Date getTime() { return time; }
-
-	public void setTime(Date time) { this.time = time; }
-
-	public String getStatus() { return status; }
-
-	public void setStatus(String status) { this.status = status; }
-
-	public String getContent() { return content; }
-
-	public void setContent(String content) { this.content = content; }
-
-	public Byte getType() { return type; }
-
-	public void setType(Byte type) { this.type = type; }
+//
+//	public Integer getId() {return Id;}
+//
+//	public void setId(Integer id) {Id = id;}
+//
+//	public String getFromAccount() { return fromAccount; }
+//
+//	public void setFromAccount(String fromAccount) { this.fromAccount = fromAccount; }
+//
+//	public String getToAccount() { return toAccount; }
+//
+//	public void setToAccount(String toAccount) { this.toAccount = toAccount; }
+//
+//	public Double getTransferAmount() { return transferAmount; }
+//
+//	public void setTransferAmount(Double transferAmount) { this.transferAmount = transferAmount; }
+//
+//	public Date getTime() { return time; }
+//
+//	public void setTime(Date time) { this.time = time; }
+//
+//	public String getStatus() { return status; }
+//
+//	public void setStatus(String status) { this.status = status; }
+//
+//	public String getContent() { return content; }
+//
+//	public void setContent(String content) { this.content = content; }
+//
+//	public Byte getType() { return type; }
+//
+//	public void setType(Byte type) { this.type = type; }
 }

@@ -30,7 +30,6 @@ public class ATMInputValidator {
 		return isValidPassword(password);
 	}
 
-	//doi return true -> return false và ngược lại
 	public static boolean validatorDeposit(Double amount) throws ATMException {
 		if (amount == null) {
 			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
@@ -45,8 +44,11 @@ public class ATMInputValidator {
 		if (amount == null) {
 			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
 		}
-		if (amount <= 0 || amount % 10000 != 0 || amount > Transaction.Constant.MAX_AMOUNT_WITHDRAW) {
+		if (amount <= 0 || amount % 10000 != 0) {
 			throw new ATMException(ErrorCode.INVALID_AMOUNT_WITHDRAW, ErrorCode.INVALID_WITHDRAW_MES);
+		}
+		if (amount > Transaction.Constant.MAX_AMOUNT_WITHDRAW) {
+			throw new ATMException(ErrorCode.INVALID_AMOUNT, ErrorCode.INVALID_AMOUNT_MES);
 		}
 		if (oldAmount - amount - Transaction.Constant.FEE_TRANSFER < Transaction.Constant.DEFAULT_BALANCE) {
 			throw new ATMException(ErrorCode.INVALID_AMOUNT_WITHDRAW, ErrorCode.INVALID_WITHDRAW_MES);
@@ -72,14 +74,12 @@ public class ATMInputValidator {
 		if (username == null || password == null) {
 			throw new ATMException(ErrorCode.MISS_DATA, ErrorCode.MISS_DATA_MES);
 		}
-		if (!validatorStorageATM.checkUserName(username)) {
-			throw new ATMException(ErrorCode.USERNAME_EXIST, ErrorCode.USERNAME_EXIST_MES, username);
-		}
+		validatorStorageATM.checkUserNameExist(username);
 		return true;
 	}
 
 	public static Date getDate() {
-		java.util.Date currentime = new Date();
+		Date currentime = new Date();
 		Timestamp date = new Timestamp(currentime.getTime());
 		return date;
 	}
@@ -94,7 +94,6 @@ public class ATMInputValidator {
 		Account toAccount = accountService.findByAccountNumber(toAccountNumber);
 		if (toAccount == null) {
 			throw new ATMException(ErrorCode.NOT_FOUND, ErrorCode.NOT_FOUND_MES, toAccount);
-//			return false;
 		}
 		return toAccount;
 	}

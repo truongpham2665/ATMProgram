@@ -3,6 +3,7 @@ package com.homedirect.util;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +24,19 @@ public class DownloadFileTransaction extends AbstractController<TransactionProce
 		try {
 			WriteFile writeFile = new WriteFile();
 			List<Transaction> transactions = processor.findTransactionByAccountId(id);
+			writeFile.writeListTransactiontoExcel(transactions);
+			return toResponse(transactions);
+		} catch (Exception e) {
+			return toResponse(e);
+		}
+	}
+	
+	@Scheduled(cron = "0 23 10 ? * MON-FRI")
+	@GetMapping
+	public ATMResponse<?> writeAll() throws ATMException, IOException {
+		try {
+			WriteFile writeFile = new WriteFile();
+			List<Transaction> transactions = processor.findAll();
 			writeFile.writeListTransactiontoExcel(transactions);
 			return toResponse(transactions);
 		} catch (Exception e) {

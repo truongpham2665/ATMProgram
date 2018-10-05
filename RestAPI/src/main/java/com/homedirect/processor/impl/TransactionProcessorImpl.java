@@ -1,13 +1,15 @@
 package com.homedirect.processor.impl;
 
+import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 //import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.homedirect.entity.Account;
-import com.homedirect.entity.Page;
 import com.homedirect.entity.QTransaction;
 import com.homedirect.entity.Transaction;
 import com.homedirect.exception.ATMException;
@@ -73,7 +75,7 @@ public class TransactionProcessorImpl implements TransactionProcessor {
 	public Page<TransactionResponse> search(SearchTransactionRequest request) throws ATMException {
 		return transformer.toTransactionResponse(service.search(request.getAccountId(), request.getFromDate(), request.getToDate(), request.getType(),
 				request.getPageNo(), request.getPageSize()));
-		
+
 	}
 
 	public List<Transaction> findTransactionByAccountId(int accountId) throws ATMException {
@@ -91,19 +93,18 @@ public class TransactionProcessorImpl implements TransactionProcessor {
 	public List<Transaction> findAll() {
 		return service.findAll();
 	}
-	
-//	public String sendOTP() {
-//		String message = "Your OTP: " + generateOTP();
-//		return message;
-//	}
-//	
-//	public String generateOTP() {
-//			Random rd = new Random();
-//			int max = 999999999;
-//			int code = rd.nextInt(max);
-//			DecimalFormat format = new DecimalFormat("000000000");
-//			String otp = format.format(code);
-//			return otp;
-//	}
-	
+
+	public String sendOTP() {
+		String message = "Your OTP: " + generateOTP();
+		return message;
+	}
+
+	public String generateOTP() {
+		Random rd = new Random();
+		int max = 999999999;
+		int code = rd.nextInt(max);
+		DecimalFormat format = new DecimalFormat("000000000");
+		String otp = format.format(code);
+		return otp;
+	}
 }
