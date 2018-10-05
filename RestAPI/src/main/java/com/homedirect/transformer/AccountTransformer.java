@@ -36,18 +36,13 @@ public class AccountTransformer {
 		response.setAmount(account.getAmount());
 		return response;
 	}
-	
+
 	public List<AccountResponse> toResponseList(List<Account> accounts) {
 		return accounts.stream().map(this::toResponse).collect(Collectors.toList());
 	}
-	
-	//Thêm hàm transformer Page<Account> sang Page<AccountResponse>
-//	public Page<AccountResponse> toResponse(Page<Account> page) {
-//		if (page == null) return new Page<AccountResponse>();
-//		return new Page<>(page.getPageNo(), page.getPageSize(), page.getTotalElements(), page.getTotalPage() ,toResponseList(page.getContent()));
-//	}
+
 	public Page<AccountResponse> toResponse(Page<Account> page) {
-		return page.map(account -> toResponse(account)); 
+		return page.map(account -> toResponse(account));
 	}
-	
+
 }

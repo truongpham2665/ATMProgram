@@ -6,29 +6,34 @@ import org.springframework.data.domain.Page;
 
 import com.homedirect.entity.Account;
 import com.homedirect.request.AccountRequest;
-import com.homedirect.response.AccountResponse;
+import com.homedirect.exception.ATMException;
+import com.homedirect.request.ChangePassRequest;
 
 public interface AccountService {
 
 	Account creatAcc(AccountRequest request);
 
-	Account login(String username, String password);
+	Account login(AccountRequest request) throws ATMException;
 
-	Account changePassword(Account account, String password);
+	Account changePassword(ChangePassRequest changePassRequest) throws ATMException;
 
-	Page<AccountResponse> search(String username, int pageNo, int pageSize);
+	Page<Account> search(String username, int pageNo, int pageSize);
 
 	Account findByAccountNumber(String accountNumber);
 
-	Account findById(int id);
+	Page<Account> findAll(int pageNo, int pageSize);
 
-	List<Account> findAll();
+	Account findById(int id) throws ATMException;
+
+	List<Account> findAlls();
 
 	String generateAccountNumber();
 
+	void exportCsv() throws Exception;
+
 	Account save(Account account);
-	
+
 	Account updateAccount(Account account, String username);
-	
+
 	void deleteAccount(Account account);
 }

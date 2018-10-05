@@ -47,8 +47,9 @@ public class TransactionController extends AbstractController<TransactionProcess
 		return apply(new SearchTransactionRequest(id, fromDate, toDate, type, pageNo, Transaction.Constant.PAGESIZE), processor::search);
 	}
 	
-//	@PostMapping(value = "/validateOTP")
-//	public String validateOTP(@RequestBody String otp) {
-//		return ErrorCode.SUCCESS_MES;
-//	}
+	@GetMapping(value = "/dowload")
+	public String dowloadCsv() throws Exception {
+		processor.exportCsv();
+		return "Dowload complete";
+	}
 }
