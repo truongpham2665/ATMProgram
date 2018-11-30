@@ -17,7 +17,7 @@ import com.homedirect.response.ATMResponse;
 
 @RestController
 @RequestMapping("/accounts")
-public class AccountController extends AbstractController<AccountProcessor> {
+public class AccountController extends AbstractController<AccountProcessor>{
 
 	// sử dụng phương thức apply(...) abstractController đã có try/catch. nên bỏ
 	// try/catch .
